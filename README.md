@@ -4,19 +4,15 @@
 
 ### 1. Overview
 
-ROB entry
-
-| tag  | busy | inst. type | destination | value | ready |
-| :--: | :--: | :--------: | :---------: | :---: | :---: |
-
-Load Buffer entry
-
-| tag  | busy | A (the effective address) |
-| :--: | :--: | :-----------------------: |
-
 #### 1.1 CDB
 
+`tag[3:0]`
 
+`val[31:0]`
+
+#### 1.2 Dimension
+
+The # of ROB entries is 6. The # of registers is 32.The # of ALU RS entries is 5. The number of CMP RS entries is 3.
 
 ### 2. Branch Predictor
 
@@ -68,11 +64,11 @@ The memory interface.
 
 Branch enable signal *from* CMP.
 
-`br_target`
+`br_target[31:0]`
 
 The target address of the branch if there is one.
 
-`br_pc`
+`br_pc[31:0]`
 
 The corresponding PC of the branch instruction. This is used to update the BTB.
 
@@ -143,53 +139,91 @@ If one entry does not hold valid instruction data, its value should be set to 32
 
 **Port to regfile.**
 
-`rs1`
+`rs1[4:0]`
 
 The index of the first register that we read.
 
-`rs2`
+`rs2[4:0]`
 
 The index of the second register that we read.
 
 **Port to ALU RS.**
 
-`Vj`
+`Vj[31:0]`
 
 The first operand.
 
-`Vk`
+`Vk[31:0]`
 
 The second operand.
 
-`Qj`
+`Qj[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vj.
 
-`Qk`
+`Qk[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vk.
 
-`op_type`
+`op_type[2:0]`
 
 This input indicates what kind of instruction it is.
 
-`dest`
+`dest[3:0]`
 
 This is the ROB entry tag that indicates where the result of this operation should be stored.
+
+**Port to CMP RS.**
+
+`cmp_Vj[31:0]`
+
+This is the value of the first operand for comparison.
+
+`cmp_Vk[31:0]`
+
+This is the value of the second operand for comparison.
+
+`cmp_Qj[3:0]`
+
+This indicates where `Vj` should come from.
+
+`cmp_Qk[3:0]`
+
+This indicates where `Vk` should come from.
+
+`cmp_op[2:0]`
+
+The opcode of comparator operation.
+
+`br_pred_out`
+
+The prediction of a branch (1 means take branch, 0 means not take).
+
+`pc_out[31:0]`
+
+The PC of this instruction.
+
+`pc_next_out[31:0]`
+
+The PC of the instruction right after the current one (prediction may involve).
 
 **Port from instruction queue.**
 
 `pc_in[31:0]`
 
+The PC value of this instruction.
+
 `pc_next_in[31:0]`
 
-`inst_in`
+The potential jump target of this instruction (prediction may involve).
+
+`inst_in[31:0]`
 
 The instruction popped from the instruction queue. If the opcode of the instruction is 32'b0, it means the instruction is illegal and we ignore it.
 
 `br_pred_in`
 
-This value is used later when the comparator produce the `br_en` signal to  give feedback to the branch predictor.
+The prediction of a branch (1 means take branch, 0 means not take). This value is used later when the comparator produce the `br_en` signal to  give feedback to the branch predictor.
 
 #### 4.2 Function
 
@@ -214,43 +248,47 @@ Active high signal to indicate there is empty space in the reservation station.
 
 **Port from decoder.**
 
-`Vj_in`
+`Vj_in[31:0]`
 
 The first operand.
 
-`Vk_in`
+`Vk_in[31:0]`
 
 The second operand.
 
-`Qj_in`
+`Qj_in[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vj.
 
-`Qk_in`
+`Qk_in[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vk.
 
-`op_type`
+`op_type[2:0]`
 
 This input indicates what kind of instruction it is.
 
-`dest_in`
+`dest_in[3:0]`
 
 This is the ROB entry tag that indicates where the result of this operation should be stored.
 
 **Port to ALU.**
 
-`Vj_out`
+`Vj_out[31:0]`
 
-`Vk_out`
+`Vk_out[31:0]`
 
-`Qj_out`
+`Qj_out[3:0]`
 
-`Qk_out`
+`Qk_out[3:0]`
 
-`alu_op`
+`alu_op[2:0]`
 
 This corresponds to the `op. type` field in the RS entry. It informs the ALU what operation to perform.
+
+`dest_out[3:0]`
+
+The destination of this operation. Represented by ROB index.
 
 **Control signal.**
 
@@ -282,17 +320,17 @@ The ALU reservation station contains 5 entries for pending operations waiting to
 
 **Port from ALU RS**
 
-`Vj_out`
+`Vj[31:0]`
 
-`Vk_out`
+`Vk[31:0]`
 
-`Qj_out`
+`Qj[3:0]`
 
-`Qk_out`
+`Qk[3:0]`
 
-`alu_op`
+`alu_op[2:0]`
 
-`destination`
+`dest[3:0]`
 
 This indicates where the result should go.
 
@@ -307,8 +345,6 @@ This is a `cdb_itf` type variable.
 The ALU computed a result given the two operands and operation type. Then it broadcasts the result onto the ALU-specific CDB.
 
 ### 7 Regfile
-
-refile entry
 
 | Reg# | V (register value) | Q (register source tag) |
 | :--: | :----------------: | :---------------------: |
@@ -343,9 +379,228 @@ The index of the second register we read.
 
 `rs1_out`
 
+The value inside `rs1`. If `t1_out` is not 0, this value is undefined (by default set to 0).
+
 `rs2_out`
+
+The value inside `rs2`. If `t2_out` is not 0, this value is undefined (by default set to 0).
+
+`t1_out`
+
+The tag attached to `rs1`.
+
+`t2_out`
+
+The tag attached to `rs2`.
+
+**Control signal.**
+
+`flush`
+
+This clears all the tags attached to registers.
+
+`reset`
+
+This clears all the data in the regfile.
 
 #### 7.2 Functionality
 
-The regfile will check the `Q` field of the requested register and send back the correct value, i.e. if `Q` is 0, send back value in `V`, else send back `Q` itself.
+The regfile will check the `Q` field of the requested register and send back the correct value, i.e. if `Q` is 0, send back value in `V`, else send back `Q` itself. The regfile should complete reading within 1 cycle.
+
+### 8 Comparator reservation station
+
+#### 8.1 CMP RS entry
+
+| busy | cmp_op |  Vj  |  Vk  |  Qj  |  Qk  | destination | br_pred | PC   | PC_next |
+| :--: | :----: | :--: | :--: | :--: | :--: | :---------: | :-----: | ---- | ------- |
+
+
+
+#### 8.2 Port
+
+*Note: these ports can be packaged together for convenience.*
+
+**Port from decoder.**
+
+`Vj[31:0]`
+
+This is the value of the first operand for comparison.
+
+`Vk[31:0]`
+
+This is the value of the second operand for comparison.
+
+`Qj[3:0]`
+
+This indicates where `Vj` should come from.
+
+`Qk[3:0]`
+
+This indicates where `Vk` should come from.
+
+`cmp_op[2:0]`
+
+The opcode of comparator operation.
+
+`br_pred`
+
+The prediction of a branch (1 means take branch, 0 means not take).
+
+`pc[31:0]`
+
+The PC of this instruction.
+
+`pc_next[31:0]`
+
+The PC of the instruction right after the current one (prediction may involve).
+
+`dest_in`
+
+The destination of this instruction (for `slt` instruction).
+
+**Port to CMP.**
+
+`Vj_out[31:0]`
+
+`Vk_out[31:0]`
+
+`cmp_op_out[2:0]`
+
+`br_pred_out`
+
+`pc_out[31:0]`
+
+`pc_next_out[31:0]`
+
+**Port from CDB**
+
+`alu_res`
+
+This is a `cdb_itf` type port that receives output from the ALU.
+
+`cmp_res`
+
+This is a `cdb_itf` type port that receives output from the comparator.
+
+`mem_res`
+
+This is a `cdb_itf` type port that receives output from the memory (data cache).
+
+#### 8.3 Functionality
+
+This reservation station holds the operands and operation type for instructions that involve comparator.
+
+### 9 Comparator (CMP)
+
+#### 9.1 Port
+
+**Port from CMP RS.**
+
+`Vj[31:0]`
+
+`Vk[31:0]`
+
+`cmp_op[2:0]`
+
+`br_pred`
+
+`pc_in[31:0]`
+
+The PC of this instruction.
+
+`pc_next[31:0]`
+
+**Port to CDB.**
+
+`cmp_out`
+
+This is a `cdb_itf` type variable.
+
+**Port to branch predictor.**
+
+`pred_check`
+
+If set to 1, the branch prediction was successful. Else, the prediction was wrong.
+
+`pc_target[31:0]`
+
+The address of the actual next instruction.
+
+`pc_out[31:0]`
+
+The PC of this instruction.
+
+#### 9.2 Functionality
+
+The comparator not only need to perform arithmetic operations, but check if the branch predictor was right and decide the true next PC.
+
+### 10 Reorder buffer (ROB)
+
+#### 10.1 ROB entry
+
+| tag  | busy | inst. type | destination | value | ready |
+| :--: | :--: | :--------: | :---------: | :---: | :---: |
+
+`inst. type` can be branch, store or register operation.
+
+`ready` indicates if this entry is ready to commit.
+
+`destination` can be a register index or memory address (for store).
+
+#### 10.2 Port
+
+**Port from CDB**
+
+`alu_res`
+
+This is a `cdb_itf` type port that receives output from the ALU.
+
+`cmp_res`
+
+This is a `cdb_itf` type port that receives output from the comparator.
+
+`mem_res`
+
+This is a `cdb_itf` type port that receives output from the memory (data cache).
+
+#### 10.3 Functionality
+
+The ROB buffer maintains any instruction that is not ready to commit. It also properly manages the commiting of different kinds of instructions.
+
+### 11 Load buffer
+
+#### 11.1 Load buffer entry
+
+| busy | A (the effective address) |  Q   |  V   |
+| :--: | :-----------------------: | :--: | :--: |
+
+
+
+#### 11.2 Port
+
+**Port from CDB**
+
+`alu_res`
+
+This is a `cdb_itf` type port that receives output from the ALU.
+
+`cmp_res`
+
+This is a `cdb_itf` type port that receives output from the comparator.
+
+`mem_res`
+
+This is a `cdb_itf` type port that receives output from the memory (data cache).
+
+#### 11.3 Functionality
+
+
+
+### 12 Arbiter
+
+#### 12.1 Port
+
+
+
+#### 12.2 Functionality
 
