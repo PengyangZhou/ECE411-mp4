@@ -468,6 +468,12 @@ The regfile will check the `Q` field of the requested register and send back the
 
 *Note: these ports can be packaged together for convenience.*
 
+**Port to decoder**
+
+`ready`
+
+Active high signal to indicate there is empty space in the reservation station.
+
 **Port from decoder.**
 
 `Vj[31:0]`
@@ -633,6 +639,12 @@ For a load, `destination` is a ROB entry index indicating where the read data sh
 
 #### 11.2 Port
 
+**Port to decoder**
+
+`ready`
+
+Active high signal to indicate there is empty space in the Load/Store buffer.
+
 **Port from decoder**
 
 `Vj[31:0]`
@@ -702,7 +714,7 @@ This is a `cdb_itf` type port that receives output from the memory unit.
 The load buffer store the effective address to load from and the destination ROB entry. It shares the functionality of a reservation station.
 
 1. When Load instruction is issued, the immediate part is put into `A` field.
-2. For load step 1, when `Vj` is ready the addition between `Vj` and `A` is performed and the result is again stored in `A`. This step can only execute when there are no stores earlier in the Load/Store buffer queue.
+2. For load step 1, when `Vj` is ready the addition between `Vj` and `A` is performed and the result is again stored in `A`. This step can only execute when there are no stores earlier in the Load/Store buffer queue (not necessary?).
 3. For load step 2, when load step 1 is done and all stores earlier in the ROB have differnet address.
 
 ### 12 Arbiter
