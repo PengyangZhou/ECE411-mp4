@@ -125,7 +125,7 @@ Active high signal that enables the instruction queue to shift downward, i.e. po
 
 Active high signal that clears the whole queue.
 
-#### 3.2 Function
+#### 3.2 Functionality
 
 The instruction queue takes in the instruction data from the branch predictor and passes it along its internel pipeline.
 
@@ -147,31 +147,45 @@ The index of the first register that we read.
 
 The index of the second register that we read.
 
+**Port from regfile**
+
+`Qi[4:0]`
+
+The index of ROB that contains the operation whose result should be stored into this register.
+
+`Vi[31:0]`
+
+The value of the register. Valid only when `Qi` is 0.
+
 **Port to ALU RS.**
 
-`Vj[31:0]`
+`alu_Vj[31:0]`
 
 The first operand.
 
-`Vk[31:0]`
+`alu_Vk[31:0]`
 
 The second operand.
 
-`Qj[3:0]`
+`alu_Qj[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vj.
 
-`Qk[3:0]`
+`alu_Qk[3:0]`
 
 The tag of the ROB entry that we will obtain the data Vk.
 
-`op_type[2:0]`
+`alu_op_type[2:0]`
 
 This input indicates what kind of instruction it is.
 
-`dest[3:0]`
+`alu_dest[3:0]`
 
 This is the ROB entry tag that indicates where the result of this operation should be stored.
+
+`alu_valid_out`
+
+Active high signal indicating there is a new operation produced.
 
 **Port to CMP RS.**
 
@@ -207,6 +221,40 @@ The PC of this instruction.
 
 The PC of the instruction right after the current one (prediction may involve).
 
+`cmp_valid_out`
+
+Active high signal indicating there is a new operation produced.
+
+**Port to Load/Store buffer**
+
+`lsb_Vj[31:0]`
+
+The first operand.
+
+`lsb_Vk[31:0]`
+
+The second operand.
+
+`lsb_Qj[3:0]`
+
+The tag of the ROB entry that we will obtain the data Vj.
+
+`lsb_Qk[3:0]`
+
+The tag of the ROB entry that we will obtain the data Vk.
+
+`lsb_op_type`
+
+This input indicates what kind of instruction it is. `1` means store and `0` means load.
+
+`lsb_dest[3:0]`
+
+This is the ROB entry tag that indicates where the result of this operation should be stored.
+
+`lsb_valid_out`
+
+Active high signal indicating there is a new operation produced.
+
 **Port from instruction queue.**
 
 `pc_in[31:0]`
@@ -225,9 +273,9 @@ The instruction popped from the instruction queue. If the opcode of the instruct
 
 The prediction of a branch (1 means take branch, 0 means not take). This value is used later when the comparator produce the `br_en` signal to  give feedback to the branch predictor.
 
-#### 4.2 Function
+#### 4.2 Functionality
 
-The decoder module put the right value into the ALU reservation station (RS). It is either a immediate from the instruction, existing register value from regfile, or ROB entry index read from the regfile.
+The decoder module put the right value into the ALU reservation station (RS). It is either a immediate from the instruction, existing register value from regfile, completed but not committed value from ROB, or ROB entry index of an uncompleted operation. The decoder must handle the relationship between `Q` and `V` properly.
 
 ### 5 ALU reservation station
 
@@ -538,7 +586,7 @@ The comparator not only need to perform arithmetic operations, but check if the 
 
 #### 10.1 ROB entry
 
-| tag[3:0] | busy | inst. type[1:0] | destination[4:0] | value[31:0] | ready |
+| tag[3:0] | busy | inst. type[1:0] | destination[31:0] | value[31:0] | ready |
 | :------: | :--: | :-------------: | :--------------: | :---------: | :---: |
 
 `inst. type` can be branch, store or register operation.
@@ -565,18 +613,75 @@ This is a `cdb_itf` type port that receives output from the memory (data cache).
 
 #### 10.3 Functionality
 
-The ROB buffer maintains any instruction that is not ready to commit. It also properly manages the commiting of different kinds of instructions.
+The ROB buffer maintains any instruction that is not ready to commit. It also properly manages the commiting of different kinds of instructions. Also, when any RS entry is requesting for register values that are not yet committed but already exist in the ROB, the ROB should be able to spread out these values.
 
-### 11 Load buffer
+1. If the instruction to commit is a branch and it is mispredicted, clear ROB and all pending registers. Then fetch the new instruction.
+2. If the instruction to commit is a store, `Mem[destination] <- value`. 
+3. Else, put the `value` in the `destination` register.
+4. In all conditions, free up the tags on the registers that are associated with this ROB entry.
 
-#### 11.1 Load buffer entry
+### 11 Load/Store buffer
 
-| busy | A[31:0] (the effective address) | destination[4:0] |
-| :--: | :-----------------------------: | :--------------: |
+#### 11.1 Load/Store buffer entry
 
-Destination indicates
+| busy | A |  Vj  |  Vk  |  Qj  |  Qk  | destination |
+| :--: | :------: | :--: | :--: | :--: | :--: | :---------: |
+
+For a load, `destination` is a ROB entry index indicating where the read data should go. For a store, `destination` is a ROB entry index indicating where the calculated effective address as well as the data to store should go.
+
+`A` stores the immediate value from the memory instruction. `Vj` stores the value of the register for calculating address. `Vk` stores the value we want to wrote to memory (for store operation).
 
 #### 11.2 Port
+
+**Port from decoder**
+
+`Vj[31:0]`
+
+The first operand.
+
+`Vk[31:0]`
+
+The second operand.
+
+`Qj[3:0]`
+
+The tag of the ROB entry that we will obtain the data Vj.
+
+`Qk[3:0]`
+
+The tag of the ROB entry that we will obtain the data Vk.
+
+`op_type`
+
+This input indicates what kind of instruction it is. `1` means store and `0` means load.
+
+`dest[3:0]`
+
+This is the ROB entry tag that indicates where the result of this operation should be stored.
+
+`valid`
+
+Active high signal indicating there is a new operation coming in.
+
+**Port to memory unit**
+
+`mem_Vj[31:0]`
+
+`mem_Vk[31:0]`
+
+`mem_Qj[3:0]`
+
+`mem_Qk[3:0]`
+
+`mem_op`
+
+This output indicates what kind of instruction it is. `1` means store and `0` means load.
+
+`mem_dest[3:0]`
+
+`mem_valid_out`
+
+Active high signal indicating there is a new operation produced.
 
 **Port from CDB**
 
@@ -590,11 +695,15 @@ This is a `cdb_itf` type port that receives output from the comparator.
 
 `mem_res`
 
-This is a `cdb_itf` type port that receives output from the memory (data cache).
+This is a `cdb_itf` type port that receives output from the memory unit.
 
 #### 11.3 Functionality
 
-The load buffer store the effective address to load from and the destination ROB entry.
+The load buffer store the effective address to load from and the destination ROB entry. It shares the functionality of a reservation station.
+
+1. When Load instruction is issued, the immediate part is put into `A` field.
+2. For load step 1, when `Vj` is ready the addition between `Vj` and `A` is performed and the result is again stored in `A`. This step can only execute when there are no stores earlier in the Load/Store buffer queue.
+3. For load step 2, when load step 1 is done and all stores earlier in the ROB have differnet address.
 
 ### 12 Arbiter
 
@@ -648,42 +757,75 @@ This is basically the same as ports with respect to data cache.
 
 **Port to L2 cache.**
 
-```
+`
 pmem_address[31:0]
-```
+`
 
 Physical memory is accessed using this 32-bit signal. It specifies the physical memory address that is to be read or written.
 
-```
+`
 pmem_rdata[255:0]
-```
+`
 
 256-bit data bus for receiving data *from* physical memory.
 
-```
+`
 pmem_wdata[255:0]
-```
+`
 
 256-bit data bus for sending data *to* physical memory.
 
-```
+`
 pmem_read
-```
+`
 
 Active high signal that tells the memory interface that the address is valid and the cache is trying to perform a physical memory read.
 
-```
+`
 pmem_write
-```
+`
 
 Active high signal that tells the memory interface that the address is valid and the cache is trying to perform a physical memory write.
 
-```
+`
 pmem_resp
-```
+`
 
 Active high signal generated by the memory interface indicating that the memory operation has completed.
 
 #### 12.2 Functionality
 
-The arbiter will handle the requests from the 2 highest level caches, reasonably distribute the memory resources for them. (What scheme to use?)
+The arbiter will handle the requests from the 2 highest level caches, reasonably distribute the memory resources for them. Instruction fetch has a higher priority than data fetch. As a result, when there is a collision between the two caches, the arbiter should always serve the instruction request first.
+
+### 13 Memory Unit
+
+#### 13.1 Port
+
+**Port to CDB**
+
+`mem_res`
+
+This is a `cdb_itf` type port that broadcasts memory read data or store addresses onto the CDB.
+
+**Port from Load/Store buffer**
+
+`Vj[31:0]`
+
+`Vk[31:0]`
+
+`Qj[3:0]`
+
+`Qk[3:0]`
+
+`mem_op`
+
+`dest[3:0]`
+
+`valid`
+
+#### 13.2 Functionality
+
+The memory unit resembles the ALU. While ALU executes the operations buffered in ALU reservation station, memory unit handles the memory operations buffered in Load/Store buffer.
+
+1. If all necessary components of a load is ready, the memory unit will calculate the address and send the request to data cache (if it is available).
+2. If all necessary components of a store is ready, the memory unit will calculate the effective address and broadcast the address and the data to store on the 
