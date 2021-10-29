@@ -3,7 +3,7 @@
  */
 
 interface cdb_itf;
-    logic [4:0]  ROB_idx;
-    logic [31:0] value;
+    logic [4:0]  tag;
+    logic [31:0] val;
 
 endinterface : cdb_itf

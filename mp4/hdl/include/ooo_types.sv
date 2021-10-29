@@ -8,7 +8,10 @@ package ooo_types
     parameter int NUM_CMP_RS  = 3;
     parameter int NUM_LDST_RS = 3;
 
+    typedef logic [3:0] tag_t;
+    typedef logic [4:0] reg_t;
 
+    
 endpackage
 
 

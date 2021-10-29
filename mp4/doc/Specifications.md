@@ -4,15 +4,15 @@
 
 ### 1. Overview
 
-#### 1.1 CDB
+#### 1.1 CDB definition
 
 `tag[3:0]`
 
 `val[31:0]`
 
-#### 1.2 Dimension
+#### 1.2 Parameters
 
-The # of ROB entries is 6. The # of registers is 32.The # of ALU RS entries is 5. The number of CMP RS entries is 3.
+The number of ROB entries is 6. The number of registers is 32.The number of ALU reservation station entries is 5. The number of Load/Store buffer entries is 5. The number of CMP reservation station entries is 3.
 
 ### 2. Branch Predictor
 
@@ -839,5 +839,5 @@ This is a `cdb_itf` type port that broadcasts memory read data or store addresse
 
 The memory unit resembles the ALU. While ALU executes the operations buffered in ALU reservation station, memory unit handles the memory operations buffered in Load/Store buffer.
 
-1. If all necessary components of a load is ready, the memory unit will calculate the address and send the request to data cache (if it is available).
+1. If all necessary components of a load is ready, the memory unit will calculate the address and send the request to data cache (if it is available). If the data cache is being accessed by ROB during a store commit, the memory unit should wait until the memory write is over.
 2. If all necessary components of a store is ready, the memory unit will calculate the effective address and broadcast the address and the data to store on the 
