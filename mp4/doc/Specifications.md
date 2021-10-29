@@ -6,9 +6,11 @@
 
 #### 1.1 CDB definition
 
-`tag[3:0]`
+`busy` Active high signal indicating there is valid data on the bus.
 
-`val[31:0]`
+`tag[3:0]` The index of the ROB entry this data is aiming for.
+
+`val[31:0]` The value of the data.
 
 #### 1.2 Parameters
 
@@ -35,6 +37,13 @@ The instruction itself.
 `br_pred`
 
 Set high if the corresponding instruction is a branch and is predicted as take. Otherwise is low.
+
+
+**Port from instruction queue**
+
+`iq_ready`
+
+Signal indicating there is empty space in the instruction queue so that new instructions can be loaded.
 
 **Port to cache.**
 
@@ -87,6 +96,12 @@ instruction queue entry
 
 #### 3.1 Port
 
+**Port to branch predictor**
+
+`ready`
+
+Asserted when there is empty space in the queue.
+
 **Port from branch predictor.**
 
 `pc_in[31:0]`
@@ -103,7 +118,7 @@ The instruction itself.
 
 `br_pred_in`
 
-The predicted branch enable signal.
+The predicted branch. `1` means taken and  `0` means not taken.
 
 **Port to decoder.**
 
@@ -125,6 +140,7 @@ Active high signal that enables the instruction queue to shift downward, i.e. po
 
 Active high signal that clears the whole queue.
 
+
 #### 3.2 Functionality
 
 The instruction queue takes in the instruction data from the branch predictor and passes it along its internel pipeline.
@@ -132,6 +148,10 @@ The instruction queue takes in the instruction data from the branch predictor an
 flush means branch misprediction and all instructions need to be omitted (new PC will be sent to branch predictor and then to instruction queue by PC_next).
 
 If one entry does not hold valid instruction data, its value should be set to 32'b0.
+
+#### 3.3 Implmentation
+
+The instruction queue is a FIFO queue implemented by a shift register and a head pointer.
 
 ### 4 Decoder
 

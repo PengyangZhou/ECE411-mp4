@@ -3,7 +3,8 @@
  */
 
 interface cdb_itf;
-    logic [4:0]  tag;
-    logic [31:0] val;
+    bit             busy;
+    logic [4:0]     tag;
+    logic [31:0]    val;
 
 endinterface : cdb_itf
