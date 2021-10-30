@@ -20,6 +20,24 @@ The number of ROB entries is 6. The number of registers is 32.The number of ALU 
 
 Note that all module have `clk` and `rst` signals. We ignore mentioning them in this specification.
 
+#### 1.4 Usage of `vcs`
+
+The command below is a perfect example of how to use it.
+
+```
+vcs -sverilog -top testbench -full64 hdl/include/rv32i_mux_types.sv hdl/include/rv32i_types.sv hdl/out_of_order_cpu/inst_queue.sv hvl/inst_queue/inst_queue_itf.sv hvl/inst_queue/top.sv
+```
+
+Note that the order of these modules matters. Be careful about the dependency.
+
+Another way to simplify your dbugging process is to dump the file options into a single file without postfix, like `inst_queue_tb`. Then execute the following command in the terminal:
+
+```
+vcs -sverilog -full64 -f inst_queue_tb
+```
+
+You can look into this exact file in `hvl/inst_queue`.
+
 ### 2. Branch Predictor
 
 #### 2.1 Port
@@ -183,7 +201,7 @@ The index of the second register that we read.
 
 **Port from regfile**
 
-`Qi[4:0]`
+`Qi[3:0]`
 
 The index of ROB that contains the operation whose result should be stored into this register.
 

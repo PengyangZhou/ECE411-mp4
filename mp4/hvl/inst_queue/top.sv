@@ -1,8 +1,8 @@
-`include "inst_queue_itf.sv"
+// `include "inst_queue_itf.sv"
 
 module testbench ();
     
-    inst_queue_itf itf;
+    inst_queue_itf itf();
 
     instruction_queue dut(
         .clk        (itf.clk),
@@ -54,6 +54,10 @@ module testbench ();
     logic [96:0] val_out;
 
     initial begin
+        /* dump the simulation results */
+        $dumpfile("inst_queue_tb.vcd");
+        $dumpvars;
+
         $display("Starting Instructin Queue Test");
 
         reset();
@@ -75,7 +79,7 @@ module testbench ();
         for (int i = 0; i < 6; ++i) begin
             pop(val_out);
             assert (val_out == test_data[i]) 
-            else   $error("%0t TB: popped %0d, expected %0d", $time, val_out, test_data[i]);
+            else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i]);
         end
 
         itf.finish();

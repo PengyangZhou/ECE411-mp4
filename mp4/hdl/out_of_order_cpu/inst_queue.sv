@@ -3,8 +3,8 @@
 import rv32i_types::*;
 
 module instruction_queue #(
-    parameter SIZE = 97; /* 32+32+1+32 */
-    parameter NUM_ENTRY = 6;
+    parameter SIZE = 97, /* 32+32+1+32 */
+    parameter NUM_ENTRY = 6
 )(
     input logic clk,
     input logic rst,

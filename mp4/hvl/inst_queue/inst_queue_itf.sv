@@ -7,7 +7,7 @@ interface inst_queue_itf;
     import rv32i_types::*;
     
     bit clk, rst, valid_in, valid_out;
-    bit flush, ready, br_pred_in, br_pred_out;
+    bit flush, shift, ready, br_pred_in, br_pred_out;
     rv32i_word inst_in, pc_in, pc_next_in;
     rv32i_word inst_out, pc_out, pc_next_out;
 

@@ -1,0 +1,6 @@
+-top testbench 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_mux_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/inst_queue.sv 
+/home/zeduoyu2/M2/mp4/hvl/inst_queue/inst_queue_itf.sv 
+/home/zeduoyu2/M2/mp4/hvl/inst_queue/top.sv
