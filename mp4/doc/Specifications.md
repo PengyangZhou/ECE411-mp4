@@ -14,7 +14,11 @@
 
 #### 1.2 Parameters
 
-The number of ROB entries is 6. The number of registers is 32.The number of ALU reservation station entries is 5. The number of Load/Store buffer entries is 5. The number of CMP reservation station entries is 3.
+The number of ROB entries is 6. The number of registers is 32.The number of ALU reservation station entries is 5. The number of Load/Store buffer entries is 5. The number of CMP reservation station entries is 3. The number of instruction queue entries is 6.
+
+#### 1.3 Signals
+
+Note that all module have `clk` and `rst` signals. We ignore mentioning them in this specification.
 
 ### 2. Branch Predictor
 
@@ -104,6 +108,10 @@ Asserted when there is empty space in the queue.
 
 **Port from branch predictor.**
 
+`valid_in`
+
+Active high signal to indicate valid data is at the input ports.
+
 `pc_in[31:0]`
 
 The PC value of current instruction.
@@ -120,7 +128,15 @@ The instruction itself.
 
 The predicted branch. `1` means taken and  `0` means not taken.
 
+**Port from decoder.**
+
+`shift`
+
+Active high signal that enables the instruction queue to shift downward, i.e. popping out the instructions.
+
 **Port to decoder.**
+
+`valid_out`
 
 `pc_out[31:0]`
 
@@ -131,10 +147,6 @@ The predicted branch. `1` means taken and  `0` means not taken.
 `br_pred_out`
 
 **Control signal.**
-
-`shift`
-
-Active high signal that enables the instruction queue to shift downward, i.e. popping out the instructions.
 
 `flush`
 
@@ -152,6 +164,8 @@ If one entry does not hold valid instruction data, its value should be set to 32
 #### 3.3 Implmentation
 
 The instruction queue is a FIFO queue implemented by a shift register and a head pointer.
+
+![iq](figures/instruction_queue.png)
 
 ### 4 Decoder
 
@@ -274,6 +288,12 @@ This is the ROB entry tag that indicates where the result of this operation shou
 `lsb_valid_out`
 
 Active high signal indicating there is a new operation produced.
+
+**Port to intruction qeueu.**
+
+`shift`
+
+Active high signal that enables the instruction queue to shift downward, i.e. popping out the instructions.
 
 **Port from instruction queue.**
 
