@@ -201,23 +201,31 @@ The index of the second register that we read.
 
 **Port from regfile**
 
-`Qj[3:0]`
+`reg_Qj[3:0]`
 
 Register tag pertains to `rs1`. The index of ROB that contains the operation whose result should be stored into this register.
 
-`Vj[31:0]`
+`reg_Vj[31:0]`
 
 The value of the register. Valid only when `Qj` is 0.
 
-`Qk[3:0]`
+`reg_Qk[3:0]`
 
 Registe tag pertains to `rs2`.
 
-`Vk[31:0]`
+`reg_Vk[31:0]`
 
 Register data pertains to `rs2`.
 
 **Port to ROB.**
+
+`rob_Qj`
+
+This signal indicates which entry we want to read for the first operand.
+
+`rob_Qk`
+
+This signal indicates which entry we want to read for the second operand.
 
 `rob_valid`
 
@@ -236,6 +244,14 @@ The destination of this instruction. This can be the tag of ROB entry or the sto
 `rob_ready`
 
 Active high signal from ROB indicating there is empty space in ROB.
+
+`rob_Vj`
+
+The read value from ROB.
+
+`rob_Vk`
+
+The read value from ROB.
 
 **Port to ALU RS.**
 
@@ -463,6 +479,12 @@ The ALU reservation station contains 5 entries for pending operations waiting to
 ### 6 ALU
 
 #### 6.1 Port
+
+**Port to decoder.**
+
+`ready`
+
+Active high signal to indicate there is empty space in the reservation station.
 
 **Port from ALU RS**
 
@@ -701,6 +723,42 @@ The comparator not only need to perform arithmetic operations, but check if the 
 
 #### 10.2 Port
 
+**Port from decoder.**
+
+`Qj`
+
+This signal indicates which entry we want to read for the first operand.
+
+`Qk`
+
+This signal indicates which entry we want to read for the second operand.
+
+`valid_in`
+
+Active high signal indicating a new instruction needs to be pushed into the ROB.
+
+`op_type[1:0]`
+
+The type of the new instruction. There are 3 types: register, store and branch.
+
+`dest[31:0]`
+
+The destination of this instruction. This can be the tag of ROB entry or the store address.
+
+**Port to decoder.**
+
+`ready`
+
+Active high signal from ROB indicating there is empty space in ROB.
+
+`Vj`
+
+The read value from ROB.
+
+`Vk`
+
+The read value from ROB.
+
 **Port from CDB**
 
 `alu_res`
@@ -723,6 +781,8 @@ The ROB buffer maintains any instruction that is not ready to commit. It also pr
 2. If the instruction to commit is a store, `Mem[destination] <- value`. 
 3. Else, put the `value` in the `destination` register.
 4. In all conditions, free up the tags on the registers that are associated with this ROB entry.
+
+*Note: ROB should support read while write.*
 
 ### 11 Load/Store buffer
 
