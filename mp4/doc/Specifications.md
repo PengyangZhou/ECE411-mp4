@@ -201,13 +201,41 @@ The index of the second register that we read.
 
 **Port from regfile**
 
-`Qi[3:0]`
+`Qj[3:0]`
 
-The index of ROB that contains the operation whose result should be stored into this register.
+Register tag pertains to `rs1`. The index of ROB that contains the operation whose result should be stored into this register.
 
-`Vi[31:0]`
+`Vj[31:0]`
 
-The value of the register. Valid only when `Qi` is 0.
+The value of the register. Valid only when `Qj` is 0.
+
+`Qk[3:0]`
+
+Registe tag pertains to `rs2`.
+
+`Vk[31:0]`
+
+Register data pertains to `rs2`.
+
+**Port to ROB.**
+
+`rob_valid`
+
+Active high signal indicating a new instruction needs to be pushed into the ROB.
+
+`rob_op[1:0]`
+
+The type of the new instruction. There are 3 types: register, store and branch.
+
+`rob_dest[31:0]`
+
+The destination of this instruction. This can be the tag of ROB entry or the store address.
+
+**Port from ROB.**
+
+`rob_ready`
+
+Active high signal from ROB indicating there is empty space in ROB.
 
 **Port to ALU RS.**
 
@@ -235,9 +263,13 @@ This input indicates what kind of instruction it is.
 
 This is the ROB entry tag that indicates where the result of this operation should be stored.
 
-`alu_valid_out`
+`alu_valid`
 
 Active high signal indicating there is a new operation produced.
+
+**Port from ALU RS.**
+
+`alu_ready`
 
 **Port to CMP RS.**
 
@@ -273,9 +305,13 @@ The PC of this instruction.
 
 The PC of the instruction right after the current one (prediction may involve).
 
-`cmp_valid_out`
+`cmp_valid`
 
 Active high signal indicating there is a new operation produced.
+
+**Port from CMP RS.**
+
+`cmp_ready`
 
 **Port to Load/Store buffer**
 
@@ -303,9 +339,13 @@ This input indicates what kind of instruction it is. `1` means store and `0` mea
 
 This is the ROB entry tag that indicates where the result of this operation should be stored.
 
-`lsb_valid_out`
+`lsb_valid`
 
 Active high signal indicating there is a new operation produced.
+
+**Port from Load/Store buffer.**
+
+`lsb_ready`
 
 **Port to intruction qeueu.**
 
