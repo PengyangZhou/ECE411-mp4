@@ -24,29 +24,32 @@ module testbench ();
 
     default clocking tb_clk @(negedge itf.clk); endclocking
 
+    logic [96:0] data_out;
+    assign data_out = {itf.pc_next_out, itf.pc_out, itf.br_pred_out, itf.inst_out};
+
     task reset();
-        itf.rst <= 1'b0;
-        repeat (5) @(tb_clk);
         itf.rst <= 1'b1;
+        repeat (5) @(tb_clk);
+        itf.rst <= 1'b0;
         repeat (5) @(tb_clk);
     endtask
 
     task push(input logic [96:0] data);
         itf.valid_in <= 1'b1;
         itf.inst_in <= data[0+:32];
-        itf.pc_in <= data[32+:1];
-        itf.pc_next_in <= data[33+:32];
-        itf.br_pred_in <= data[65+:32];
+        itf.br_pred_in <= data[32+:1];
+        itf.pc_in <= data[33+:32];
+        itf.pc_next_in <= data[65+:32];
         @(tb_clk);
         itf.valid_in <= 1'b0;
         @(tb_clk);
     endtask
 
-    task pop(output logic [96:0] data_out);
+    task pop(output logic [96:0] val_out);
         itf.shift <= 1'b1;
         @(tb_clk);
         itf.shift <= 1'b0;
-        data_out <= {itf.pc_next_out, itf.pc_out, itf.br_pred_out, itf.inst_out};
+        val_out <= data_out;
         @(tb_clk);
     endtask
 
@@ -81,6 +84,57 @@ module testbench ();
             assert (val_out == test_data[i]) 
             else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i]);
         end
+
+        /* test4: pop when the queue is empty */
+        pop(val_out);
+
+        /* test5: continuous and excessive push */
+        for (int i = 0; i < 7; ++i) begin
+            itf.valid_in    <= 1'b1;
+            itf.inst_in     <= test_data[i][0+:32];
+            itf.br_pred_in  <= test_data[i][32+:1];
+            itf.pc_in       <= test_data[i][33+:32];
+            itf.pc_next_in  <= test_data[i][65+:32];
+            @(tb_clk);
+        end
+        itf.valid_in <= 1'b0;
+        @(tb_clk);
+
+        /* test6: continuous pop */
+        $display("\nTest 6 Starts\n");
+        for (int i = 0; i < 7; ++i) begin
+            itf.shift   <= 1'b1;
+            val_out     <= data_out;
+            @(tb_clk);
+            if(i > 0)begin 
+                assert (val_out == test_data[i-1]) 
+                    else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i]);
+            end
+        end
+        itf.shift <= 1'b0;
+        @(tb_clk);
+
+        /* test7: push while pop */
+        $display("\nTest 7 Starts\n");
+        push(test_data[0]);
+        push(test_data[1]);
+        for (int i = 2; i < 7; ++i) begin
+            /* push */
+            itf.valid_in    <= 1'b1;
+            itf.inst_in     <= test_data[i][0+:32];
+            itf.br_pred_in  <= test_data[i][32+:1];
+            itf.pc_in       <= test_data[i][33+:32];
+            itf.pc_next_in  <= test_data[i][65+:32];
+            /* pop */
+            itf.shift   <= 1'b1;
+            val_out     <= data_out;
+            @(tb_clk);
+            if(i > 2)begin 
+                assert (val_out == test_data[i-3]) 
+                else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i-2]);
+            end
+        end
+
 
         itf.finish();
     end

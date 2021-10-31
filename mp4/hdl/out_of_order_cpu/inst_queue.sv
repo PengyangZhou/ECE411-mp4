@@ -43,7 +43,7 @@ module instruction_queue #(
 
     /* combinational logic for control signals */
     assign ready = head < NUM_ENTRY ? 1'b1 : 1'b0;
-    assign valid_out = (head != 0 && shift) ? 1'b1 : 1'b0;
+    // assign valid_out = (head != 0 && shift) ? 1'b1 : 1'b0;
     
     /* manage data */
     always_ff @( posedge clk ) begin
@@ -53,10 +53,13 @@ module instruction_queue #(
                 regs[i] <= 'b0;
             end
             head <= 'b0;
+            valid_out <= 1'b0;
         end else begin
+            valid_out <= 1'b0;
             if(shift & !valid_in)begin
                 /* update head pointer */
                 head <= head > 0 ? head - 1 : 0;  
+                if(head > 0) valid_out <= 1'b1;
 
             end else if(shift & valid_in)begin
                 /* shift all the entries forward */
@@ -65,6 +68,7 @@ module instruction_queue #(
                 end
                 /* bring new data in */
                 regs[0] <= data_in;
+                valid_out <= 1'b1;
 
             end else if(!shift & !valid_in)begin
                 /* do nothing */
