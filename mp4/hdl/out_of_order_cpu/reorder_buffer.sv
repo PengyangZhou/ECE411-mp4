@@ -1,4 +1,3 @@
-/* This is the Reorder Buffer for precise exception. */
 module reorder_buffer #(
     NUM_ENTRY = 6
 )
@@ -14,11 +13,12 @@ module reorder_buffer #(
     cdb_itf cmp_res,
     cdb_itf mem_res,
     // port to decoder
-    output logic ready,
-    output logic Vj,
-    output logic Vk,
+    output rob_out_t rob_out,
     // port to regfile
+    output logic load_tag,
+    output logic load_val,
     output logic tag,
+    output logic val,
     
     output logic flush
 );
