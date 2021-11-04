@@ -89,11 +89,15 @@ The memory interface.
 
 32-bit data bus for receiving data *from* the cache.
 
-**Port to CMP.**
+**Port from CMP.**
 
 `br_en`
 
 Branch enable signal *from* CMP.
+
+`br_pred_res`
+
+Signal indicating the result of this prediction. `1` means the prediction was successful, `0` means the prediction failed.
 
 `br_target[31:0]`
 
@@ -724,14 +728,6 @@ The comparator not only need to perform arithmetic operations, but check if the 
 #### 10.2 Port
 
 **Port from decoder.**
-
-`Qj`
-
-This signal indicates which entry we want to read for the first operand.
-
-`Qk`
-
-This signal indicates which entry we want to read for the second operand.
 
 `valid_in`
 

@@ -1,4 +1,5 @@
-/* This is the instruction queue. */
+/* This is the instruction queue.                                   */
+/* NOTE: we assume decoder will NOT shift inst_queue if it is empty */
 
 import rv32i_types::*;
 
@@ -35,10 +36,10 @@ module instruction_queue #(
     logic [SIZE-1:0] data_in;
 
     /* wire */
-    assign inst_out     = regs[head][0+:32];
-    assign br_pred_out  = regs[head][32+:1];
-    assign pc_out       = regs[head][33+:32];
-    assign pc_next_out  = regs[head][65+:32];
+    assign inst_out     = (head == 0) ? 'b0 : regs[head-1][0+:32];
+    assign br_pred_out  = (head == 0) ? 'b0 : regs[head-1][32+:1];
+    assign pc_out       = (head == 0) ? 'b0 : regs[head-1][33+:32];
+    assign pc_next_out  = (head == 0) ? 'b0 : regs[head-1][65+:32];
     assign data_in      = {pc_next_in, pc_in, br_pred_in, inst_in};
 
     /* combinational logic for control signals */
@@ -55,18 +56,19 @@ module instruction_queue #(
             head <= 'b0;
             valid_out <= 1'b0;
         end else begin
-            valid_out <= 1'b0;
+            // valid_out <= 1'b0;
             if(shift & !valid_in)begin
                 /* update head pointer */
                 head <= head > 0 ? head - 1 : 0;  
-                if(head > 0) valid_out <= 1'b1;
+                if(head > 1) valid_out <= 1'b1;
+                else         valid_out <= 1'b0;
 
             end else if(shift & valid_in)begin
                 /* shift all the entries forward */
                 for (int i = 1; i < NUM_ENTRY; ++i) begin
                     regs[i] <= regs[i-1];
                 end
-                /* bring new data in */
+                /* bring new data in. Don't need to change head. */
                 regs[0] <= data_in;
                 valid_out <= 1'b1;
 
@@ -84,6 +86,7 @@ module instruction_queue #(
                     regs[0] <= data_in;
                     /* update head pointer */
                     head <= head + 1;
+                    valid_out <= 1'b1;
                 end else begin
                     /* do nothing */
                 end

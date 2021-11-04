@@ -35,21 +35,21 @@ module testbench ();
     endtask
 
     task push(input logic [96:0] data);
-        itf.valid_in <= 1'b1;
-        itf.inst_in <= data[0+:32];
-        itf.br_pred_in <= data[32+:1];
-        itf.pc_in <= data[33+:32];
-        itf.pc_next_in <= data[65+:32];
+        itf.valid_in    <= 1'b1;
+        itf.inst_in     <= data[0+:32];
+        itf.br_pred_in  <= data[32+:1];
+        itf.pc_in       <= data[33+:32];
+        itf.pc_next_in  <= data[65+:32];
         @(tb_clk);
-        itf.valid_in <= 1'b0;
+        itf.valid_in    <= 1'b0;
         @(tb_clk);
     endtask
 
     task pop(output logic [96:0] val_out);
-        itf.shift <= 1'b1;
+        itf.shift   <= 1'b1;
+        val_out     <= data_out;
         @(tb_clk);
-        itf.shift <= 1'b0;
-        val_out <= data_out;
+        itf.shift   <= 1'b0;
         @(tb_clk);
     endtask
 
@@ -61,7 +61,7 @@ module testbench ();
         $dumpfile("inst_queue_tb.vcd");
         $dumpvars;
 
-        $display("Starting Instructin Queue Test");
+        $display("\nStarting Instructin Queue Test\n");
 
         reset();
 
@@ -89,6 +89,7 @@ module testbench ();
         pop(val_out);
 
         /* test5: continuous and excessive push */
+        $display("\nTest 5 Starts\n");
         for (int i = 0; i < 7; ++i) begin
             itf.valid_in    <= 1'b1;
             itf.inst_in     <= test_data[i][0+:32];
@@ -106,9 +107,12 @@ module testbench ();
             itf.shift   <= 1'b1;
             val_out     <= data_out;
             @(tb_clk);
-            if(i > 0)begin 
-                assert (val_out == test_data[i-1]) 
+            if(i != 6)begin 
+                assert (val_out == test_data[i]) 
                     else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i]);
+            end else begin
+                assert (val_out == 'b0) 
+                    else   $error("%0t TB: popped 0x%0h, expected 0x0", $time, val_out);
             end
         end
         itf.shift <= 1'b0;
@@ -129,10 +133,8 @@ module testbench ();
             itf.shift   <= 1'b1;
             val_out     <= data_out;
             @(tb_clk);
-            if(i > 2)begin 
-                assert (val_out == test_data[i-3]) 
-                else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i-2]);
-            end
+            assert (val_out == test_data[i-2]) 
+            else   $error("%0t TB: popped 0x%0h, expected 0x%0h", $time, val_out, test_data[i-2]);
         end
 
 
