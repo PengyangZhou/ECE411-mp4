@@ -22,9 +22,9 @@ package ooo_types;
     } op_type_t;
 
     typedef struct {
-        tag_t       tag;  // the valid ROB entry number to put, 0 for no empty space
-        bit         ready [ROB_DEPTH];  // set high if the value is not available
-        rv32i_word  vals [ROB_DEPTH];  // values for each destination
+        tag_t       ready_tag;          // the valid ROB entry number to put, 0 for no empty space
+        bit         ready [ROB_DEPTH];  // set high if the entry is ready to commit
+        rv32i_word  vals [ROB_DEPTH];   // values for each destination
     } rob_out_t;
 
 endpackage
