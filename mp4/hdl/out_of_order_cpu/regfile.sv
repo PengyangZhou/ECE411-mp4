@@ -5,9 +5,9 @@ module regfile(
     // port from ROB
     input logic load_tag,
     input logic load_val,
-    input rv32i_reg rd,             
+    input rv32i_reg rd, 
+    input tag_t tag,            
     input rv32i_word val,
-    input tag_t tag,
     // port from decoder
     input rv32i_reg rs1,            
     input rv32i_reg rs2,            
@@ -41,6 +41,12 @@ module regfile(
                 // the situation happens when committing
                 // each cycle updates a single register's value
                 reg_vals[rd] <= val; 
+                if (reg_tags[rd] == tag) begin
+                    // if the register tag is the same as the committed ROB entry number,
+                    // clear the tag
+                    reg_tags[rd] = '0;
+                end
+                
             end
         end
     end
