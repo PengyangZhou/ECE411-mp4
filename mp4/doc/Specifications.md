@@ -203,6 +203,18 @@ The index of the first register that we read.
 
 The index of the second register that we read.
 
+`load_tag`
+
+Set high to indicate the regfile that a tag is to be written.
+
+`tag_out`
+
+The tag value to write.
+
+`rd_out`
+
+The register index of which we want to write the tag to.
+
 **Port from regfile**
 
 `reg_Qj[3:0]`
@@ -540,6 +552,18 @@ The index of the first register we read.
 `rs2`
 
 The index of the second register we read.
+
+`load_tag`
+
+Set high to indicate the regfile that a tag is to be written.
+
+`tag_in`
+
+The tag value to write.
+
+`rd_in`
+
+The register index of which we want to write the tag to.
 
 **Port to decoder**
 
