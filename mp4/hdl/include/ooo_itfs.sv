@@ -38,7 +38,7 @@ interface cmp_rs_itf;
     rv32i_word  Vk;
     tag_t       Qj;
     tag_t       Qk;
-    cmp_ops     cmp_op; /* cmp opcode */
+    branch_funct3_t cmp_op; /* cmp opcode */
     tag_t       dest;   /* destination of computation result */
     bit         br_pred;
     bit         valid, ready;  /* ready means the reservation station has empty space */
