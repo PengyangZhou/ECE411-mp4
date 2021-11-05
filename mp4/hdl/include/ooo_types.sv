@@ -4,6 +4,9 @@
 `define OOO_TYPES_SV
 
 package ooo_types;
+
+    import rv32i_types::*;
+
     parameter int INST_QUEUE_DEPTH = 6;
     parameter int ROB_DEPTH = 6;
     parameter int NUM_ALU_RS  = 5;

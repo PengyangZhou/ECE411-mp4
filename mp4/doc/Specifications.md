@@ -245,17 +245,13 @@ The destination of this instruction. This can be the tag of ROB entry or the sto
 
 **Port from ROB.**
 
-`rob_ready`
+`rob_ready[3:0] (tag_t)`
 
-Active high signal from ROB indicating there is empty space in ROB.
+Signal from ROB indicating the index of the empty entry in it. If `ready` is `0`, it means no available entry in the ROB.
 
-`rob_Vj`
+`rob_values[31:0][6]`
 
-The read value from ROB.
-
-`rob_Vk`
-
-The read value from ROB.
+A unpacked array receiving all the possibly existing values from ROB.
 
 **Port to ALU RS.**
 
@@ -743,17 +739,13 @@ The destination of this instruction. This can be the tag of ROB entry or the sto
 
 **Port to decoder.**
 
-`ready`
+`ready[3:0] (tag_t)`
 
-Active high signal from ROB indicating there is empty space in ROB.
+Signal to decoder indicating the index of the empty entry in it. If `ready` is `0`, it means no available entry in the ROB.
 
-`Vj`
+`values[31:0][6]`
 
-The read value from ROB.
-
-`Vk`
-
-The read value from ROB.
+A unpacked array exporting all the possibly existing values to decoder.
 
 **Port from CDB**
 
