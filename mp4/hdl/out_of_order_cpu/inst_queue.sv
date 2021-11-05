@@ -2,10 +2,10 @@
 /* NOTE: we assume decoder will NOT shift inst_queue if it is empty */
 
 import rv32i_types::*;
+import ooo_types::*;
 
 module instruction_queue #(
-    parameter SIZE = 97, /* 32+32+1+32 */
-    parameter NUM_ENTRY = 6
+    parameter SIZE = 97 /* 32+32+1+32 */
 )(
     input logic clk,
     input logic rst,
@@ -29,7 +29,7 @@ module instruction_queue #(
     output logic br_pred_out
 );
     
-    logic [SIZE-1:0] regs [NUM_ENTRY];  /* storage variable */
+    logic [SIZE-1:0] regs [INST_QUEUE_DEPTH];  /* storage variable */
 
     /* intermediate variables */
     logic [2:0] head;   /* pointer to the queue head */
@@ -43,14 +43,14 @@ module instruction_queue #(
     assign data_in      = {pc_next_in, pc_in, br_pred_in, inst_in};
 
     /* combinational logic for control signals */
-    assign ready = head < NUM_ENTRY ? 1'b1 : 1'b0;
+    assign ready = head < INST_QUEUE_DEPTH ? 1'b1 : 1'b0;
     // assign valid_out = (head != 0 && shift) ? 1'b1 : 1'b0;
     
     /* manage data */
     always_ff @( posedge clk ) begin
         if(rst | flush)begin
             /* reset everything */
-            for (int i = 0; i < NUM_ENTRY; ++i) begin
+            for (int i = 0; i < INST_QUEUE_DEPTH; ++i) begin
                 regs[i] <= 'b0;
             end
             head <= 'b0;
@@ -65,7 +65,7 @@ module instruction_queue #(
 
             end else if(shift & valid_in)begin
                 /* shift all the entries forward */
-                for (int i = 1; i < NUM_ENTRY; ++i) begin
+                for (int i = 1; i < INST_QUEUE_DEPTH; ++i) begin
                     regs[i] <= regs[i-1];
                 end
                 /* bring new data in. Don't need to change head. */
@@ -77,9 +77,9 @@ module instruction_queue #(
                 
             end else if(!shift & valid_in)begin
                 /* check number of elements in the queue when popping */
-                if(head < NUM_ENTRY)begin
+                if(head < INST_QUEUE_DEPTH)begin
                     /* shift all the entries forward */
-                    for (int i = 1; i < NUM_ENTRY; ++i) begin
+                    for (int i = 1; i < INST_QUEUE_DEPTH; ++i) begin
                         regs[i] <= regs[i-1];
                     end
                     /* bring new data in */
