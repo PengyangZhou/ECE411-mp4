@@ -23,7 +23,7 @@ package ooo_types;
 
     typedef struct {
         tag_t       tag;  // the valid ROB entry number to put, 0 for no empty space
-        bit         busy [ROB_DEPTH];  // high if the value is not available
+        bit         ready [ROB_DEPTH];  // set high if the value is not available
         rv32i_word  vals [ROB_DEPTH];  // values for each destination
     } rob_out_t;
 

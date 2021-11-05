@@ -1,8 +1,8 @@
 /* This is the decoder, which is responsible for issuing instructions. */
 // `include "cdb_itf.sv"
 
-import rv32i_types::*;
-import ooo_types::*;
+// import rv32i_types::*; // may cause "package already imported" error
+// import ooo_types::*;
 
 module decoder (
     input logic clk,
@@ -27,12 +27,8 @@ module decoder (
     output logic        rob_valid,  /* indicate there is a new inst coming */
     output op_type_t    rob_op,     /* there are 3 types of operation in ROB */
     output rv32i_word   rob_dest,   /* destination can be ROB entry or memory address */
-    output tag_t        rob_Qj,     /* these 2 ports are for ROB read */
-    output tag_t        rob_Qk,
     /* port from ROB */
-    input logic         rob_ready,
-    input rv32i_word    rob_Vj,
-    input rv32i_word    rob_Vk,
+    input rob_out_t     rob_data,
     /* port to ALU RS */
     alu_rs_itf.decoder  alu_itf,
     /* port to CMP RS */
@@ -52,9 +48,13 @@ module decoder (
     logic [31:0] b_imm;
     logic [31:0] u_imm;
     logic [31:0] j_imm;
-    logic [4:0] rs1;
-    logic [4:0] rs2;
-    logic [4:0] rd;
+    rv32i_reg    rd;
+    branch_funct3_t branch_funct3;
+    store_funct3_t  store_funct3;
+    load_funct3_t   load_funct3;
+    arith_funct3_t  arith_funct3;
+    rv32i_word  Vj_out, Qj_out;
+    tag_t       Qj_out, Qk_out;
     
     /* instruction deconstruction */
     assign funct3 = inst_in[14:12];
@@ -68,28 +68,149 @@ module decoder (
     assign rs1 = inst_in[19:15];
     assign rs2 = inst_in[24:20];
     assign rd = inst_in[11:7];
+    assign arith_funct3 = arith_funct3_t'(funct3);
+    assign branch_funct3 = branch_funct3_t'(funct3);
+    assign load_funct3 = load_funct3_t'(funct3);
+    assign store_funct3 = store_funct3_t'(funct3);
+
+    /* V and Q output */
+    assign Vj_out = (reg_Qj != 0 && rob_data.ready[reg_Qj]) ? 
+
+    /* function definition */
+    task send_to_ALU(input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,
+        input alu_ops alu_op, input tag_t dest);
+        alu_itf.valid   <= 1'b1;
+        alu_itf.Vj      <= Vj;
+        alu_itf.Vk      <= Vk;
+        alu_itf.Qj      <= Qj;
+        alu_itf.Qk      <= Qk;
+        alu_itf.alu_op  <= alu_op;
+        alu_itf.dest    <= dest;
+    endtask
+
+    task send_to_CMP(input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,
+        input branch_funct3_t cmp_op, input tag_t dest, input logic br_pred,
+        input rv32i_word pc, input rv32i_word pc_next);
+        cmp_itf.valid   <= 1'b1;
+        cmp_itf.Vj      <= Vj;
+        cmp_itf.Vk      <= Vk;
+        cmp_itf.Qj      <= Qj;
+        cmp_itf.Qk      <= Qk;
+        cmp_itf.cmp_op  <= cmp_op;
+        cmp_itf.dest    <= dest;
+        cmp_itf.pc      <= pc;
+        cmp_itf.pc_next <= pc_next;
+        cmp_itf.br_pred <= br_pred;
+    endtask
     
     /* main logic */
-    always_ff @( posedge clk ) begin
-        case (opcode)
-            nop: ;
+    always_ff @( posedge clk ) begin : issue_logic
+        if(rst)begin
+            rob_valid   <= 1'b0;
+            rob_op      <= REG;
+            rob_dest    <= 0;
+            shift       <= 1'b0;
+            alu_itf.valid   <= 1'b0;
+            cmp_itf.valid   <= 1'b0;
+            lsb_itf.valid   <= 1'b0;
+        end else begin
+            /* defaults. same as reset */
+            rob_valid   <= 1'b0;
+            rob_op      <= REG;
+            rob_dest    <= 0;
+            shift       <= 1'b0;
+            alu_itf.valid   <= 1'b0;
+            cmp_itf.valid   <= 1'b0;
+            lsb_itf.valid   <= 1'b0;
 
-            op_lui: ;
+            /* decode each instruction */
+            case (opcode)
+                op_imm: begin
+                    /* check availability */
+                    if(rd == 0 || rob_ready == 1'b0 || alu_itf.ready == 1'b0)begin
+                        rob_valid   <= 1'b0;
+                    end else begin
+                        /* push new ROB entry */
+                        rob_valid   <= 1'b1;
+                        rob_op      <= REG;
+                        rob_dest    <= rd;
+                        /* send new entry to ALU RS or CMP RS */
+                        case (arith_funct3)
+                            slt: begin
+                                send_to_CMP(reg_Vj, i_imm, reg_Qj, 0, blt, rd, 0, 0, 0);
+                            end
 
-            op_auipc: ;
+                            sltu: begin
+                                send_to_CMP(reg_Vj, i_imm, reg_Qj, 0, bltu, rd, 0, 0, 0);
+                            end
 
-            op_br:;
+                            sr: begin
+                                if(funct7[5])begin
+                                    send_to_ALU(reg_Vj, i_imm, reg_Qj, 0, alu_sra, rd);
+                                end else begin
+                                    send_to_ALU(reg_Vj, i_imm, reg_Qj, 0, alu_srl, rd);
+                                end
+                            end
 
-            op_jal: ;
+                            add, sll, axor, aor, aand: begin
+                                send_to_ALU(reg_Vj, reg_Vk, reg_Qj, reg_Qk, alu_ops'(funct3), rd);
+                            end
 
-            op_load, op_store: ;
+                            default: ;
+                        endcase
+                    end
+                    
+                end
+                
+                op_reg: begin
+                    /* to ROB */
+                    if(rd == 0 || rob_ready == 1'b0 || alu_itf.ready == 1'b0)begin
+                        rob_valid   <= 1'b0;
+                    end else begin
+                        /* push a new ROB entry */
+                        rob_valid   <= 1'b1;
+                        rob_op      <= REG;
+                        rob_dest    <= rd;
+                        /* to ALU RS or CMP RS */
+                        case (arith_funct3)
+                            add: begin
+                                if(funct7[5])begin
+                                    send_to_ALU(reg_Vj, reg_Vk, reg_Qj, reg_Qk, alu_sub, rd);
+                                end else begin
+                                    send_to_ALU(reg_Vj, reg_Vk, reg_Qj, reg_Qk, alu_add, rd);
+                                end
+                            end
 
-            op_imm: ;
-            
-            op_reg: ;
-            
-            default: 
-        endcase
-    end
+                            sr: ;
+
+                            slt: ;
+
+                            sltu: ;
+
+                            axor, sll, aor, aand: ; 
+                            default: ;
+                        endcase
+                    end
+                end
+
+                op_lui: ;
+
+                op_auipc: ;
+
+                op_br:;
+
+                op_jal: ;
+
+                op_load, op_store: ;
+
+                default: ;
+            endcase
+        end
+    end : issue_logic
+
+    /* shift logic */
+    always_comb begin : shift_logic
+        
+    end : shift_logic
 
 endmodule

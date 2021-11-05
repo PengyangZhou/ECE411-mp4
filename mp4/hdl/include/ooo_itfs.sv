@@ -41,8 +41,8 @@ interface cmp_rs_itf;
     branch_funct3_t cmp_op; /* cmp opcode */
     tag_t       dest;       /* destination of computation result */
     bit         br_pred;
-    bit         valid, ready;  /* ready means the reservation station has empty space */
-    rv32i_word  pc, pc_next;
+    bit         valid, ready;   /* ready means the reservation station has empty space */
+    rv32i_word  pc, pc_next;    /* if pc and pc_next are both 0, this instruction is not a branch */
 
     modport decoder (
         input ready,

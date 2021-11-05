@@ -1,0 +1,7 @@
+-top decoder_tb 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_mux_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/ooo_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/ooo_itfs.sv 
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/decoder.sv
+/home/zeduoyu2/M2/mp4/hvl/decoder/top.sv
