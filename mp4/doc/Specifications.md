@@ -531,17 +531,21 @@ The ALU computed a result given the two operands and operation type. Then it bro
 
 **Port from ROB**
 
-`rd`
+`load_val`
 
-The index of the destination register we want to write.
+Active high signal that enables update value operation.
+
+`val_rd`
+
+The index of the destination register we want to update value.
 
 `val`
 
-The value that we want to write to `rd`.
+The value that we want to write to `val_rd`.
 
-`load`
+`tag_from_rob`
 
-Active high signal that enables write operation.
+The currently committed ROB entry number.
 
 **Port from decoder**
 
@@ -557,11 +561,11 @@ The index of the second register we read.
 
 Set high to indicate the regfile that a tag is to be written.
 
-`tag_in`
+`tag_from_decoder`
 
 The tag value to write.
 
-`rd_in`
+`tag_rd`
 
 The register index of which we want to write the tag to.
 
@@ -595,7 +599,7 @@ This clears all the data in the regfile.
 
 #### 7.2 Functionality
 
-The regfile will check the `Q` field of the requested register and send back the correct value, i.e. if `Q` is 0, send back value in `V`, else send back `Q` itself. The regfile should complete reading within 1 cycle.
+The regfile provides the register value and tag for decoder. The register value is available if the corresponding tag is 0.  The regfile should complete reading within 1 cycle.
 
 ### 8 Comparator reservation station
 
@@ -759,25 +763,53 @@ The type of the new instruction. There are 3 types: register, store and branch.
 
 The destination of this instruction. This can be the tag of ROB entry or the store address.
 
-**Port to decoder.**
-
-`rob_data`
-
-A `rob_out_t` type struct to decoder, which includes signal `ready` indicating the index of the empty entry in it. If `ready` is `0`, it means no available entry in the ROB. And an unpacked array sending all the possibly existing values of ROB.
-
 **Port from CDB**
 
 `alu_res`
 
-This is a `cdb_itf` type port that receives output from the ALU.
+This is a `alu_cdb` type port that receives output from the ALU.
 
 `cmp_res`
 
-This is a `cdb_itf` type port that receives output from the comparator.
+This is a `cmp_cdb` type port that receives output from the comparator.
 
 `mem_res`
 
-This is a `cdb_itf` type port that receives output from the memory (data cache).
+This is a `mem_cdb` type port that receives output from the memory (data cache).
+
+**Port to decoder.**
+
+`rob_out`
+
+A `rob_out_t` type struct to decoder, which includes signal `ready` indicating the index of the empty entry in it. If `ready` is `0`, it means no available entry in the ROB. And an unpacked array sending all the possibly existing values of ROB.
+
+**Port to regfile**
+
+`load_val`
+
+Active high signal that enables update value operation.
+
+`val_rd`
+
+The index of the destination register where we want to update value.
+
+`val`
+
+The value that we want to update to `val_rd`.
+
+**Port to memory unit**
+
+`mem_write`
+
+Active high signal that tells the memory system to perform a memory write.
+
+`mem_wdata`
+
+32-bit data bus for sending data to the memory system.
+
+`mem_address`
+
+The address  that is to be written.
 
 #### 10.3 Functionality
 

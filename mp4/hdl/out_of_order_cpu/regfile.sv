@@ -3,14 +3,16 @@ module regfile(
     input logic rst,
     input logic flush,
     // port from ROB
-    input logic load_tag,
     input logic load_val,
-    input rv32i_reg rd, 
-    input tag_t tag,            
+    input rv32i_reg val_rd,             
     input rv32i_word val,
+    input rv32i_word tag_from_rob,
     // port from decoder
     input rv32i_reg rs1,            
-    input rv32i_reg rs2,            
+    input rv32i_reg rs2,
+    input logic load_tag,
+    input tag_t tag_from_decoder,
+    input tag_t tag_rd,
     // port to decoder
     output rv32i_word rs1_out,      
     output rv32i_word rs2_out,
@@ -35,16 +37,16 @@ module regfile(
             if (load_tag) begin
                 // the situation happens when decoder adds a new entry in ROB
                 // tag is the ROB new entry number, rd is the register to be calculated 
-                reg_tags[rd] <= tag;
+                reg_tags[tag_rd] <= tag_from_decoder;
             end
             if (load_val) begin
                 // the situation happens when committing
                 // each cycle updates a single register's value
-                reg_vals[rd] <= val; 
-                if (reg_tags[rd] == tag) begin
+                reg_vals[val_rd] <= val; 
+                if (reg_tags[val_rd] == tag_from_rob) begin
                     // if the register tag is the same as the committed ROB entry number,
                     // clear the tag
-                    reg_tags[rd] = '0;
+                    reg_tags[val_rd] = '0;
                 end
                 
             end
