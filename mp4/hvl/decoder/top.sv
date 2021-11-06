@@ -13,6 +13,9 @@ module decoder_tb ();
     /* port to regfile */
     rv32i_reg    rs1;
     rv32i_reg    rs2;
+    logic        load_tag;
+    tag_t        tag_out;
+    rv32i_reg    rd_out;
     /* port from regfile */
     tag_t         reg_Qj;
     tag_t         reg_Qk;
@@ -23,11 +26,14 @@ module decoder_tb ();
     op_type_t    rob_op;    
     rv32i_word   rob_dest;  
     /* port from ROB */
-    logic         rob_ready;  
-    logic  [31:0] rob_values [ROB_DEPTH]; 
+    rob_out_t    rob_data;
+    /* port to RSs */
     alu_rs_itf  alu_itf();
     cmp_rs_itf  cmp_itf();
     lsb_rs_itf  lsb_itf();
+    
+    logic [31:0] regs [32];
+    logic [4:0]  tags [32];
 
     always #5 clk = (clk === 1'b0);
     default clocking tb_clk @(negedge clk); endclocking
@@ -54,13 +60,54 @@ module decoder_tb ();
         inst_in     <= inst;
         br_pred_in  <= 1'b0;
         @(tb_clk);
+        assert (shift == 1'b1);
+        valid_in    <= 1'b0;
+        @(tb_clk);
     endtask
 
+    /* V and Q are acutal results. */
+    task check_VQ(input rv32i_reg reg_index, input rv32i_word V, input tag_t Q);
+        if(tags[reg_index] == 0)begin
+            assert (V == regs[reg_index]) 
+            else $error("reg %0d, Expected 0x%0h, got 0x%0h\n", reg_index, regs[reg_index], V);
+        end else if(rob_data.ready[tags[reg_index]])begin
+            assert (V == rob_data.vals[tags[reg_index]]) 
+            else $error("reg %0d, Expected 0x%0h, got 0x%0h\n", reg_index, rob_data.vals[tags[reg_index]], V);
+        end else begin
+            assert (Q == tags[reg_index]) 
+            else $error("reg %0d, Expected 0x%0h, got 0x%0h\n", reg_index, tags[reg_index], Q);
+        end
+    endtask
+
+    task check_imm(input logic [11:0] imm_expect, input logic [11:0] imm_got);
+        assert (imm_expect == imm_got) 
+        else $error("Expected 0x%0h, got 0x%0h\n", imm_expect, imm_got);
+    endtask
+
+    task check_tagupdate(input rv32i_reg rd);
+        assert (tag_out == rob_data.tag_ready && rd_out == rd && load_tag == 1'b1);
+    endtask
+
+    initial begin
+        /* initialize regfile */
+        for (int i = 0; i < 32; ++i) begin
+            regs[i] = $urandom();
+            tags[i] = $urandom_range(5); /* range [0, 5] */
+            // $display("regs[%0d]: %0h, tags[%0d]: %0h", i, regs[i], i, tags[i]);
+        end
+        /* initialize ROB */
+        for (int i = 0; i < 6; ++i) begin
+            rob_data.vals[i] = $urandom();
+            rob_data.ready[i] = $urandom_range(1);
+        end
+        rob_data.tag_ready = 3;
+    end
+
     always_comb begin : regfile
-        reg_Qj = rs1;
-        reg_Qk = rs2;
-        reg_Vj = rs1;
-        reg_Vk = rs2;
+        reg_Qj = tags[rs1];
+        reg_Qk = tags[rs2];
+        reg_Vj = regs[rs1];
+        reg_Vk = regs[rs2];
     end 
     
     initial begin
@@ -79,6 +126,20 @@ module decoder_tb ();
         @(tb_clk);
         
         send_inst(32'h002081b3); /* add x3,x1,x2 */
+        check_VQ(1, alu_itf.Vj, alu_itf.Qj);
+        check_VQ(2, alu_itf.Vk, alu_itf.Qk);
+
+        send_inst(32'h004120b3); /* slt x1,x2,x4 */
+        check_VQ(2, cmp_itf.Vj, cmp_itf.Qj);
+        check_VQ(4, cmp_itf.Vk, cmp_itf.Qk);
+
+        send_inst(32'h00508093); /* addi x1,x1,5 */
+        check_VQ(1, alu_itf.Vj, alu_itf.Qj);
+        check_imm(5, alu_itf.Vk);
+
+        send_inst(32'h00612093); /* slti x1,x2,6 */
+        check_VQ(2, cmp_itf.Vj, cmp_itf.Qj);
+        check_imm(6, cmp_itf.Vk);
 
         finish();
     end

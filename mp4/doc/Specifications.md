@@ -745,7 +745,9 @@ The comparator not only need to perform arithmetic operations, but check if the 
 
 `ready` indicates if this entry is ready to commit.
 
-`destination` can be a register index or memory address (for store).
+`destination` can be a register index, memory address (for store) or jump target address (for branch).
+
+`value` can be the register value to store into regfile, or indicator of whether the branch was correct.
 
 #### 10.2 Port
 

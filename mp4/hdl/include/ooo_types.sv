@@ -46,6 +46,7 @@ package ooo_types;
         bit         valid; // indicating there is valid data on the bus
         bit         sw;    // 1 for store, 0 for load
         tag_t       tag;   // the index of ROB entry to be updated
+        logic [2:0] funct; // granularity of this memory operation
         rv32i_word  addr;  // the address to store, not used for load
         rv32i_word  val;   // the value to store or the loaded data
     } mem_cdb;
