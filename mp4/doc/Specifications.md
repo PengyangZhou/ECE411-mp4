@@ -12,6 +12,12 @@
 
 `val[31:0]` The value of the data.
 
+`br_pred_res` This is only for `cmp_cdb` to transmit branch prediction result.
+
+`funct` This is for `lsb_cdb` to indicate for load or store granularity.
+
+`sw` Set high to indicate a store operation. Otherwise a load operation.
+
 #### 1.2 Parameters
 
 The number of ROB entries is 6. The number of registers is 32.The number of ALU reservation station entries is 5. The number of Load/Store buffer entries is 5. The number of CMP reservation station entries is 3. The number of instruction queue entries is 6.
@@ -485,6 +491,10 @@ This is a `cdb_itf` type port that receives output from the memory (data cache).
 #### 5.3 Functionality
 
 The ALU reservation station contains 5 entries for pending operations waiting to be done by ALU. The destination field indicates where the computed result should go.
+
+#### 5.4 Implementation
+
+We use a specific ALU for each of the reservation station entry. So there are `5` ALUs in total. The benefit would be the conceptual simplicity, but the drawback would be extra complex routing.
 
 ### 6 ALU
 
