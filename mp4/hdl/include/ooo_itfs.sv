@@ -5,14 +5,6 @@
 import rv32i_types::*;
 import ooo_types::*;
 
-interface cdb_itf;
-    bit valid;       /* indicating there is valid data on the bus */
-    bit br_pred_res; /* signal from CMP to ROB. 1 means prediction was true. */
-    tag_t       tag;
-    rv32i_word  val;
-
-endinterface : cdb_itf
-
 interface alu_rs_itf;
     rv32i_word  Vj;
     rv32i_word  Vk;
