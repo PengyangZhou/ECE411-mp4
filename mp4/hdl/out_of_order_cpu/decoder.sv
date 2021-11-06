@@ -108,6 +108,19 @@ module decoder (
         cmp_itf.pc_next <= pc_next;
         cmp_itf.br_pred <= br_pred;
     endtask
+
+    task send_to_LSB(input rv32i_word Vj, input rv32i_word Vk, input rv32i_word A,
+        input tag_t Qj, input tag_t Qk, input logic lsb_op, input logic [2:0] funct, input tag_t dest);
+        lsb_itf.valid   <= 1'b1;
+        lsb_itf.Vj      <= Vj;
+        lsb_itf.Vk      <= Vk;
+        lsb_itf.A       <= A;
+        lsb_itf.Qj      <= Qj;
+        lsb_itf.Qk      <= Qk;
+        lsb_itf.lsb_op  <= lsb_op;
+        lsb_itf.funct   <= funct;
+        lsb_itf.dest    <= dest;
+    endtask
     
     /* main logic */
     always_ff @( posedge clk ) begin : issue_logic
@@ -115,7 +128,6 @@ module decoder (
             rob_valid   <= 1'b0;
             rob_op      <= REG;
             rob_dest    <= 0;
-            shift       <= 1'b0;
             alu_itf.valid   <= 1'b0;
             cmp_itf.valid   <= 1'b0;
             lsb_itf.valid   <= 1'b0;
@@ -124,7 +136,6 @@ module decoder (
             rob_valid   <= 1'b0;
             rob_op      <= REG;
             rob_dest    <= 0;
-            shift       <= 1'b0;
             alu_itf.valid   <= 1'b0;
             cmp_itf.valid   <= 1'b0;
             lsb_itf.valid   <= 1'b0;
@@ -133,33 +144,42 @@ module decoder (
             case (opcode)
                 op_imm: begin
                     /* check availability */
-                    if(rd == 0 || rob_data.tag_ready == 0 || alu_itf.ready == 1'b0)begin
-                        rob_valid   <= 1'b0;
-                    end else begin
-                        /* push new ROB entry */
-                        rob_valid   <= 1'b1;
+                    if(rd != 0 && rob_data.tag_ready != 0)begin
+                        /* prepare ROB entry data but do not set valid yet */
                         rob_op      <= REG;
                         rob_dest    <= rd;
                         /* send new entry to ALU RS or CMP RS */
                         case (arith_funct3)
                             slt: begin
-                                send_to_CMP(Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0);
+                                if(cmp_itf.ready)begin
+                                    send_to_CMP(Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0);
+                                    rob_valid <= 1'b1;
+                                end
                             end
 
                             sltu: begin
-                                send_to_CMP(Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
+                                if(cmp_itf.ready)begin
+                                    send_to_CMP(Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
+                                    rob_valid <= 1'b1;
+                                end
                             end
 
                             sr: begin
-                                if(funct7[5])begin
-                                    send_to_ALU(Vj_out, i_imm, Qj_out, 0, alu_sra, rob_data.tag_ready);
-                                end else begin
-                                    send_to_ALU(Vj_out, i_imm, Qj_out, 0, alu_srl, rob_data.tag_ready);
+                                if(alu_itf.ready)begin
+                                    if(funct7[5])begin
+                                        send_to_ALU(Vj_out, i_imm, Qj_out, 0, alu_sra, rob_data.tag_ready);
+                                    end else begin
+                                        send_to_ALU(Vj_out, i_imm, Qj_out, 0, alu_srl, rob_data.tag_ready);
+                                    end
+                                    rob_valid <= 1'b1;
                                 end
                             end
 
                             add, sll, axor, aor, aand: begin
-                                send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_ops'(funct3), rob_data.tag_ready);
+                                if(alu_itf.ready)begin
+                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_ops'(funct3), rob_data.tag_ready);
+                                    rob_valid <= 1'b1;
+                                end
                             end
 
                             default: ;
@@ -170,41 +190,53 @@ module decoder (
                 
                 op_reg: begin
                     /* to ROB */
-                    if(rd == 0 || rob_data.tag_ready == 0 || alu_itf.ready == 1'b0)begin
-                        rob_valid   <= 1'b0;
-                    end else begin
-                        /* push a new ROB entry */
-                        rob_valid   <= 1'b1;
+                    if(rd != 0 && rob_data.tag_ready != 0)begin
+                        /* prepare ROB entry data but do not set valid yet */
                         rob_op      <= REG;
                         rob_dest    <= rd;
                         /* to ALU RS or CMP RS */
                         case (arith_funct3)
                             add: begin
-                                if(funct7[5])begin
-                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_sub, rob_data.tag_ready);
-                                end else begin
-                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_add, rob_data.tag_ready);
+                                if(alu_itf.ready)begin
+                                    if(funct7[5])begin
+                                        send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_sub, rob_data.tag_ready);
+                                    end else begin
+                                        send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_add, rob_data.tag_ready);
+                                    end
+                                    rob_valid <= 1'b1;
                                 end
                             end
 
                             sr: begin
-                                if(funct7[5])begin
-                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_sra, rob_data.tag_ready);
-                                end else begin
-                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_srl, rob_data.tag_ready);
+                                if(alu_itf.ready)begin
+                                    if(funct7[5])begin
+                                        send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_sra, rob_data.tag_ready);
+                                    end else begin
+                                        send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_srl, rob_data.tag_ready);
+                                    end
+                                    rob_valid <= 1'b1;
                                 end
                             end
 
                             slt: begin
-                                send_to_CMP(Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0);
+                                if(cmp_itf.ready)begin
+                                    send_to_CMP(Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0); 
+                                    rob_valid <= 1'b1;
+                                end
                             end
 
                             sltu: begin
-                                send_to_CMP(Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
+                                if(cmp_itf.ready)begin
+                                    send_to_CMP(Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
+                                    rob_valid <= 1'b1;
+                                end
                             end
 
                             axor, sll, aor, aand: begin
-                                send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_ops'(funct3), rob_data.tag_ready);
+                                if(alu_itf.ready)begin
+                                    send_to_ALU(Vj_out, Vk_out, Qj_out, Qk_out, alu_ops'(funct3), rob_data.tag_ready);
+                                    rob_valid <= 1'b1;
+                                end
                             end
                             default: ;
                         endcase
@@ -212,16 +244,54 @@ module decoder (
                 end
 
                 op_lui: begin
-                    send_to_ALU(0, u_imm, 0, 0, alu_add, rob_data.tag_ready);
+                    if(rd != 0 && rob_data.tag_ready != 0 && alu_itf.ready)begin
+                        rob_op      <= REG;
+                        rob_dest    <= rd;
+                        rob_valid   <= 1'b1;
+                        send_to_ALU(0, u_imm, 0, 0, alu_add, rob_data.tag_ready);
+                    end
                 end
 
-                op_auipc: ;
+                op_auipc: begin
+                    if(rd != 0 && rob_data.tag_ready != 0 && alu_itf.ready)begin
+                        rob_op      <= REG;
+                        rob_dest    <= rd;
+                        rob_valid   <= 1'b1;
+                        send_to_ALU(pc_in, u_imm, 0, 0, alu_add, rob_data.tag_ready); /* perform PC+u_imm */
+                    end
+                end
 
-                op_br:;
+                op_br: begin
+                    if(rd != 0 && rob_data.tag_ready != 0 && cmp_itf.ready)begin
+                        rob_op      <= BR;
+                        rob_dest    <= rd;
+                        rob_valid   <= 1'b1;
+                        send_to_CMP(Vj_out, Vk_out, Qj_out, Qk_out, branch_funct3, rob_data.tag_ready, br_pred_in, pc_in, pc_next_in);
+                    end
+                end
 
-                op_jal: ;
+                op_jal: begin
+                    if(rd != 0 && rob_data.tag_ready != 0 && alu_itf.ready)begin
+                        rob_op    <= REG; /* jal is regarded as REG. Because it will write value to a register. */
+                        rob_valid <= 1'b1;
+                        send_to_ALU(pc_in, 4, 0, 0, alu_add, rob_data.tag_ready); /* perfrom PC+4 */
+                    end
+                end
 
-                op_load, op_store: ;
+                op_load: begin
+                    if(rd != 0 && rob_data.tag_ready != 0 && lsb_itf.ready)begin
+                        rob_op      <= REG;
+                        rob_dest    <= rd;
+                        rob_valid   <= 1'b1;
+                        send_to_LSB(Vj_out, 0, i_imm, Qj_out, 0, 1'b0, load_funct3, rob_data.tag_ready);
+                    end
+                end
+
+                op_store: begin
+                    rob_op      <= ST;  /* don't need dest here */
+                    rob_valid   <= 1'b1;
+                    send_to_LSB(Vj_out, Vk_out, s_imm, Qj_out, Qk_out, 1'b1, store_funct3, rob_data.tag_ready);
+                end
 
                 default: ;
             endcase
@@ -230,6 +300,7 @@ module decoder (
 
     /* shift and load_tag logic */
     always_comb begin : shift_loadtag_logic
+
         
     end : shift_loadtag_logic
 

@@ -794,12 +794,14 @@ The ROB buffer maintains any instruction that is not ready to commit. It also pr
 
 #### 11.1 Load/Store buffer entry
 
-| busy | A |  Vj  |  Vk  |  Qj  |  Qk  | destination |
-| :--: | :------: | :--: | :--: | :--: | :--: | :---------: |
+| busy | A |  Vj  |  Vk  |  Qj  |  Qk  | funct | destination |
+| :--: | :------: | :--: | :--: | :--: | :--: | :--: | :---------: |
 
 For a load, `destination` is a ROB entry index indicating where the read data should go. For a store, `destination` is a ROB entry index indicating where the calculated effective address as well as the data to store should go.
 
 `A` stores the immediate value from the memory instruction. `Vj` stores the value of the register for calculating address. `Vk` stores the value we want to wrote to memory (for store operation).
+
+`funct` field indicates the type of this memory operation. This value is the same as `funct3` field in the instruction.
 
 #### 11.2 Port
 

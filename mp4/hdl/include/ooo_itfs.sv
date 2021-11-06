@@ -58,19 +58,21 @@ endinterface //cmp_rs
 interface lsb_rs_itf;
     rv32i_word  Vj;
     rv32i_word  Vk;
+    rv32i_word  A;  /* the immediate value involved to calculate address */
     tag_t       Qj;
     tag_t       Qk;
-    bit         lsb_op; /* lsb opcode */
+    bit         lsb_op; /* lsb opcode. 1 means write. 0 means load. */
+    logic [2:0] funct;
     tag_t       dest;   /* destination of computation result */
     bit         valid, ready;  /* ready means the RS has empty space */
 
     modport decoder (
         input ready,
-        output Vj, Vk, Qj, Qk, lsb_op, dest, valid
+        output Vj, Vk, A, Qj, Qk, lsb_op, funct, dest, valid
     );
 
     modport lsb_rs (
-        input Vj, Vk, Qj, Qk, lsb_op, dest, valid,
+        input Vj, Vk, A, Qj, Qk, lsb_op, funct, dest, valid,
         output ready
     );
 endinterface //lsb_rs
