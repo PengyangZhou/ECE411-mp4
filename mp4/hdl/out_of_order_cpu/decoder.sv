@@ -56,7 +56,7 @@ module decoder (
     store_funct3_t  store_funct3;
     load_funct3_t   load_funct3;
     arith_funct3_t  arith_funct3;
-    rv32i_word  Vj_out, Qj_out;
+    rv32i_word  Vj_out, Vk_out;
     tag_t       Qj_out, Qk_out;
     
     /* instruction deconstruction */
@@ -82,7 +82,7 @@ module decoder (
     assign Qj_out = (reg_Qj != 0 && rob_data.ready[reg_Qj]) ? 0 : reg_Qj;
     assign Qk_out = (reg_Qk != 0 && rob_data.ready[reg_Qk]) ? 0 : reg_Qk;
 
-    /* function definition */
+    /* task definition */
     task send_to_ALU(input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,
         input alu_ops alu_op, input tag_t dest);
         alu_itf.valid   <= 1'b1;

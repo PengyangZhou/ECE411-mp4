@@ -8,7 +8,7 @@ package ooo_types;
     import rv32i_types::*;
 
     parameter int INST_QUEUE_DEPTH = 6;
-    parameter int ROB_DEPTH = 6;
+    parameter int ROB_DEPTH   = 6;
     parameter int NUM_ALU_RS  = 5;
     parameter int NUM_CMP_RS  = 3;
     parameter int NUM_LDST_RS = 3;
@@ -22,9 +22,9 @@ package ooo_types;
     } op_type_t;
 
     typedef struct {
-        tag_t       tag_ready;          // the valid ROB entry number to put, 0 for no empty space
-        bit         ready [ROB_DEPTH];  // set high if the entry is ready to commit
-        rv32i_word  vals [ROB_DEPTH];   // values for each destination
+        tag_t       tag_ready;            // the valid ROB entry number to put, 0 for no empty space
+        bit         ready [ROB_DEPTH+1];  // set high if the entry is ready to commit
+        rv32i_word  vals [ROB_DEPTH+1];   // values for each destination
     } rob_out_t;
 
     typedef struct packed {

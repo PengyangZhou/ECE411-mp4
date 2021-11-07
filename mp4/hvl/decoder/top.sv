@@ -60,7 +60,9 @@ module decoder_tb ();
         inst_in     <= inst;
         br_pred_in  <= 1'b0;
         @(tb_clk);
-        assert (shift == 1'b1);
+        /* check if shift signal is sent to instruction queue */
+        assert (shift == 1'b1)
+        else $error("Shift is not asserted.\n");
         valid_in    <= 1'b0;
         @(tb_clk);
     endtask
@@ -85,7 +87,8 @@ module decoder_tb ();
     endtask
 
     task check_tagupdate(input rv32i_reg rd);
-        assert (tag_out == rob_data.tag_ready && rd_out == rd && load_tag == 1'b1);
+        assert (tag_out == rob_data.tag_ready && rd_out == rd && load_tag == 1'b1)
+        else $error("Tag update is not right.\ntag_out:%0d, rd_out:%0d, load_tag:%0d\n", tag_out, rd_out, load_tag);
     endtask
 
     initial begin
@@ -128,18 +131,35 @@ module decoder_tb ();
         send_inst(32'h002081b3); /* add x3,x1,x2 */
         check_VQ(1, alu_itf.Vj, alu_itf.Qj);
         check_VQ(2, alu_itf.Vk, alu_itf.Qk);
+        check_tagupdate(3);
 
         send_inst(32'h004120b3); /* slt x1,x2,x4 */
         check_VQ(2, cmp_itf.Vj, cmp_itf.Qj);
         check_VQ(4, cmp_itf.Vk, cmp_itf.Qk);
+        check_tagupdate(1);
 
         send_inst(32'h00508093); /* addi x1,x1,5 */
         check_VQ(1, alu_itf.Vj, alu_itf.Qj);
         check_imm(5, alu_itf.Vk);
+        check_tagupdate(1);
 
         send_inst(32'h00612093); /* slti x1,x2,6 */
         check_VQ(2, cmp_itf.Vj, cmp_itf.Qj);
         check_imm(6, cmp_itf.Vk);
+        check_tagupdate(1);
+
+        send_inst(32'h0050a103); /* lw x2,5(x1) */
+        check_VQ(1, lsb_itf.Vj, lsb_itf.Qj);
+        check_imm(5, lsb_itf.A);
+        check_tagupdate(2);
+
+        send_inst(32'h00411323); /* sh x4,6(x2) */
+        check_VQ(2, lsb_itf.Vj, lsb_itf.Qj);
+        check_VQ(4, lsb_itf.Vk, lsb_itf.Qk);
+        check_imm(6, lsb_itf.A);
+        assert (load_tag == 1'b0); /* don't need to load tag */
+
+        /* TODO: test branch and jal(r) */
 
         finish();
     end
