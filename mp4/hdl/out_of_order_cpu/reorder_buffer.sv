@@ -7,9 +7,9 @@ module reorder_buffer
     input logic [1:0] op_type,
     input logic [31:0] dest,
     // port from CDB
-    input alu_cdb alu_res,
-    input cmp_cdb cmp_res,
-    input mem_cdb mem_res,
+    input alu_cdb_t alu_res,
+    input cmp_cdb_t cmp_res,
+    input mem_cdb_t mem_res,
     // port to decoder
     output rob_out_t rob_out,
     // port to regfile
@@ -82,10 +82,12 @@ module reorder_buffer
                 rob_ready[commit_head] <= '0;
                 inc_head(commit_head);
             end
-            if (alu_res.valid) begin
-                // if the result out of alu is valid
-                rob_vals[alu_res.tag] <= alu_res.val;
-                rob_ready[alu_res.tag] <= 1'b1;
+            for (int i = 0; i < NUM_ALU_RS; i++) begin
+                if (alu_res.valid[i]) begin
+                    // if the result out of alu is valid
+                    rob_vals[alu_res.tags[i]] <= alu_res.vals[i];
+                    rob_ready[alu_res.tags[i]] <= 1'b1;
+                end
             end
             if (mem_res.valid) begin
                 if (rob_type[mem_res.tag] == REG) begin
@@ -102,7 +104,7 @@ module reorder_buffer
             if (cmp_res.valid) begin
                 // for checkpoint2 we assume all the predict result is true.
                 if (cmp_res.br_pred_res) begin
-                    rob_ready[alu_res.tag] <= 1'b1;
+                    rob_ready[cmp_res.tag] <= 1'b1;
                 end
             end
         end
@@ -110,9 +112,21 @@ module reorder_buffer
 
     // the output to the decoder
     always_comb begin
-        // given the current busy status and values of every ROB entry
-        rob_out.ready = rob_ready;
-        rob_out.vals = rob_vals;
+        // given the current ready status and values of every ROB entry
+        // output the value if alu cdb has the valid value 
+        for (int i = 0; i < ROB_DEPTH; i++) begin
+            for (int j = 0; j < NUM_ALU_RS; j++) begin
+                if (alu_res.valid[j] && (alu_res.tags[j] == i)) begin
+                    rob_out.vals[i] = alu_res.vals[j];
+                    rob_out.ready[i] = 1'b1;
+                end else begin
+                    rob_out.vals[i] = rob_vals[i];
+                    rob_out.ready[i] = rob_ready[j];
+                end
+                
+            end
+        end
+
         // immediately return the next next available ROB entry number
         if (rob_busy[next_input_head]) begin
             // if the next entry is not available, output 0
@@ -128,7 +142,7 @@ module reorder_buffer
 
     // the output to the regfile
     always_comb begin
-        load_val = 1'b0;
+        load_val = '0;
         val_rd = '0;
         tag = '0;
         val = '0;
