@@ -19,7 +19,7 @@ module reorder_buffer
     output rv32i_word val,
     // port to memory unit
     output logic mem_write,
-    output logic mem_wdata,
+    output rv32i_word mem_wdata,
     output rv32i_word mem_address,
     // output logic [3:0] mem_byte_enable, TODO
 
@@ -28,12 +28,12 @@ module reorder_buffer
 
     // entry of reorder buffer
     // the entry of index 0 will be remained empty by intention
-    bit rob_busy [ROB_DEPTH];          // high if the entry's value is not available
-    logic [1:0] rob_type [ROB_DEPTH];  // instruction type. register operation, store, or branch
-    rv32i_word rob_dest [ROB_DEPTH];   // for register operation, contains the index(only use bits [4:0]) 
+    bit rob_busy [ROB_DEPTH + 1];          // high if the entry's value is not available
+    logic [1:0] rob_type [ROB_DEPTH + 1];  // instruction type. register operation, store, or branch
+    rv32i_word rob_dest [ROB_DEPTH + 1];   // for register operation, contains the index(only use bits [4:0]) 
                                        // for store or branch, contains the address
-    rv32i_word rob_vals [ROB_DEPTH];   // contains the value of register or the value to store
-    bit rob_ready [ROB_DEPTH];         // high if the entry is ready to commit
+    rv32i_word rob_vals [ROB_DEPTH + 1];   // contains the value of register or the value to store
+    bit rob_ready [ROB_DEPTH + 1];         // high if the entry is ready to commit
 
     tag_t input_head;   // pointing to the empty entry waiting for input
     tag_t next_input_head; 
@@ -44,7 +44,7 @@ module reorder_buffer
 
     // increment the head pointer
     task inc_head(tag_t head);
-        if (head == ROB_DEPTH - 1) begin
+        if (head == ROB_DEPTH) begin
             head <= 4'd1;
         end else begin
             head <= head + 1'b1;
@@ -54,16 +54,17 @@ module reorder_buffer
     always_ff @( posedge clk ) begin
         if (rst | flush) begin
             // empty the whole reorder buffer
-            for (int i = 0; i < ROB_DEPTH; i++) begin
+            for (int i = 0; i < ROB_DEPTH + 1; i++) begin
                 rob_busy[i] <= '0;
                 rob_type[i] <= '0;
                 rob_dest[i] <= '0;
                 rob_vals[i] <= '0;
                 rob_ready[i] <= '0;
-                input_head <= 4'd1;
-                next_input_head <= 4'd2;
-                commit_head <= 4'd1;
             end
+            // reset head pointer
+            input_head <= 4'd1;
+            next_input_head <= 4'd2;
+            commit_head <= 4'd1;
         end else begin 
             if (valid_in) begin
                 // new instruction from decoder
@@ -114,7 +115,7 @@ module reorder_buffer
     always_comb begin
         // given the current ready status and values of every ROB entry
         // output the value if alu cdb has the valid value 
-        for (int i = 0; i < ROB_DEPTH; i++) begin
+        for (int i = 1; i < ROB_DEPTH + 1; i++) begin
             for (int j = 0; j < NUM_ALU_RS; j++) begin
                 if (alu_res.valid[j] && (alu_res.tags[j] == i)) begin
                     rob_out.vals[i] = alu_res.vals[j];
