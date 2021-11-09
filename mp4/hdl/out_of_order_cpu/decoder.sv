@@ -37,7 +37,9 @@ module decoder (
     /* port to CMP RS */
     cmp_rs_itf.decoder  cmp_itf,
     /* port to Load/Store buffer */
-    lsb_rs_itf.decoder  lsb_itf
+    lsb_rs_itf.decoder  lsb_itf,
+    /* port to jalr */
+    jalr_itf.decoder jalr_itf
 );
     /* implemented as to take 1 cycle to decode */
     /* May need accommodation due to long critical path */
@@ -94,10 +96,11 @@ module decoder (
         alu_itf.dest    <= dest;
     endtask
 
-    task send_to_CMP(input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,
+    task send_to_CMP(input logic is_br, input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,
         input branch_funct3_t cmp_op, input tag_t dest, input logic br_pred,
-        input rv32i_word pc, input rv32i_word pc_next);
+        input rv32i_word pc, input rv32i_word b_imm);
         cmp_itf.valid   <= 1'b1;
+        cmp_itf.is_br   <= is_br;
         cmp_itf.Vj      <= Vj;
         cmp_itf.Vk      <= Vk;
         cmp_itf.Qj      <= Qj;
@@ -105,7 +108,7 @@ module decoder (
         cmp_itf.cmp_op  <= cmp_op;
         cmp_itf.dest    <= dest;
         cmp_itf.pc      <= pc;
-        cmp_itf.pc_next <= pc_next;
+        cmp_itf.b_imm   <= b_imm;
         cmp_itf.br_pred <= br_pred;
     endtask
 
@@ -131,6 +134,7 @@ module decoder (
             alu_itf.valid   <= 1'b0;
             cmp_itf.valid   <= 1'b0;
             lsb_itf.valid   <= 1'b0;
+            jalr_itf.valid  <= 1'b0;
         end else begin
             /* defaults. same as reset */
             rob_valid   <= 1'b0;
@@ -139,7 +143,7 @@ module decoder (
             alu_itf.valid   <= 1'b0;
             cmp_itf.valid   <= 1'b0;
             lsb_itf.valid   <= 1'b0;
-
+            jalr_itf.valid  <= 1'b1;
             /* decode each instruction */
             if(valid_in)begin
                 case (opcode)
@@ -153,14 +157,14 @@ module decoder (
                             case (arith_funct3)
                                 slt: begin
                                     if(cmp_itf.ready)begin
-                                        send_to_CMP(Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0);
+                                        send_to_CMP(0, Vj_out, i_imm, Qj_out, 0, blt, rob_data.tag_ready, 0, 0, 0);
                                         rob_valid <= 1'b1;
                                     end
                                 end
 
                                 sltu: begin
                                     if(cmp_itf.ready)begin
-                                        send_to_CMP(Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
+                                        send_to_CMP(0, Vj_out, i_imm, Qj_out, 0, bltu, rob_data.tag_ready, 0, 0, 0);
                                         rob_valid <= 1'b1;
                                     end
                                 end
@@ -221,14 +225,14 @@ module decoder (
 
                                 slt: begin
                                     if(cmp_itf.ready)begin
-                                        send_to_CMP(Vj_out, Vk_out, Qj_out, Qk_out, blt, rob_data.tag_ready, 0, 0, 0); 
+                                        send_to_CMP(0, Vj_out, Vk_out, Qj_out, Qk_out, blt, rob_data.tag_ready, 0, 0, 0); 
                                         rob_valid <= 1'b1;
                                     end
                                 end
 
                                 sltu: begin
                                     if(cmp_itf.ready)begin
-                                        send_to_CMP(Vj_out, Vk_out, Qj_out, Qk_out, bltu, rob_data.tag_ready, 0, 0, 0);
+                                        send_to_CMP(0, Vj_out, Vk_out, Qj_out, Qk_out, bltu, rob_data.tag_ready, 0, 0, 0);
                                         rob_valid <= 1'b1;
                                     end
                                 end
@@ -267,19 +271,32 @@ module decoder (
                             rob_op      <= BR;
                             rob_dest    <= rd;
                             rob_valid   <= 1'b1;
-                            send_to_CMP(Vj_out, Vk_out, Qj_out, Qk_out, branch_funct3, rob_data.tag_ready, br_pred_in, pc_in, pc_next_in);
+                            send_to_CMP(1, Vj_out, Vk_out, Qj_out, Qk_out, branch_funct3, rob_data.tag_ready, br_pred_in, pc_in, b_imm);
                         end
                     end
 
                     op_jal: begin
-                        if(rd != 0 && rob_data.tag_ready != 0 && alu_itf.ready)begin
+                        if(rob_data.tag_ready != 0 && alu_itf.ready)begin
                             rob_op    <= REG; /* jal is regarded as REG. Because it will write value to a register. */
                             rob_valid <= 1'b1;
                             send_to_ALU(pc_in, 4, 0, 0, alu_add, rob_data.tag_ready); /* perfrom PC+4 */
                         end
                     end
 
-                    op_jalr: ; /* TODO */
+                    op_jalr: begin
+                    if(rob_data.tag_ready != 0 && jalr_itf.ready)begin
+                        rob_op      <= JALR;
+                        rob_dest    <= rd;
+                        rob_valid   <= 1'b1;
+                        jalr_itf.valid <= 1'b1;
+                        jalr_itf.Vj <= Vj;
+                        jalr_itf.A <= A;
+                        jalr_itf.Qj <= Qj;
+                        jalr_itf.dest <= dest;
+                        jalr_itf.pc <= pc;
+                        jalr_itf.pc_next <= pc_next;
+                        end
+                    end
 
                     op_load: begin
                         if(rd != 0 && rob_data.tag_ready != 0 && lsb_itf.ready)begin
@@ -378,10 +395,14 @@ module decoder (
                     end
                 end
 
-                op_jalr: ; /* TODO */
+                op_jalr: begin
+                if(rob_data.tag_ready != 0 && jalr_itf.ready)begin
+                        shift    = 1'b1;
+                    end
+                end
 
                 op_br: begin
-                    if(rd != 0 && rob_data.tag_ready != 0 && cmp_itf.ready)begin
+                    if(rob_data.tag_ready != 0 && cmp_itf.ready)begin
                         shift    = 1'b1;
                     end
                 end
@@ -396,7 +417,7 @@ module decoder (
                 end
 
                 op_store: begin
-                    if(rd != 0 && rob_data.tag_ready != 0 && lsb_itf.ready)begin
+                    if(rob_data.tag_ready != 0 && lsb_itf.ready)begin
                         shift    = 1'b1;
                     end
                 end

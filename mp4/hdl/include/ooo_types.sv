@@ -18,7 +18,8 @@ package ooo_types;
     typedef enum logic [1:0] { 
         REG = 2'b00, 
         ST  = 2'b01, 
-        BR  = 2'b10
+        BR  = 2'b10,
+        JALR = 2'b11
     } op_type_t;
 
     typedef struct {
@@ -28,10 +29,11 @@ package ooo_types;
     } rob_out_t;
 
     typedef struct packed {
-        bit         valid;       /* indicating there is valid data on the bus */
-        bit         br_pred_res; /* signal from CMP to ROB. 1 means prediction was true. */
-        tag_t       tag;
-        rv32i_word  val;
+        bit         valid [NUM_CMP_RS];       /* indicating there is valid data on the bus */
+        bit         br_pred_res [NUM_CMP_RS]; /* signal from CMP to ROB. 1 means prediction was true. */
+        tag_t       tag [NUM_CMP_RS];
+        rv32i_word  val [NUM_CMP_RS];
+        rv32i_word  addr [NUM_CMP_RS];  // the pc of the instruction
     } cmp_cdb_t;
 
     // the cdb out of alu, each entry of reservation station has its alu
@@ -43,13 +45,21 @@ package ooo_types;
 
     // the cdb out of memory unit
     typedef struct packed {
-        bit         valid; // indicating there is valid data on the bus
-        bit         sw;    // 1 for store, 0 for load
-        tag_t       tag;   // the index of ROB entry to be updated
-        logic [2:0] funct; // granularity of this memory operation
-        rv32i_word  addr;  // the address to store, not used for load
-        rv32i_word  val;   // the value to store or the loaded data
+        bit         valid [NUM_LDST_RS]; // indicating there is valid data on the bus
+        // bit         sw [NUM_LDST_RS];    // 1 for write, 0 for load
+        tag_t       tag [NUM_LDST_RS];   // the index of ROB entry to be updated
+        // logic [2:0] funct [NUM_LDST_RS]; // granularity of this memory operation
+        rv32i_word  addr [NUM_LDST_RS];  // the address to store, not used for load
+        rv32i_word  val [NUM_LDST_RS];   // the value to store or the loaded data
     } mem_cdb_t;
+
+    typedef struct packed {
+        bit         valid;
+        tag_t       tag;
+        rv32i_word  val;
+        bit         correct_predict; // 1 for correct
+        rv32i_word  addr; // the pc of the instruction
+    } jalr_cdb_t;
 
 endpackage
 

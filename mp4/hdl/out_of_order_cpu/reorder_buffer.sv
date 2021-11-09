@@ -10,6 +10,7 @@ module reorder_buffer
     input alu_cdb_t alu_res,
     input cmp_cdb_t cmp_res,
     input mem_cdb_t mem_res,
+    input jalr_cdb_t jalr_res,
     // port to decoder
     output rob_out_t rob_out,
     // port to regfile
@@ -22,8 +23,13 @@ module reorder_buffer
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
     // output logic [3:0] mem_byte_enable, TODO
-
-    output logic flush
+    output logic new_store,
+    output logic flush,
+    output logic br_mispredict,
+    output logic jalr_mispredict,
+    output rv32i_word pc_correct,
+    output rv32i_word br_pc_mispredict,
+    output rv32i_word jalr_pc_mispredict
 );
 
     // entry of reorder buffer

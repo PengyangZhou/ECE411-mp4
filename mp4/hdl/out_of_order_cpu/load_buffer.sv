@@ -1,1 +1,0 @@
-/* This is the load buffer, containing 5 reservation stations */
