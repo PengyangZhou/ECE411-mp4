@@ -9,7 +9,7 @@ module reorder_buffer
     // port from CDB
     input alu_cdb_t alu_res,
     input cmp_cdb_t cmp_res,
-    input mem_cdb_t mem_res,
+    input mem_cdb_t mem_res,  // from load/store buffer
     input jalr_cdb_t jalr_res,
     // port to decoder
     output rob_out_t rob_out,
@@ -23,13 +23,16 @@ module reorder_buffer
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
     // output logic [3:0] mem_byte_enable, TODO
-    output logic new_store,
-    output logic flush,
-    output logic br_mispredict,
-    output logic jalr_mispredict,
-    output rv32i_word pc_correct,
-    output rv32i_word br_pc_mispredict,
-    output rv32i_word jalr_pc_mispredict
+
+    // output logic new_store,
+    // port to branch predictor
+    // TODO
+    // output logic br_mispredict,
+    // output logic jalr_mispredict,
+    // output rv32i_word pc_correct,
+    // output rv32i_word br_pc_mispredict,
+    // output rv32i_word jalr_pc_mispredict,
+    output logic flush
 );
 
     // entry of reorder buffer
@@ -96,22 +99,36 @@ module reorder_buffer
                     rob_ready[alu_res.tags[i]] <= 1'b1;
                 end
             end
-            if (mem_res.valid) begin
-                if (rob_type[mem_res.tag] == REG) begin
-                    // the load operation
-                    rob_vals[mem_res.tag] <= mem_res.val;
-                    rob_ready[mem_res.tag] <= 1'b1;
-                end else if (rob_type[mem_res.tag] == ST) begin
-                    // the store operation
-                    rob_ready[mem_res.tag] <= 1'b1;
-                    rob_dest[mem_res.tag] <= mem_res.addr;
-                    rob_vals[mem_res.tag] <= mem_res.val;
+            for (int i = 0; i < NUM_LDST_RS; i++) begin
+                if (mem_res.valid[i]) begin
+                    if (rob_type[mem_res.tag[i]] == REG) begin
+                        // the load operation
+                        rob_vals[mem_res.tag[i]] <= mem_res.val[i];
+                        rob_ready[mem_res.tag[i]] <= 1'b1;
+                    end else if (rob_type[mem_res.tag[i]] == ST) begin
+                        // the store operation
+                        rob_ready[mem_res.tag[i]] <= 1'b1;
+                        rob_dest[mem_res.tag[i]] <= mem_res.addr[i];
+                        rob_vals[mem_res.tag[i]] <= mem_res.val[i];
+                    end
                 end
             end
-            if (cmp_res.valid) begin
+            for (int i = 0; i < NUM_CMP_RS; i++) begin
                 // for checkpoint2 we assume all the predict result is true.
-                if (cmp_res.br_pred_res) begin
-                    rob_ready[cmp_res.tag] <= 1'b1;
+                if (cmp_res.valid[i]) begin
+                    if (cmp_res.br_pred_res[i]) begin
+                        // if the predict result is true
+                        rob_ready[cmp_res.tag[i]] <= 1'b1;
+                        if (rob_type[cmp_res.tag[i]] == BR) begin
+                            // if the operation is branch
+                            // for correct predict, nothing is needed
+                        end else if (rob_type[cmp_res.tag[i]] == REG) begin
+                            // if the operation is slt, store the compare result 1 or 0
+                            rob_vals[cmp_res.val[i]] = cmp_res.val[i];
+                        end
+                    end
+                end else begin
+                    // TODO, for mispredict
                 end
             end
         end
@@ -147,7 +164,7 @@ module reorder_buffer
         end
     end
 
-    // the output to the regfile
+    // output to the regfile
     always_comb begin
         load_val = '0;
         val_rd = '0;
@@ -177,10 +194,10 @@ module reorder_buffer
     // for checkpoint2, we assume all the prediction result is true.
     always_comb begin
         flush = 1'b0;
-        if (cmp_res.valid && (~cmp_res.br_pred_res)) begin
-            // if the branch predict result is false
-            flush = 1'b1;
-        end    
+        // if (cmp_res.valid && (~cmp_res.br_pred_res)) begin
+        //     // if the branch predict result is false
+        //     flush = 1'b1;
+        // end    
     end
 
 

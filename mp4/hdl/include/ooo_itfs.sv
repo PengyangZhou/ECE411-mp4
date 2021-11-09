@@ -70,7 +70,7 @@ interface lsb_rs_itf;
     );
 endinterface //lsb_rs
 
-interface jalr_itf
+interface jalr_itf;
     rv32i_word  Vj;
     rv32i_word  A;  /* the immediate value involved to calculate address */
     tag_t       Qj;

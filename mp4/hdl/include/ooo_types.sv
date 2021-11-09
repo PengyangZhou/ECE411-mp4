@@ -28,7 +28,7 @@ package ooo_types;
         rv32i_word  vals [ROB_DEPTH+1];   // values for each destination
     } rob_out_t;
 
-    typedef struct packed {
+    typedef struct {
         bit         valid [NUM_CMP_RS];       /* indicating there is valid data on the bus */
         bit         br_pred_res [NUM_CMP_RS]; /* signal from CMP to ROB. 1 means prediction was true. */
         tag_t       tag [NUM_CMP_RS];
@@ -44,7 +44,7 @@ package ooo_types;
     } alu_cdb_t;
 
     // the cdb out of memory unit
-    typedef struct packed {
+    typedef struct {
         bit         valid [NUM_LDST_RS]; // indicating there is valid data on the bus
         // bit         sw [NUM_LDST_RS];    // 1 for write, 0 for load
         tag_t       tag [NUM_LDST_RS];   // the index of ROB entry to be updated
