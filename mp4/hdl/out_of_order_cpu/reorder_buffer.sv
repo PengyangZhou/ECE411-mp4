@@ -26,7 +26,8 @@ module reorder_buffer
     output rv32i_word mem_address,
     // output logic [3:0] mem_byte_enable, TODO
 
-    // output logic new_store,
+    // port to load/store buffer
+    output logic new_store,
     // port to branch predictor
     // TODO
     // output logic br_mispredict,
@@ -206,10 +207,12 @@ module reorder_buffer
                 mem_write = '0;
                 mem_wdata = '0;
                 mem_address = '0;
+                new_store = '0;
                 if (commit_ready && (rob_type[commit_head] == ST)) begin
                     mem_write = 1'b1;
                     mem_wdata = rob_vals[commit_head];
                     mem_address = rob_dest[commit_head];
+                    new_store = 1'b1;
                     next_state = STORE_PROCESSING;
                 end
             end
@@ -217,6 +220,7 @@ module reorder_buffer
                 mem_write = 1'b1;
                 mem_wdata = rob_vals[commit_head];
                 mem_address = rob_dest[commit_head];
+                new_store = '0;
                 if (mem_resp) begin
                     mem_write = '0;
                     mem_wdata = '0;

@@ -178,54 +178,54 @@ module lsb_rs (
         end else begin
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
                 /* set default */
-                alu_res.valid[i] <= 1'b0;
+                mem_res.valid[i] <= 1'b0;
                 /* output the calculated result */
                 if (lsb_op[i] == 1)
                 begin
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0)begin
-                        alu_res.valid[i] <= 1'b1;
-                        alu_res.val[i]  <= Vk[i];
-                        alu_res.tag[i]  <= dest[i];
-                        alu_res.addr[i] <= Vj[i] + A;
+                        mem_res.valid[i] <= 1'b1;
+                        mem_res.val[i]  <= Vk[i];
+                        mem_res.tag[i]  <= dest[i];
+                        mem_res.addr[i] <= Vj[i] + A;
                     end
                 end
                 else
                 begin
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
-                        alu_res.valid[i] <= 1'b1;
-                        alu_res.tag[i]  <= dest[i];
+                        mem_res.valid[i] <= 1'b1;
+                        mem_res.tag[i]  <= dest[i];
                         unique case (lsb_op[i])
-                        lw:        alu_res.val[i]  <= mem_rdata_d;
+                        lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: alu_res.val[i] = {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
-                                2'b01: alu_res.val[i] = {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
-                                2'b10: alu_res.val[i] = {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
-                                2'b11: alu_res.val[i] = {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] = {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] = {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] = {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] = {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
                             endcase
                         end
                         lbu:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: alu_res.val[i] = {24'b0, mem_rdata_d[7:0]};
-                                2'b01: alu_res.val[i] = {24'b0, mem_rdata_d[15:8]};
-                                2'b10: alu_res.val[i] = {24'b0, mem_rdata_d[23:16]};
-                                2'b11: alu_res.val[i] = {24'b0, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] = {24'b0, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] = {24'b0, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] = {24'b0, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] = {24'b0, mem_rdata_d[31:24]};
                             endcase
                         end
                         lh:
                         begin
                             case (mem_address_d[1])
-                                1'b0: alu_res.val[i] = {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
-                                1'b1: alu_res.val[i] = {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] = {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] = {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
                             endcase
                         end
                         lhu:
                         begin
                             case (mem_address_d[1])
-                                1'b0: alu_res.val[i] = {16'b0, mem_rdata_d[15:0]};
-                                1'b1: alu_res.val[i] = {16'b0, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] = {16'b0, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] = {16'b0, mem_rdata_d[31:16]};
                             endcase
                         end            
                         endcase
