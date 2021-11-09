@@ -11,6 +11,8 @@ module reorder_buffer
     input cmp_cdb_t cmp_res,
     input mem_cdb_t mem_res,  // from load/store buffer
     input jalr_cdb_t jalr_res,
+    // input from data cache
+    input logic mem_resp,
     // port to decoder
     output rob_out_t rob_out,
     // port to regfile
@@ -90,7 +92,14 @@ module reorder_buffer
                 rob_dest[commit_head] <= '0;
                 rob_vals[commit_head] <= '0;
                 rob_ready[commit_head] <= '0;
-                inc_head(commit_head);
+                if (rob_type[commit_head] == ST) begin
+                    if (next_state == STORE_IDLE) begin
+                        inc_head(commit_head);
+                    end
+                end else begin
+                    // if the operation is not store, always go to the next entry.
+                    inc_head(commit_head);
+                end
             end
             for (int i = 0; i < NUM_ALU_RS; i++) begin
                 if (alu_res.valid[i]) begin
@@ -152,16 +161,14 @@ module reorder_buffer
         end
 
         // immediately return the next next available ROB entry number
-        if (rob_busy[next_input_head]) begin
-            // if the next entry is not available, output 0
-            rob_out.tag_ready = '0;
-        end else if (valid_in) begin
-            // if detects valid_in and next entry is available
-            rob_out.tag_ready = next_input_head;
+        if (valid_in) begin
+            // if detects valid_in, tell if the next entry is available
+            rob_out.tag_ready = (~rob_busy[next_input_head]);
         end else begin
-            // remains the tag to be the current one.
-            rob_out.tag_ready = rob_out.tag_ready;
-        end
+            // otherwise, tell if the current entry is avaiable
+            rob_out.tag_ready = (~rob_busy[input_head]);
+        end 
+
     end
 
     // output to the regfile
@@ -179,16 +186,45 @@ module reorder_buffer
         end
     end
 
+    enum int unsigned {
+        STORE_IDLE, STORE_PROCESSING
+    } state, next_state;
+
+    always_ff @( posedge clk ) begin
+        if (rst | flush) begin
+            state <= STORE_IDLE;
+        end else begin
+            state <= next_state;
+        end
+    end
+
     // output to the memory unit, for store operation
     always_comb begin
-        mem_write = '0;
-        mem_wdata = '0;
-        mem_address = '0;
-        if (commit_ready && (rob_type[commit_head] == ST)) begin
-            mem_write = 1'b1;
-            mem_wdata = rob_vals[commit_head];
-            mem_address = rob_dest[commit_head];
-        end
+        next_state = state;
+        case (state) 
+            STORE_IDLE: begin
+                mem_write = '0;
+                mem_wdata = '0;
+                mem_address = '0;
+                if (commit_ready && (rob_type[commit_head] == ST)) begin
+                    mem_write = 1'b1;
+                    mem_wdata = rob_vals[commit_head];
+                    mem_address = rob_dest[commit_head];
+                    next_state = STORE_PROCESSING;
+                end
+            end
+            STORE_PROCESSING: begin
+                mem_write = 1'b1;
+                mem_wdata = rob_vals[commit_head];
+                mem_address = rob_dest[commit_head];
+                if (mem_resp) begin
+                    mem_write = '0;
+                    mem_wdata = '0;
+                    mem_address = '0;
+                    next_state = STORE_IDLE;
+                end
+            end
+        endcase
     end
 
     // for checkpoint2, we assume all the prediction result is true.
