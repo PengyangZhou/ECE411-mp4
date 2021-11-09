@@ -57,7 +57,7 @@ module alu_rs (
             empty_index = 5; /* if empty_index is 5, there is no empty space in the RS */
         end
         /* output of ready signal */
-        alu_itf.ready = empty_index < 5 ? 1'b1 : 1'b0;
+        alu_itf.ready = empty_index < NUM_ALU_RS ? 1'b1 : 1'b0;
     end
 
     /* task definition */

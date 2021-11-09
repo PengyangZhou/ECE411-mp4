@@ -411,8 +411,8 @@ The decoder module put the right value into the ALU reservation station (RS). It
 
 #### 5.1 ALU RS entry
 
-| tag  | busy | op. type |  Vj  |  Vk  |  Qj  |  Qk  | destination |
-| :--: | :--: | :------: | :--: | :--: | :--: | :--: | :---------: |
+| busy | op. type |  Vj  |  Vk  |  Qj  |  Qk  | destination |
+| :--: | :------: | :--: | :--: | :--: | :--: | :---------: |
 
 If `Qj` or `Qk` is 0, it means the respective value is currently in `Vj` or `Vk`. Otherwise they refer to the ROB entry where the operands are fetched. `op. type` indicate the ALU operation type.
 
