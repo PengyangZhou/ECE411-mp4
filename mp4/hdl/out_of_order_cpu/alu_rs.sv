@@ -15,7 +15,7 @@ module alu_rs (
     output alu_cdb_t    alu_res
 );
 
-    /* RS entries */
+    /* RS entry fields */
     logic       busy    [NUM_ALU_RS];
     alu_ops     op_type [NUM_ALU_RS];
     rv32i_word  Vj      [NUM_ALU_RS];
