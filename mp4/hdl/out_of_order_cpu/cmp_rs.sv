@@ -152,7 +152,7 @@ module cmp_rs (
                     begin
                     end
                     cmp_res.tag[i] <= dest[i];
-                    cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 0 : 1);
+                    cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 1 : 0);
                     if (res[i])
                     begin
                         cmp_res.pc_next[i] <= pc[i] + B_imm[i];

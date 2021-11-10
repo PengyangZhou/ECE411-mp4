@@ -23,9 +23,9 @@ module branch_predictor
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
     output logic mem_write_i,
-    output logic [3:0] mem_byte_enable_i, // TODO really need it?
+    output logic [3:0] mem_byte_enable_i,
     output rv32i_word mem_address_i,
-    output rv32i_word mem_wdata_i // TODO really need it?
+    output rv32i_word mem_wdata_i
 );
 
 assign mem_write_i = 0;
