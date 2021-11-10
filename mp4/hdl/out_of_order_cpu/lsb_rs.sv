@@ -158,7 +158,7 @@ module lsb_rs (
             current_load = 0;
         end else if(busy[1] == 1 && lsb_op[1] == 0 && Qj[1] == 0 && store_before[1] == 0)begin
             current_load = 1;
-        end else if(busy[2] == 1 && lsb_op[2] == 0 && Qj[2] && store_before[2] == 0)begin
+        end else if(busy[2] == 1 && lsb_op[2] == 0 && Qj[2] == 0 && store_before[2] == 0)begin
             current_load = 2;
         end else begin
             current_load = 3; /* if current_load is 3, there is no valid load instruction */
