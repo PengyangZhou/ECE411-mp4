@@ -24,12 +24,10 @@ module reorder_buffer
     output logic mem_write,
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
-    // output logic [3:0] mem_byte_enable, TODO
-
+    output logic [3:0] mem_byte_enable,
     // port to load/store buffer
     output logic new_store,
     // port to branch predictor
-    // TODO
     output logic br_mispredict,
     output logic jalr_mispredict,
     output rv32i_word pc_correct,

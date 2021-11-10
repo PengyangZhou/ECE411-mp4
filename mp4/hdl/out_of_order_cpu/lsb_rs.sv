@@ -4,10 +4,10 @@ module lsb_rs (
     input logic         clk,
     input logic         rst,
     input logic         flush,
-    input logic         new_store,
     /* port from decoder */
     lsb_rs_itf.lsb_rs   lsb_itf,
     /* port from ROB */
+    input logic         new_store,
     input rob_out_t     rob_data,
     /* port to CDB */
     output mem_cdb_t    mem_res,  /* maybe change to lsb_res someday? */
@@ -69,7 +69,7 @@ module lsb_rs (
 
     logic last_valid;
     logic new_valid;
-    assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1 : 0;
+    assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1'b1 : 1'b0;
 
     always_ff @(posedge clk)
     begin
@@ -95,11 +95,11 @@ module lsb_rs (
         end
         else if (new_valid && lsb_itf.lsb_op)
         begin
-            store_number <= store_number + 1;
+            store_number <= store_number + 3'd1;
         end
         else if (new_store)
         begin
-            store_number <= store_number - 1;
+            store_number <= store_number - 3'd1;
         end
         else
         begin
@@ -145,7 +145,7 @@ module lsb_rs (
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
                 if (busy[i] == 1 && lsb_op[i] == 0 && store_before[i] != 0)
                 begin
-                    store_before[i] <= store_before[i] -1;
+                    store_before[i] <= store_before[i] - 3'd1;
                 end
             end
         end
@@ -163,6 +163,7 @@ module lsb_rs (
         end else begin
             current_load = 3; /* if current_load is 3, there is no valid load instruction */
         end
+        lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
 
     /* output logic */
@@ -194,38 +195,38 @@ module lsb_rs (
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
                         mem_res.valid[i] <= 1'b1;
                         mem_res.tag[i]  <= dest[i];
-                        unique case (lsb_op[i])
+                        case (funct[i])
                         lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
                             endcase
                         end
                         lbu:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {24'b0, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {24'b0, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {24'b0, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {24'b0, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {24'b0, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {24'b0, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {24'b0, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {24'b0, mem_rdata_d[31:24]};
                             endcase
                         end
                         lh:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
                             endcase
                         end
                         lhu:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {16'b0, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {16'b0, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {16'b0, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {16'b0, mem_rdata_d[31:16]};
                             endcase
                         end            
                         endcase

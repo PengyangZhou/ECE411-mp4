@@ -5,6 +5,7 @@ import rv32i_types::*;
 module cpu (
     input clk,
     input rst,
+    /* port between instruction cache */
     input mem_resp_i,
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
@@ -12,6 +13,7 @@ module cpu (
     output logic [3:0] mem_byte_enable_i,
     output rv32i_word mem_address_i,
     output rv32i_word mem_wdata_i,
+    /* port between data cache */
     input mem_resp_d,
     input rv32i_word mem_rdata_d,
     output logic mem_read_d,
@@ -20,14 +22,14 @@ module cpu (
     output rv32i_word mem_address_d,
     output rv32i_word mem_wdata_d
 );
-    logic mem_resp_d_read;
-    logic mem_resp_d_write;
+    logic mem_read_resp;
+    logic mem_write_resp;
     logic mem_address_d_read;
     logic mem_address_d_write;
 
-    assign mem_resp_d_read = (1 == mem_resp_d && mem_read_d) ? 1 : 0;
-    assign mem_resp_d_write = (1 == mem_resp_d && mem_write_d) ? 1 : 0;
-    assign mem_address_d = (1 == mem_write_d) mem_address_d_write : mem_address_d_read;
+    assign mem_read_resp = (1 == mem_resp_d && mem_read_d) ? 1'b1 : 1'b0;
+    assign mem_write_resp = (1 == mem_resp_d && mem_write_d) ? 1'b1 : 1'b0;
+    assign mem_address_d = (1 == mem_write_d) ? mem_address_d_write : mem_address_d_read;
 
     logic flush;
 
@@ -79,7 +81,7 @@ module cpu (
     rv32i_word inst_decoder;
     logic br_pred_decoder;
 
-    inst_queue inst_queue_inst(
+    instruction_queue instruction_queue_inst(
         .clk(clk),
         .rst(rst),
         .flush(flush),
@@ -176,7 +178,7 @@ module cpu (
         .mem_res(mem_res),
         .jalr_res(jalr_res),
         // port from data cache
-        .mem_resp(mem_resp_d_write),
+        .mem_resp(mem_write_resp),
         // port to decoder
         .rob_out(rob_data),
         // port to regfile
@@ -252,6 +254,7 @@ module cpu (
         /* port from decoder */
         .lsb_itf(lsb_itf.lsb_rs),
         /* port from ROB */
+        .new_store(new_store),
         .rob_data(rob_data),
         /* port to CDB */
         .mem_res(mem_res),
@@ -259,7 +262,7 @@ module cpu (
         .mem_read_d(mem_read_d),
         .mem_address_d(mem_address_d_read),
         /* port from data cache */
-        .mem_resp_d(mem_resp_d_read),
+        .mem_resp_d(mem_read_resp),
         .mem_rdata_d(mem_rdata_d)
     );
 

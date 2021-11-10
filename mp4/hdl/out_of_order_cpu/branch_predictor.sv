@@ -42,9 +42,9 @@ enum logic [1:0]
 } state, next_state;
 
 rv32i_opcode opcode;
-rv32i_word i_imm;
+rv32i_word j_imm;
 assign opcode = rv32i_opcode'(mem_rdata_i[6:0]);
-assign i_imm = {{21{mem_rdata_i[31]}}, mem_rdata_i[30:20]};
+assign j_imm = {{12{mem_rdata_i[31]}}, mem_rdata_i[19:12], mem_rdata_i[20], mem_rdata_i[30:21], 1'b0};
 
 always_ff @(posedge clk)
 begin
@@ -82,7 +82,7 @@ begin
                 inst <= mem_rdata_i;
                 if (op_jal == opcode)
                 begin
-                    pc_next <= pc + i_imm;
+                    pc_next <= pc + j_imm;
                     br_pred <= 0;
                 end
                 else if (op_br == opcode) // TODO: Predictor

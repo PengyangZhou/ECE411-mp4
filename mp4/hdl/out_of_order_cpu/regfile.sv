@@ -12,7 +12,7 @@ module regfile(
     input rv32i_reg rs2,
     input logic load_tag,
     input tag_t tag_from_decoder,
-    input tag_t tag_rd,
+    input rv32i_reg tag_rd,
     // port to decoder
     output rv32i_word rs1_out,      
     output rv32i_word rs2_out,
