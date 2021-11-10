@@ -265,7 +265,7 @@ module lsb_rs (
 
     always_ff @(posedge clk)
     begin
-        if (clk | flush)
+        if (rst | flush)
         begin
             state <= IDLE;
             mem_address_d <= 0;
