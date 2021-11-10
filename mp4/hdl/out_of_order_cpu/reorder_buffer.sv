@@ -64,7 +64,7 @@ module reorder_buffer
         STORE_IDLE, STORE_PROCESSING
     } state, next_state;
 
-    // increment the head pointer
+    // increment the commit head pointer
     task inc_commit_head();
         if (commit_head == ROB_DEPTH) begin
             commit_head <= 4'd1;
@@ -72,8 +72,6 @@ module reorder_buffer
             commit_head <= commit_head + 1'b1;
         end
     endtask
-
-
 
     always_ff @( posedge clk ) begin
         if (rst | flush) begin
@@ -202,10 +200,10 @@ module reorder_buffer
         // immediately return the next next available ROB entry number
         if (valid_in) begin
             // if detects valid_in, tell if the next entry is available
-            rob_out.tag_ready = (~rob_busy[next_input_head]);
+            rob_out.tag_ready = (rob_busy[next_input_head]) ? '0 : next_input_head;
         end else begin
             // otherwise, tell if the current entry is avaiable
-            rob_out.tag_ready = (~rob_busy[input_head]);
+            rob_out.tag_ready = (rob_busy[input_head]) ? '0 : input_head;
         end 
 
     end
