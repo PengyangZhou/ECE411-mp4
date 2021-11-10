@@ -1,4 +1,5 @@
 /* This is the testbench for CPU */
+/* THIS FILE IS NOT USED */
 
 module cpu_tb ();
     
@@ -39,5 +40,15 @@ module cpu_tb ();
         repeat (100) @(posedge clk);
         $finish;
     endtask : finish
+
+    initial begin
+        /* dump the simulation results */
+        $dumpfile("decoder_tb.vcd");
+        $dumpvars;
+
+        $display("\nStarting CPU Test\n");
+
+        finish();
+    end
     
 endmodule
