@@ -200,33 +200,33 @@ module lsb_rs (
                         lb:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
                             endcase
                         end
                         lbu:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {24'b0, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {24'b0, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {24'b0, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {24'b0, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {24'b0, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {24'b0, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {24'b0, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {24'b0, mem_rdata_d[31:24]};
                             endcase
                         end
                         lh:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
                             endcase
                         end
                         lhu:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {16'b0, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {16'b0, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {16'b0, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {16'b0, mem_rdata_d[31:16]};
                             endcase
                         end            
                         endcase

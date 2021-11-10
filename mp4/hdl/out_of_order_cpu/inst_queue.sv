@@ -37,7 +37,7 @@ module instruction_queue #(
 
     /* wire */
     assign inst_out     = (head == 0) ? 'b0 : regs[head-1][0+:32];
-    assign br_pred_out  = (head == 0) ? 'b0 : regs[head-1][32+:1];
+    assign br_pred_out  = (head == 0) ? 1'b0 : regs[head-1][32+:1];
     assign pc_out       = (head == 0) ? 'b0 : regs[head-1][33+:32];
     assign pc_next_out  = (head == 0) ? 'b0 : regs[head-1][65+:32];
     assign data_in      = {pc_next_in, pc_in, br_pred_in, inst_in};
@@ -59,7 +59,7 @@ module instruction_queue #(
             // valid_out <= 1'b0;
             if(shift & !valid_in)begin
                 /* update head pointer */
-                head <= head > 0 ? head - 1 : 0;  
+                head <= head > 0 ? head - 1'b1 : 1'b0;  
                 if(head > 1) valid_out <= 1'b1;
                 else         valid_out <= 1'b0;
 
@@ -85,7 +85,7 @@ module instruction_queue #(
                     /* bring new data in */
                     regs[0] <= data_in;
                     /* update head pointer */
-                    head <= head + 1;
+                    head <= head + 1'b1;
                     valid_out <= 1'b1;
                 end else begin
                     /* do nothing */
