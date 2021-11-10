@@ -61,7 +61,7 @@ module lsb_rs (
         A[index]    <= lsb_itf.A;
         Qj[index]   <= lsb_itf.Qj;
         Qk[index]   <= lsb_itf.Qk;
-        lsb_op[index]   <= lsb_ift.lsb_op;
+        lsb_op[index]   <= lsb_itf.lsb_op;
         funct[index] <= lsb_itf.funct;
         dest[index] <= lsb_itf.dest;
         store_before[index] <= store_number;
@@ -89,11 +89,11 @@ module lsb_rs (
         begin
             store_number <= 0;
         end
-        else if (new_valid && lsb_ift.lsb_op && new_store)
+        else if (new_valid && lsb_itf.lsb_op && new_store)
         begin
             store_number <= store_number;
         end
-        else if (new_valid && lsb_ift.lsb_op)
+        else if (new_valid && lsb_itf.lsb_op)
         begin
             store_number <= store_number + 1;
         end
@@ -117,14 +117,14 @@ module lsb_rs (
                 A[i]    <= 'b0;
                 Qj[i]   <= 'b0;
                 Qk[i]   <= 'b0;
-                lsb_op[index] <= 'b0;
-                funct[index] <= 'b0;
+                lsb_op[i] <= 'b0;
+                funct[i] <= 'b0;
                 dest[i] <= 'b0;
-                store_before <= 'b0;
+                store_before[i] <= 'b0;
             end
         end else begin
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
-                if(lsb_ift.valid && empty_index == i)begin
+                if(lsb_itf.valid && empty_index == i)begin
                     /* bring in new entry */
                     push_entry(i);
                 end else begin
@@ -173,7 +173,7 @@ module lsb_rs (
                 mem_res.valid[i]  <= 1'b0;
                 mem_res.val[i]   <= 'b0;
                 mem_res.tag[i]   <= 'b0;
-                mem_addr.addr[i] <= 'b0;
+                mem_res.addr[i] <= 'b0;
             end
         end else begin
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
@@ -186,7 +186,7 @@ module lsb_rs (
                         mem_res.valid[i] <= 1'b1;
                         mem_res.val[i]  <= Vk[i];
                         mem_res.tag[i]  <= dest[i];
-                        mem_res.addr[i] <= Vj[i] + A;
+                        mem_res.addr[i] <= Vj[i] + A[i];
                     end
                 end
                 else
@@ -279,7 +279,7 @@ module lsb_rs (
                 if (3 != current_load)
                 begin
                     state <= BUSY;
-                    mem_address_d <= Vj[current_load] + A;
+                    mem_address_d <= Vj[current_load] + [current_load];
                 end
                 else
                 begin
@@ -289,7 +289,7 @@ module lsb_rs (
             end
             BUSY:
             begin
-                mem_address_d <= Vj[current_load] + A;
+                mem_address_d <= Vj[current_load] + A[current_load];
                 if (mem_resp_d)
                 begin
                     state <= IDLE;

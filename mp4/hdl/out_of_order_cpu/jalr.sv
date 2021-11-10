@@ -9,7 +9,7 @@ module jalr
     input rob_out_t rob_data,
     /* port to cdb */
     output jalr_cdb_t jalr_res,
-    output rv32i_word correct_pc;
+    output rv32i_word correct_pc
 );
 
     rv32i_word  Vj;
@@ -63,7 +63,7 @@ module jalr
             jalr_res.correct_predict <= 'b0;
             jalr_res.addr <= 'b0;
             end
-        end else begin
+        else begin
             jalr_res.valid  <= 1'b0;
             if (busy && Qj == 0 && pc_next == correct_pc)
             begin
