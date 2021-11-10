@@ -55,8 +55,8 @@ module regfile(
 
     always_comb begin
         // decoder tries to find value of rs1 and rs2
-        rs1_out = reg_vals[rs1];
-        rs2_out = reg_vals[rs2];
+        rs1_out = (rs1 == 0) ? '0 : reg_vals[rs1];
+        rs2_out = (rs2 == 0) ? '0 : reg_vals[rs2];
         t1_out = reg_tags[rs1];
         t2_out = reg_tags[rs2];
     end

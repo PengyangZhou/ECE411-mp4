@@ -170,7 +170,7 @@ module reorder_buffer
     always_comb begin
         // given the current ready status and values of every ROB entry
         // output the value if alu cdb has the valid value 
-        for (int i = 1; i < ROB_DEPTH + 1; i++) begin
+        for (int i = 0; i < ROB_DEPTH + 1; i++) begin
             rob_out.vals[i] = rob_vals[i];
             rob_out.ready[i] = rob_ready[i];
             for (int j = 0; j < NUM_ALU_RS; j++) begin
