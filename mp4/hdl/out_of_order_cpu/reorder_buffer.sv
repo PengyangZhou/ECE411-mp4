@@ -1,3 +1,6 @@
+import ooo_types::*;
+import rv32i_types::*;
+
 module reorder_buffer 
 (
     input logic clk,
@@ -56,6 +59,10 @@ module reorder_buffer
 
     logic commit_ready; 
     assign commit_ready = rob_ready[commit_head];
+
+    enum int unsigned {
+        STORE_IDLE, STORE_PROCESSING
+    } state, next_state;
 
     // increment the head pointer
     task inc_head(tag_t head);
@@ -207,10 +214,6 @@ module reorder_buffer
             tag = commit_head;
         end
     end
-
-    enum int unsigned {
-        STORE_IDLE, STORE_PROCESSING
-    } state, next_state;
 
     always_ff @( posedge clk ) begin
         if (rst | flush) begin

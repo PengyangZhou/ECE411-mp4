@@ -1,5 +1,7 @@
 /* This is the ALU of our processor. Borrowed from mp2. */
 
+import rv32i_types::*;
+
 module alu
 (
     input alu_ops aluop,
