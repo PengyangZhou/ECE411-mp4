@@ -20,14 +20,14 @@ module cpu (
     output rv32i_word mem_address_d,
     output rv32i_word mem_wdata_d
 );
-    logic mem_resp_d_read;
-    logic mem_resp_d_write;
-    rv32i_word mem_address_d_read;
-    rv32i_word mem_address_d_write;
+    logic mem_read_resp;
+    logic mem_write_resp;
+    logic mem_address_d_read;
+    logic mem_address_d_write;
 
-    assign mem_resp_d_read = (1 == mem_resp_d && mem_read_d) ? 1'b1 : 1'b0;
-    assign mem_resp_d_write = (1 == mem_resp_d && mem_write_d) ? 1'b1 : 1'b0;
-    assign mem_address_d = (1 == mem_write_d) ? mem_address_d_write : mem_address_d_read;
+    assign mem_read_resp = (1 == mem_resp_d && mem_read_d) ? 1 : 0;
+    assign mem_write_resp = (1 == mem_resp_d && mem_write_d) ? 1 : 0;
+    assign mem_address_d = (1 == mem_write_d) mem_address_d_write : mem_address_d_read;
 
     logic flush;
 
@@ -176,7 +176,7 @@ module cpu (
         .mem_res(mem_res),
         .jalr_res(jalr_res),
         // port from data cache
-        .mem_resp(mem_resp_d_write),
+        .mem_resp(mem_write_resp),
         // port to decoder
         .rob_out(rob_data),
         // port to regfile
@@ -260,7 +260,7 @@ module cpu (
         .mem_read_d(mem_read_d),
         .mem_address_d(mem_address_d_read),
         /* port from data cache */
-        .mem_resp_d(mem_resp_d_read),
+        .mem_resp_d(mem_read_resp),
         .mem_rdata_d(mem_rdata_d)
     );
 
