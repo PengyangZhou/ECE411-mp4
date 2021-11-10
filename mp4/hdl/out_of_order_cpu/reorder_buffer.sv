@@ -109,23 +109,30 @@ module reorder_buffer
                 end
             end
             if (commit_ready) begin
-                // clear the current ROB entry
-                rob_busy[commit_head] <= '0;
-                rob_type[commit_head] <= '0;
-                rob_dest[commit_head] <= '0;
-                rob_vals[commit_head] <= '0;
-                rob_ready[commit_head] <= '0;
-                rob_predict[commit_head] <= '1;
-                rob_store_type[commit_head] <= '0;
-                if (rob_type[commit_head] == JALR) begin
-                    jalr_pc_next <= '0;
-                end
                 if (rob_type[commit_head] == ST) begin
+                    // if is the store operation, wait for completion.
                     if (next_state == STORE_IDLE) begin
+                        rob_busy[commit_head] <= '0;
+                        rob_type[commit_head] <= '0;
+                        rob_dest[commit_head] <= '0;
+                        rob_vals[commit_head] <= '0;
+                        rob_ready[commit_head] <= '0;
+                        rob_predict[commit_head] <= 1'b1;
+                        rob_store_type[commit_head] <= '0;
                         inc_commit_head();
                     end
                 end else begin
-                    // if the operation is not store, always go to the next entry.
+                    // if not the store operation, clear the entry
+                    rob_busy[commit_head] <= '0;
+                    rob_type[commit_head] <= '0;
+                    rob_dest[commit_head] <= '0;
+                    rob_vals[commit_head] <= '0;
+                    rob_ready[commit_head] <= '0;
+                    rob_predict[commit_head] <= 1'b1;
+                    rob_store_type[commit_head] <= '0;
+                    if (rob_type[commit_head] == JALR) begin
+                        jalr_pc_next <= '0;
+                    end
                     inc_commit_head();
                 end
             end
@@ -255,9 +262,9 @@ module reorder_buffer
                 mem_address = rob_dest[commit_head];
                 new_store = '0;
                 if (mem_resp) begin
-                    mem_write = '0;
-                    mem_wdata = '0;
-                    mem_address = '0;
+                    //mem_write = '0;
+                    //mem_wdata = '0;
+                    //mem_address = '0;
                     next_state = STORE_IDLE;
                 end
             end
