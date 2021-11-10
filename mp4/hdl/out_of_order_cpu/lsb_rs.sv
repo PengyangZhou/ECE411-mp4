@@ -1,4 +1,6 @@
 /* This is the Load/Store Buffer */
+import ooo_types::*;
+import rv32i_types::*;
 
 module lsb_rs (
     input logic         clk,

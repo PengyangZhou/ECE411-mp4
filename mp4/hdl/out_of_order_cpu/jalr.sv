@@ -1,3 +1,6 @@
+import ooo_types::*;
+import rv32i_types::*;
+
 module jalr
 (
     input logic clk,

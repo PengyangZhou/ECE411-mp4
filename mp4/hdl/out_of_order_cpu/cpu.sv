@@ -1,5 +1,5 @@
 /* This is the top-level module of our out-of-order processor. */
-
+import ooo_types::*;
 import rv32i_types::*;
 
 module cpu (

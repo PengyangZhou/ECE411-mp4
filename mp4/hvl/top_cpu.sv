@@ -123,7 +123,7 @@ cpu dut(
     .mem_write_d(itf.data_write),
     .mem_byte_enable_d(itf.data_mbe),
     .mem_address_d(itf.data_addr),
-    .mem_wdata_d(itf.data_wdata),
+    .mem_wdata_d(itf.data_wdata)
 );
 /***************************** End Instantiation *****************************/
 

@@ -1,4 +1,6 @@
 /* This is the Comparator Reservation Station */
+import ooo_types::*;
+import rv32i_types::*;
 
 module cmp_rs (
     input logic         clk,

@@ -1,4 +1,6 @@
 /* This is the ALU reservation station. */
+import ooo_types::*;
+import rv32i_types::*;
 
 module alu_rs (
     input logic         clk,

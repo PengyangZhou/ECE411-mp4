@@ -3,6 +3,8 @@
 
 // import rv32i_types::*; // may cause "package already imported" error
 // import ooo_types::*;
+import ooo_types::*;
+import rv32i_types::*;
 
 module decoder (
     input logic clk,
