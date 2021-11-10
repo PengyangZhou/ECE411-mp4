@@ -32,8 +32,8 @@ package ooo_types;
         bit         valid [NUM_CMP_RS];       /* indicating there is valid data on the bus */
         bit         br_pred_res [NUM_CMP_RS]; /* signal from CMP to ROB. 1 means prediction was true. */
         tag_t       tag [NUM_CMP_RS];
-        rv32i_word  val [NUM_CMP_RS];
-        rv32i_word  addr [NUM_CMP_RS];  // the pc of the instruction
+        rv32i_word  val [NUM_CMP_RS]; // the pc of the instruction, or value stored in the register
+        rv32i_word  pc_next [NUM_CMP_RS]; // correct pc_next
     } cmp_cdb_t;
 
     // the cdb out of alu, each entry of reservation station has its alu
@@ -56,9 +56,9 @@ package ooo_types;
     typedef struct packed {
         bit         valid;
         tag_t       tag;
-        rv32i_word  val;
+        rv32i_word  val; // pc + 4
         bit         correct_predict; // 1 for correct
-        rv32i_word  addr; // the pc of the instruction
+        rv32i_word  pc_next; // correct pc_next
     } jalr_cdb_t;
 
 endpackage

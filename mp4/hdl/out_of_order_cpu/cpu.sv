@@ -5,13 +5,20 @@ import rv32i_types::*;
 module cpu (
     input clk,
     input rst,
-    input mem_resp,
-    input rv32i_word mem_rdata,
-    output logic mem_read,
-    output logic mem_write,
-    output logic [3:0] mem_byte_enable,
-    output rv32i_word mem_address,
-    output rv32i_word mem_wdata
+    input mem_resp_i,
+    input rv32i_word mem_rdata_i,
+    output logic mem_read_i,
+    output logic mem_write_i,
+    output logic [3:0] mem_byte_enable_i,
+    output rv32i_word mem_address_i,
+    output rv32i_word mem_wdata_i,
+    input mem_resp_c,
+    input rv32i_word mem_rdata_c,
+    output logic mem_read_c,
+    output logic mem_write_c,
+    output logic [3:0] mem_byte_enable_c,
+    output rv32i_word mem_address_c,
+    output rv32i_word mem_wdata_c
 );
 
     branch_predictor branch_predictor_inst(

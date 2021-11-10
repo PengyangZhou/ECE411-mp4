@@ -8,8 +8,7 @@ module jalr
     /* port from ROB */
     input rob_out_t rob_data,
     /* port to cdb */
-    output jalr_cdb_t jalr_res,
-    output rv32i_word correct_pc
+    output jalr_cdb_t jalr_res
 );
 
     rv32i_word  Vj;
@@ -50,6 +49,7 @@ module jalr
         end
     end
 
+    rv32i_word correct_pc;
     assign correct_pc = Vj + A;
 
     /* output logic */
@@ -61,7 +61,7 @@ module jalr
             jalr_res.val   <= 'b0;
             jalr_res.tag   <= 'b0;
             jalr_res.correct_predict <= 'b0;
-            jalr_res.addr <= 'b0;
+            jalr_res.pc_next <= 'b0;
             end
         else begin
             jalr_res.valid  <= 1'b0;
@@ -72,16 +72,16 @@ module jalr
                 jalr_res.val   <= pc + 4;
                 jalr_res.tag   <= dest;
                 jalr_res.correct_predict <= 'b1;
-                jalr_res.addr <= pc;
+                jalr_res.pc_next <= correct_pc;
             end
             else if (busy && Qj == 0 && pc_next != correct_pc)
             begin
-                busy <= 1'b1;
+                busy <= 1'b0;
                 jalr_res.valid  <= 1'b1;
                 jalr_res.val   <= pc + 4;
                 jalr_res.tag   <= dest;
                 jalr_res.correct_predict <= 'b0;
-                jalr_res.addr <= pc;
+                jalr_res.pc_next <= correct_pc;
             end
         end
     end

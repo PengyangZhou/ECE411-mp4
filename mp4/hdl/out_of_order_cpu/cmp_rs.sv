@@ -134,7 +134,7 @@ module cmp_rs (
                 cmp_res.val[i]   <= 'b0;
                 cmp_res.tag[i]   <= 'b0;
                 cmp_res.br_pred_res[i]  <= 1'b0;
-                cmp_res.addr[i] <= 'b0;
+                cmp_res.pc_next[i] <= 'b0;
             end
         end else begin
             for (int i = 0; i < NUM_CMP_RS; ++i) begin
@@ -145,22 +145,22 @@ module cmp_rs (
                     cmp_res.valid[i] <= 1'b1;
                     if (!is_br[i])
                     begin
-                        cmp_res.val[i]  <= {32{res[i]}};
+                        cmp_res.val[i] <= {32{res[i]}};
                     end
                     else
-                        if (res[i])
-                        begin
-                            cmp_res.val[i] <=pc[i] + B_imm[i];
-                        end
-                        else
-                        begin
-                            cmp_res.val[i] <= pc[i] + 4;
-                        end
+                        cmp_res.val[i] <= pc[i];
                     begin
                     end
-                    cmp_res.tag[i]  <= dest[i];
+                    cmp_res.tag[i] <= dest[i];
                     cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 0 : 1);
-                    cmp_res.addr[i] <= pc[i];
+                    if (res[i])
+                    begin
+                        cmp_res.pc_next[i] <= pc[i] + B_imm[i];
+                    end
+                    else
+                    begin
+                        cmp_res.pc_next[i] <= pc[i] + 4;
+                    end
                 end
             end
         end
