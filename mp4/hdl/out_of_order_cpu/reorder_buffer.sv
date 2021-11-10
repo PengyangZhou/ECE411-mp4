@@ -65,13 +65,15 @@ module reorder_buffer
     } state, next_state;
 
     // increment the head pointer
-    task inc_head(tag_t head);
-        if (head == ROB_DEPTH) begin
-            head <= 4'd1;
+    task inc_commit_head();
+        if (commit_head == ROB_DEPTH) begin
+            commit_head <= 4'd1;
         end else begin
-            head <= head + 1'b1;
+            commit_head <= commit_head + 1'b1;
         end
     endtask
+
+
 
     always_ff @( posedge clk ) begin
         if (rst | flush) begin
@@ -96,8 +98,17 @@ module reorder_buffer
                 rob_busy[input_head] <= 1'b1;
                 rob_type[input_head] <= op_type;
                 rob_dest[input_head] <= dest;
-                inc_head(input_head);
-                inc_head(next_input_head);
+                // increment the head pointer
+                if (input_head == ROB_DEPTH) begin
+                    input_head <= 4'd1;
+                end else begin
+                    input_head <= input_head + 1'b1;
+                end
+                if (next_input_head == ROB_DEPTH) begin
+                    next_input_head <= 4'd1;
+                end else begin
+                    next_input_head <= next_input_head + 1'b1;
+                end
             end
             if (commit_ready) begin
                 // clear the current ROB entry
@@ -113,11 +124,11 @@ module reorder_buffer
                 end
                 if (rob_type[commit_head] == ST) begin
                     if (next_state == STORE_IDLE) begin
-                        inc_head(commit_head);
+                        inc_commit_head();
                     end
                 end else begin
                     // if the operation is not store, always go to the next entry.
-                    inc_head(commit_head);
+                    inc_commit_head();
                 end
             end
             for (int i = 0; i < NUM_ALU_RS; i++) begin
