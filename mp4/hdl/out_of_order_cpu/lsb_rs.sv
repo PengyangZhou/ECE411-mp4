@@ -24,6 +24,9 @@ module lsb_rs (
 );
     parameter MAX_STORE_INDEX = 2; // ROB_DEPTH is 7
     
+    rv32i_word mem_address_d_inside;
+    assign mem_address_d = {mem_address_d_inside[31:2], 2'b00};
+    
     /* RS entry fields */
     /* NUM_LDST_RS is 3 */
     logic       busy    [NUM_LDST_RS];
@@ -201,7 +204,7 @@ module lsb_rs (
                         lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin
-                            case (mem_address_d[1:0])
+                            case (mem_address_d_inside[1:0])
                                 2'b00: mem_res.val[i] <= {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
                                 2'b01: mem_res.val[i] <= {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
                                 2'b10: mem_res.val[i] <= {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
@@ -210,7 +213,7 @@ module lsb_rs (
                         end
                         lbu:
                         begin
-                            case (mem_address_d[1:0])
+                            case (mem_address_d_inside[1:0])
                                 2'b00: mem_res.val[i] <= {24'b0, mem_rdata_d[7:0]};
                                 2'b01: mem_res.val[i] <= {24'b0, mem_rdata_d[15:8]};
                                 2'b10: mem_res.val[i] <= {24'b0, mem_rdata_d[23:16]};
@@ -219,14 +222,14 @@ module lsb_rs (
                         end
                         lh:
                         begin
-                            case (mem_address_d[1])
+                            case (mem_address_d_inside[1])
                                 1'b0: mem_res.val[i] <= {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
                                 1'b1: mem_res.val[i] <= {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
                             endcase
                         end
                         lhu:
                         begin
-                            case (mem_address_d[1])
+                            case (mem_address_d_inside[1])
                                 1'b0: mem_res.val[i] <= {16'b0, mem_rdata_d[15:0]};
                                 1'b1: mem_res.val[i] <= {16'b0, mem_rdata_d[31:16]};
                             endcase
@@ -268,19 +271,19 @@ module lsb_rs (
     } state;
     // } state, next_state;
 
-    // rv32i_word mem_address_d_in;
+    // rv32i_word mem_address_d_inside_in;
 
     // always_ff @(posedge clk)
     // begin
     //     if (rst | flush)
     //     begin
     //         state <= IDLE;
-    //         mem_address_d <= 0;
+    //         mem_address_d_inside <= 0;
     //     end
     //     else
     //     begin
     //         state <= next_state;
-    //         mem_address_d <= mem_address_d_in;
+    //         mem_address_d_inside <= mem_address_d_inside_in;
     //     end
     // end
 
@@ -290,7 +293,7 @@ module lsb_rs (
     //     begin
     //         mem_read_d = 0;
     //         next_state = IDLE;
-    //         mem_address_d_in = 0;
+    //         mem_address_d_inside_in = 0;
     //     end
     //     else
     //     begin
@@ -301,18 +304,18 @@ module lsb_rs (
     //             if (3 != current_load)
     //             begin
     //                 next_state = BUSY;
-    //                 mem_address_d_in = Vj[current_load] + A[current_load];
+    //                 mem_address_d_inside_in = Vj[current_load] + A[current_load];
     //             end
     //             else
     //             begin
     //                 next_state = IDLE;
-    //                 mem_address_d_in = 0;
+    //                 mem_address_d_inside_in = 0;
     //             end
     //         end
     //         BUSY:
     //         begin
     //             mem_read_d = 1;
-    //             mem_address_d_in = Vj[current_load] + A[current_load];
+    //             mem_address_d_inside_in = Vj[current_load] + A[current_load];
     //             if (mem_resp_d)
     //             begin
     //                 next_state = IDLE;
@@ -331,7 +334,7 @@ module lsb_rs (
         if (rst | flush)
         begin
             state <= IDLE;
-            mem_address_d <= 0;
+            mem_address_d_inside <= 0;
         end
         else
         begin
@@ -341,17 +344,17 @@ module lsb_rs (
                 if (3 != current_load)
                 begin
                     state <= BUSY;
-                    mem_address_d <= Vj[current_load] + A[current_load];
+                    mem_address_d_inside <= Vj[current_load] + A[current_load];
                 end
                 else
                 begin
                     state <= state;
-                    mem_address_d <= 0;
+                    mem_address_d_inside <= 0;
                 end
             end
             BUSY:
             begin
-                mem_address_d <= Vj[current_load] + A[current_load];
+                mem_address_d_inside <= Vj[current_load] + A[current_load];
                 if (mem_resp_d)
                 begin
                     state <= IDLE;
