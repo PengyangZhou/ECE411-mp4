@@ -18,7 +18,7 @@ module reorder_buffer
     output rv32i_reg val_rd,
     output tag_t tag,
     output rv32i_word val,
-    // port to memory unit
+    // port to data cache
     output logic mem_write,
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
