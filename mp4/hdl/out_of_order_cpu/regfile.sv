@@ -6,7 +6,7 @@ module regfile(
     input logic load_val,
     input rv32i_reg val_rd,             
     input rv32i_word val,
-    input rv32i_word tag_from_rob,
+    input tag_t tag_from_rob,
     // port from decoder
     input rv32i_reg rs1,            
     input rv32i_reg rs2,

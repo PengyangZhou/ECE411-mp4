@@ -24,8 +24,8 @@ module cpu (
 );
     logic mem_read_resp;
     logic mem_write_resp;
-    logic mem_address_d_read;
-    logic mem_address_d_write;
+    rv32i_word mem_address_d_read;
+    rv32i_word mem_address_d_write;
 
     assign mem_read_resp = (1 == mem_resp_d && mem_read_d) ? 1'b1 : 1'b0;
     assign mem_write_resp = (1 == mem_resp_d && mem_write_d) ? 1'b1 : 1'b0;
