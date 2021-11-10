@@ -82,7 +82,7 @@ module reorder_buffer
                 rob_dest[i] <= '0;
                 rob_vals[i] <= '0;
                 rob_ready[i] <= '0;
-                rob_predict[i] <= '0;
+                rob_predict[i] <= 1'b1;
                 rob_store_type[i] <= '0;
             end
             jalr_pc_next <= '0;
@@ -115,7 +115,7 @@ module reorder_buffer
                 rob_dest[commit_head] <= '0;
                 rob_vals[commit_head] <= '0;
                 rob_ready[commit_head] <= '0;
-                rob_predict[commit_head] <= '0;
+                rob_predict[commit_head] <= '1;
                 rob_store_type[commit_head] <= '0;
                 if (rob_type[commit_head] == JALR) begin
                     jalr_pc_next <= '0;
