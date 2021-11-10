@@ -24,7 +24,7 @@ module reorder_buffer
     output logic mem_write,
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
-    output logic [3:0] mem_byte_enable,
+    output logic [3:0] mem_byte_enable, // TODO
     // port to load/store buffer
     output logic new_store,
     // port to branch predictor
@@ -35,6 +35,8 @@ module reorder_buffer
     output rv32i_word jalr_pc_mispredict,
     output logic flush
 );
+
+    assign mem_byte_enable = 4'b1111;
 
     // entry of reorder buffer
     // the entry of index 0 will be remained empty by intention
