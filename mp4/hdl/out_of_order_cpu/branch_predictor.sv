@@ -51,7 +51,7 @@ begin
     if (rst)
     begin
         state <= IDLE;
-        pc <= 0;
+        pc <= 32'h00000060;
         inst <= 0;
         pc_next <= 0;
         br_pred <= 0;
