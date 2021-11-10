@@ -52,7 +52,7 @@ module decoder (
     logic [31:0] s_imm;
     logic [31:0] b_imm;
     logic [31:0] u_imm;
-    logic [31:0] j_imm;
+    // logic [31:0] j_imm;
     rv32i_reg    rd;
     branch_funct3_t branch_funct3;
     store_funct3_t  store_funct3;
@@ -69,7 +69,7 @@ module decoder (
     assign s_imm = {{21{inst_in[31]}}, inst_in[30:25], inst_in[11:7]};
     assign b_imm = {{20{inst_in[31]}}, inst_in[7], inst_in[30:25], inst_in[11:8], 1'b0};
     assign u_imm = {inst_in[31:12], 12'h000};
-    assign j_imm = {{12{inst_in[31]}}, inst_in[19:12], inst_in[20], inst_in[30:21], 1'b0};
+    // assign j_imm = {{12{inst_in[31]}}, inst_in[19:12], inst_in[20], inst_in[30:21], 1'b0};
     assign rs1 = inst_in[19:15];
     assign rs2 = inst_in[24:20];
     assign rd = inst_in[11:7];
@@ -81,8 +81,8 @@ module decoder (
     /* V and Q output */
     assign Vj_out = (reg_Qj != 0 && rob_data.ready[reg_Qj]) ? rob_data.vals[reg_Qj] : reg_Vj;
     assign Vk_out = (reg_Qk != 0 && rob_data.ready[reg_Qk]) ? rob_data.vals[reg_Qk] : reg_Vk;
-    assign Qj_out = (reg_Qj != 0 && rob_data.ready[reg_Qj]) ? 0 : reg_Qj;
-    assign Qk_out = (reg_Qk != 0 && rob_data.ready[reg_Qk]) ? 0 : reg_Qk;
+    assign Qj_out = (reg_Qj != 0 && rob_data.ready[reg_Qj]) ? 4'b0 : reg_Qj;
+    assign Qk_out = (reg_Qk != 0 && rob_data.ready[reg_Qk]) ? 4'b0 : reg_Qk;
 
     /* task definition */
     task send_to_ALU(input rv32i_word Vj, input rv32i_word Vk, input tag_t Qj, input tag_t Qk,

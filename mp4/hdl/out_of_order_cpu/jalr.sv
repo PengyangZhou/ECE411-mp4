@@ -76,7 +76,7 @@ module jalr
             end
             else if (busy && Qj == 0 && pc_next != correct_pc)
             begin
-                busy <= 1'b0;
+                busy <= 1'b1;
                 jalr_res.valid  <= 1'b1;
                 jalr_res.val   <= pc + 4;
                 jalr_res.tag   <= dest;

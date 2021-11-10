@@ -20,7 +20,7 @@ module lsb_rs (
     input logic mem_resp_d,
     input rv32i_word mem_rdata_d
 );
-    parameter MAX_STORE_INDEX = 2; // ROB_DEPTH is 6
+    parameter MAX_STORE_INDEX = 2; // ROB_DEPTH is 7
     
     /* RS entry fields */
     /* NUM_LDST_RS is 3 */
@@ -53,6 +53,7 @@ module lsb_rs (
         end else begin
             empty_index = 3; /* if empty_index is 3, there is no empty space in the RS */
         end
+        lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
 
     task push_entry(logic [1:0] index);
@@ -95,11 +96,11 @@ module lsb_rs (
         end
         else if (new_valid && lsb_itf.lsb_op)
         begin
-            store_number <= store_number + 3'd1;
+            store_number <= store_number + 3'b1;
         end
         else if (new_store)
         begin
-            store_number <= store_number - 3'd1;
+            store_number <= store_number - 3'b1;
         end
         else
         begin
@@ -127,6 +128,10 @@ module lsb_rs (
                 if(lsb_itf.valid && empty_index == i)begin
                     /* bring in new entry */
                     push_entry(i);
+                    if (new_store && 0 == lsb_itf.lsb_op)
+                    begin
+                        store_before[i] <= store_number - 3'b1;
+                    end
                 end else begin
                     /* grab data from CDB */
                     if(Qj[i] != 0 && rob_data.ready[Qj[i]])begin
@@ -137,15 +142,9 @@ module lsb_rs (
                         Qk[i] <= 'b0;
                         Vk[i] <= rob_data.vals[Qk[i]];
                     end
-                end
-            end
-        end
-        if (new_store)
-        begin
-            for (int i = 0; i < NUM_LDST_RS; ++i) begin
-                if (busy[i] == 1 && lsb_op[i] == 0 && store_before[i] != 0)
-                begin
-                    store_before[i] <= store_before[i] - 3'd1;
+                    if (new_store && busy[i] == 1 && lsb_op[i] == 0 && store_before[i] != 0)begin
+                        store_before[i] <= store_before[i] - 3'b1;
+                    end
                 end
             end
         end
@@ -158,12 +157,11 @@ module lsb_rs (
             current_load = 0;
         end else if(busy[1] == 1 && lsb_op[1] == 0 && Qj[1] == 0 && store_before[1] == 0)begin
             current_load = 1;
-        end else if(busy[2] == 1 && lsb_op[2] == 0 && Qj[2] && store_before[2] == 0)begin
+        end else if(busy[2] == 1 && lsb_op[2] == 0 && Qj[2] == 0 && store_before[2] == 0)begin
             current_load = 2;
         end else begin
             current_load = 3; /* if current_load is 3, there is no valid load instruction */
         end
-        lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
 
     /* output logic */
@@ -195,38 +193,38 @@ module lsb_rs (
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
                         mem_res.valid[i] <= 1'b1;
                         mem_res.tag[i]  <= dest[i];
-                        unique case (funct[i])
+                        case (funct[i])
                         lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {{24{mem_rdata_d[7]}}, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {{24{mem_rdata_d[15]}}, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {{24{mem_rdata_d[23]}}, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {{24{mem_rdata_d[31]}}, mem_rdata_d[31:24]};
                             endcase
                         end
                         lbu:
                         begin
                             case (mem_address_d[1:0])
-                                2'b00: mem_res.val[i] = {24'b0, mem_rdata_d[7:0]};
-                                2'b01: mem_res.val[i] = {24'b0, mem_rdata_d[15:8]};
-                                2'b10: mem_res.val[i] = {24'b0, mem_rdata_d[23:16]};
-                                2'b11: mem_res.val[i] = {24'b0, mem_rdata_d[31:24]};
+                                2'b00: mem_res.val[i] <= {24'b0, mem_rdata_d[7:0]};
+                                2'b01: mem_res.val[i] <= {24'b0, mem_rdata_d[15:8]};
+                                2'b10: mem_res.val[i] <= {24'b0, mem_rdata_d[23:16]};
+                                2'b11: mem_res.val[i] <= {24'b0, mem_rdata_d[31:24]};
                             endcase
                         end
                         lh:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {{16{mem_rdata_d[15]}}, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {{16{mem_rdata_d[31]}}, mem_rdata_d[31:16]};
                             endcase
                         end
                         lhu:
                         begin
                             case (mem_address_d[1])
-                                1'b0: mem_res.val[i] = {16'b0, mem_rdata_d[15:0]};
-                                1'b1: mem_res.val[i] = {16'b0, mem_rdata_d[31:16]};
+                                1'b0: mem_res.val[i] <= {16'b0, mem_rdata_d[15:0]};
+                                1'b1: mem_res.val[i] <= {16'b0, mem_rdata_d[31:16]};
                             endcase
                         end            
                         endcase
