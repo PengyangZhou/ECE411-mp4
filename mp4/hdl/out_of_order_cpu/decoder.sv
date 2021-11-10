@@ -289,10 +289,10 @@ module decoder (
                         rob_dest    <= rd;
                         rob_valid   <= 1'b1;
                         jalr_itf.valid <= 1'b1;
-                        jalr_itf.Vj <= Vj;
-                        jalr_itf.A <= A;
-                        jalr_itf.Qj <= Qj;
-                        jalr_itf.dest <= dest;
+                        jalr_itf.Vj <= Vj_out;
+                        jalr_itf.A <= i_imm;
+                        jalr_itf.Qj <= Qj_out;
+                        jalr_itf.dest <= rob_data.tag_ready;
                         jalr_itf.pc <= pc;
                         jalr_itf.pc_next <= pc_next;
                         end

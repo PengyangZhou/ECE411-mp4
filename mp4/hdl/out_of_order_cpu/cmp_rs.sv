@@ -23,7 +23,7 @@ module cmp_rs (
     tag_t       Qk      [NUM_CMP_RS];
     tag_t       dest    [NUM_CMP_RS];
     logic       br_pred [NUM_CMP_RS];
-    rv32i_word  PC      [NUM_CMP_RS];
+    rv32i_word  pc      [NUM_CMP_RS];
     rv32i_word  B_imm [NUM_CMP_RS];
 
     /* intermediate variables */
@@ -138,7 +138,7 @@ module cmp_rs (
             end
         end else begin
             for (int i = 0; i < NUM_CMP_RS; ++i) begin
-                /* set default */ // TODO: whether always_ff allows this
+                /* set default */
                 cmp_res.valid[i] <= 1'b0;
                 /* output the calculated result */
                 if(busy[i] && Qj[i] == 0 && Qk[i] == 0)begin
@@ -150,17 +150,17 @@ module cmp_rs (
                     else
                         if (res[i])
                         begin
-                            cmp_res.val[i] <= PC[i] + B_imm[i];
+                            cmp_res.val[i] <=pc[i] + B_imm[i];
                         end
                         else
                         begin
-                            cmp_res.val[i] <= PC[i] + 4;
+                            cmp_res.val[i] <= pc[i] + 4;
                         end
                     begin
                     end
                     cmp_res.tag[i]  <= dest[i];
                     cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 0 : 1);
-                    cmp_res.addr[i] <= PC[i];
+                    cmp_res.addr[i] <= pc[i];
                 end
             end
         end
