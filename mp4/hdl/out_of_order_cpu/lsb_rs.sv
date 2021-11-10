@@ -68,21 +68,21 @@ module lsb_rs (
         store_before[index] <= store_number;
     endtask
 
-    logic last_valid;
-    logic new_valid;
-    assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1'b1 : 1'b0;
+    // logic last_valid;
+    // logic new_valid;
+    // assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1'b1 : 1'b0;
 
-    always_ff @(posedge clk)
-    begin
-        if (rst | flush)
-        begin
-            last_valid <= 0;
-        end
-        else
-        begin
-            last_valid <= lsb_itf.valid;
-        end
-    end
+    // always_ff @(posedge clk)
+    // begin
+    //     if (rst | flush)
+    //     begin
+    //         last_valid <= 0;
+    //     end
+    //     else
+    //     begin
+    //         last_valid <= lsb_itf.valid;
+    //     end
+    // end
 
     always_ff @(posedge clk)
     begin
@@ -90,11 +90,13 @@ module lsb_rs (
         begin
             store_number <= 0;
         end
-        else if (new_valid && lsb_itf.lsb_op && new_store)
+        // else if (new_valid && lsb_itf.lsb_op && new_store)
+        else if (lsb_itf.valid && lsb_itf.lsb_op && new_store)
         begin
             store_number <= store_number;
         end
-        else if (new_valid && lsb_itf.lsb_op)
+        // else if (new_valid && lsb_itf.lsb_op)
+        else if (lsb_itf.valid && lsb_itf.lsb_op)
         begin
             store_number <= store_number + 3'b1;
         end
@@ -262,6 +264,65 @@ module lsb_rs (
         IDLE,
         BUSY
     } state;
+    // } state, next_state;
+
+    // rv32i_word mem_address_d_in;
+
+    // always_ff @(posedge clk)
+    // begin
+    //     if (rst | flush)
+    //     begin
+    //         state <= IDLE;
+    //         mem_address_d <= 0;
+    //     end
+    //     else
+    //     begin
+    //         state <= next_state;
+    //         mem_address_d <= mem_address_d_in;
+    //     end
+    // end
+
+    // always_comb
+    // begin
+    //     if (rst | flush)
+    //     begin
+    //         mem_read_d = 0;
+    //         next_state = IDLE;
+    //         mem_address_d_in = 0;
+    //     end
+    //     else
+    //     begin
+    //         unique case (state)
+    //         IDLE:
+    //         begin
+    //             mem_read_d = 0;
+    //             if (3 != current_load)
+    //             begin
+    //                 next_state = BUSY;
+    //                 mem_address_d_in = Vj[current_load] + A[current_load];
+    //             end
+    //             else
+    //             begin
+    //                 next_state = IDLE;
+    //                 mem_address_d_in = 0;
+    //             end
+    //         end
+    //         BUSY:
+    //         begin
+    //             mem_read_d = 1;
+    //             mem_address_d_in = Vj[current_load] + A[current_load];
+    //             if (mem_resp_d)
+    //             begin
+    //                 next_state = IDLE;
+    //             end
+    //             else
+    //             begin
+    //                 next_state = BUSY;
+    //             end
+    //         end
+    //         endcase
+    //     end
+    // end
 
     always_ff @(posedge clk)
     begin
