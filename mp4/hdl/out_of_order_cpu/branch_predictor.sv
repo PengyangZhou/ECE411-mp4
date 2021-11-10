@@ -50,16 +50,16 @@ always_ff @(posedge clk)
 begin
     if (rst)
     begin
-        state <= IDLE;
-        pc <= 32'h00000060;
-        inst <= 0;
+        state   <= IDLE;
+        pc      <= 32'h00000060;
+        inst    <= 0;
         pc_next <= 0;
         br_pred <= 0;
     end
     else if (flush)
     begin
-        pc <= pc_correct;
-        inst <= 0;
+        pc      <= pc_correct;
+        inst    <= 0;
         pc_next <= 0;
         br_pred <= 0;
     end
