@@ -145,10 +145,10 @@ module cpu (
         .rob_op(rob_op),
         .rob_dest(rob_dest),
         .rob_data(rob_data),
-        .alu_itf(),
-        .cmp_itf(),
-        .lsb_itf(),
-        .jalr_itf()
+        .alu_itf(alu_itf.decoder),
+        .cmp_itf(cmp_itf.decoder),
+        .lsb_itf(lsb_itf.decoder),
+        .jalr_itf(jalr_itf.decoder)
     );
 
     alu_cdb_t alu_res;
@@ -226,7 +226,7 @@ module cpu (
         .rst(rst),
         .flush(flush),
         /* port from decoder */
-        .alu_itf(),
+        .alu_itf(alu_itf.alu_rs),
         /* port from ROB */
         .rob_data(rob_data),
         /* port to CDB */
@@ -238,7 +238,7 @@ module cpu (
         .rst(rst),
         .flush(flush),
         /* port from decoder */
-        .cmp_itf(),
+        .cmp_itf(cmp_itf.cmp_rs),
         /* port from ROB */
         .rob_data(rob_data),
         /* port to CDB */
@@ -250,7 +250,7 @@ module cpu (
         .rst(rst),
         .flush(flush),
         /* port from decoder */
-        .lsb_itf(),
+        .lsb_itf(lsb_itf.lsb_rs),
         /* port from ROB */
         .rob_data(rob_data),
         /* port to CDB */
@@ -268,7 +268,7 @@ module cpu (
         .rst(rst),
         .flush(flush),
         /* port from decoder */
-        .jalr_itf(),
+        .jalr_itf(jalr_itf.jalr),
         /* port from ROB */
         .rob_data(rob_data),
         /* port to CDB */
