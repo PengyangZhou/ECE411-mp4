@@ -339,57 +339,67 @@ module decoder (
 
             case (opcode)
                 op_imm: begin
-                    if(rd != 0 && rob_data.tag_ready != 0)begin
-                        case (arith_funct3)
-                            slt, sltu: begin
-                                if(cmp_itf.ready)begin
-                                    shift    = 1'b1;
-                                    load_tag = 1'b1;
-                                    tag_out  = rob_data.tag_ready;
-                                    rd_out   = rd;
+                    if(rob_data.tag_ready != 0)begin
+                        if(rd == 0)begin
+                            shift = 1'b1; /* if rd = 0, we only shift the instruction queue */
+                        end else begin 
+                            case (arith_funct3)
+                                slt, sltu: begin
+                                    if(cmp_itf.ready)begin
+                                        shift    = 1'b1;   
+                                        load_tag = 1'b1;
+                                        tag_out  = rob_data.tag_ready;
+                                        rd_out   = rd;
+                                    end
                                 end
-                            end
 
-                            sr, add, sll, axor, aor, aand: begin
-                                if(alu_itf.ready)begin
-                                    shift    = 1'b1;
-                                    load_tag = 1'b1;
-                                    tag_out  = rob_data.tag_ready;
-                                    rd_out   = rd;
+                                sr, add, sll, axor, aor, aand: begin
+                                    if(alu_itf.ready)begin
+                                        shift    = 1'b1;
+                                        load_tag = 1'b1;
+                                        tag_out  = rob_data.tag_ready;
+                                        rd_out   = rd;
+                                    end
                                 end
-                            end
-                            default: ;
-                        endcase
+                                default: ;
+                            endcase
+                        end
                     end
                 end
 
                 op_reg: begin
-                    if(rd != 0 && rob_data.tag_ready != 0)begin
-                        case (arith_funct3)
-                            add, sr, axor, sll, aor, aand: begin
-                                if(alu_itf.ready)begin
-                                    shift    = 1'b1;
-                                    load_tag = 1'b1;
-                                    tag_out  = rob_data.tag_ready;
-                                    rd_out   = rd;
+                    if(rob_data.tag_ready != 0)begin
+                        if(rd == 0)begin 
+                            shift = 1'b1;
+                        end else begin 
+                            case (arith_funct3)
+                                add, sr, axor, sll, aor, aand: begin
+                                    if(alu_itf.ready)begin
+                                        shift    = 1'b1;
+                                        load_tag = 1'b1;
+                                        tag_out  = rob_data.tag_ready;
+                                        rd_out   = rd;
+                                    end
                                 end
-                            end
 
-                            slt, sltu: begin
-                                if(cmp_itf.ready)begin
-                                    shift    = 1'b1;
-                                    load_tag = 1'b1;
-                                    tag_out  = rob_data.tag_ready;
-                                    rd_out   = rd;
+                                slt, sltu: begin
+                                    if(cmp_itf.ready)begin
+                                        shift    = 1'b1;
+                                        load_tag = 1'b1;
+                                        tag_out  = rob_data.tag_ready;
+                                        rd_out   = rd;
+                                    end
                                 end
-                            end
-                            default: ;
-                        endcase 
+                                default: ;
+                            endcase 
+                        end 
                     end
                 end
 
                 op_lui, op_auipc, op_jal: begin
-                    if(rd != 0 && rob_data.tag_ready != 0 && alu_itf.ready)begin
+                    if(rd == 0)begin
+                        shift    = 1'b1;
+                    end else if(rob_data.tag_ready != 0 && alu_itf.ready)begin
                         shift    = 1'b1;
                         load_tag = 1'b1;
                         tag_out  = rob_data.tag_ready;
@@ -410,7 +420,9 @@ module decoder (
                 end
 
                 op_load: begin
-                    if(rd != 0 && rob_data.tag_ready != 0 && lsb_itf.ready)begin
+                    if(rd == 0)begin
+                        shift    = 1'b1;
+                    end else if(rob_data.tag_ready != 0 && lsb_itf.ready)begin
                         shift    = 1'b1;
                         load_tag = 1'b1;
                         tag_out  = rob_data.tag_ready;

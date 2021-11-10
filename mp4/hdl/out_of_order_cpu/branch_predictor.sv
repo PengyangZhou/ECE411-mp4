@@ -146,6 +146,8 @@ begin
         next_state = IDLE;
         iq_valid = 1;
     end
+    
+    default: ;
     endcase
 end
 
