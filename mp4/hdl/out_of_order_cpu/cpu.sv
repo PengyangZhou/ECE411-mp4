@@ -79,7 +79,7 @@ module cpu (
     rv32i_word inst_decoder;
     logic br_pred_decoder;
 
-    inst_queue inst_queue_inst(
+    instruction_queue instruction_queue_inst(
         .clk(clk),
         .rst(rst),
         .flush(flush),

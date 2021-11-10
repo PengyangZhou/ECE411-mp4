@@ -24,7 +24,7 @@ module cmp_rs (
     tag_t       dest    [NUM_CMP_RS];
     logic       br_pred [NUM_CMP_RS];
     rv32i_word  pc      [NUM_CMP_RS];
-    rv32i_word  B_imm [NUM_CMP_RS];
+    rv32i_word  b_imm [NUM_CMP_RS];
 
     /* intermediate variables */
     genvar i;
@@ -54,6 +54,7 @@ module cmp_rs (
         end else begin
             empty_index = 3; /* if empty_index is 3, there is no empty space in the RS */
         end
+        cmp_itf.ready = empty_index < NUM_CMP_RS ? 1'b1 : 1'b0;
     end
 
     /* busy bit logic */
@@ -87,7 +88,7 @@ module cmp_rs (
         dest[index] <= cmp_itf.dest;
         br_pred[index] <= cmp_itf.br_pred;
         pc[index] <= cmp_itf.pc;
-        B_imm[index] <= cmp_itf.B_imm;
+        b_imm[index] <= cmp_itf.b_imm;
     endtask
 
     /* input and update logic */
@@ -103,7 +104,7 @@ module cmp_rs (
                 dest[i] <= 'b0;
                 br_pred[i] <= 'b0;
                 pc[i] <= 'b0;
-                B_imm[i] <= 'b0;
+                b_imm[i] <= 'b0;
             end
         end else begin
             for (int i = 0; i < NUM_CMP_RS; ++i) begin
@@ -152,10 +153,10 @@ module cmp_rs (
                     begin
                     end
                     cmp_res.tag[i] <= dest[i];
-                    cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 1 : 0);
+                    cmp_res.br_pred_res[i] <= (br_pred[i] == res[i] ? 1'b1 : 1'b0);
                     if (res[i])
                     begin
-                        cmp_res.pc_next[i] <= pc[i] + B_imm[i];
+                        cmp_res.pc_next[i] <= pc[i] + b_imm[i];
                     end
                     else
                     begin

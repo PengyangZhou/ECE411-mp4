@@ -69,7 +69,7 @@ module lsb_rs (
 
     logic last_valid;
     logic new_valid;
-    assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1 : 0;
+    assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1'b1 : 1'b0;
 
     always_ff @(posedge clk)
     begin
@@ -95,11 +95,11 @@ module lsb_rs (
         end
         else if (new_valid && lsb_itf.lsb_op)
         begin
-            store_number <= store_number + 1;
+            store_number <= store_number + 3'd1;
         end
         else if (new_store)
         begin
-            store_number <= store_number - 1;
+            store_number <= store_number - 3'd1;
         end
         else
         begin
@@ -145,7 +145,7 @@ module lsb_rs (
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
                 if (busy[i] == 1 && lsb_op[i] == 0 && store_before[i] != 0)
                 begin
-                    store_before[i] <= store_before[i] -1;
+                    store_before[i] <= store_before[i] - 3'd1;
                 end
             end
         end
@@ -163,6 +163,7 @@ module lsb_rs (
         end else begin
             current_load = 3; /* if current_load is 3, there is no valid load instruction */
         end
+        lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
 
     /* output logic */
@@ -194,7 +195,7 @@ module lsb_rs (
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
                         mem_res.valid[i] <= 1'b1;
                         mem_res.tag[i]  <= dest[i];
-                        unique case (lsb_op[i])
+                        unique case (funct[i])
                         lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin
