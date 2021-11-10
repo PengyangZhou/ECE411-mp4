@@ -252,6 +252,7 @@ module cpu (
         /* port from decoder */
         .lsb_itf(lsb_itf.lsb_rs),
         /* port from ROB */
+        .new_store(new_store),
         .rob_data(rob_data),
         /* port to CDB */
         .mem_res(mem_res),
