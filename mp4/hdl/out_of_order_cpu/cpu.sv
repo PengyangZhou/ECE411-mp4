@@ -91,8 +91,8 @@ module cpu (
         .ready(iq_ready),
         /* port from branch predictor */
         .valid_in(iq_valid),
-        .inst_in(pc_predictor),
-        .pc_in(inst_predictor),
+        .inst_in(inst_predictor),
+        .pc_in(pc_predictor),
         .pc_next_in(pc_next_predictor),
         .br_pred_in(br_pred_predictor),
         /* port from decoder */
