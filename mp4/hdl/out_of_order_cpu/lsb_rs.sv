@@ -194,7 +194,7 @@ module lsb_rs (
                     if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
                         mem_res.valid[i] <= 1'b1;
                         mem_res.tag[i]  <= dest[i];
-                        unique case (lsb_op[i])
+                        unique case (funct[i])
                         lw:        mem_res.val[i]  <= mem_rdata_d;
                         lb:
                         begin

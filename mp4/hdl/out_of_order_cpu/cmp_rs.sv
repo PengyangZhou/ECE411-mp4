@@ -54,6 +54,7 @@ module cmp_rs (
         end else begin
             empty_index = 3; /* if empty_index is 3, there is no empty space in the RS */
         end
+        cmp_itf.ready = empty_index < NUM_CMP_RS ? 1'b1 : 1'b0;
     end
 
     /* busy bit logic */
