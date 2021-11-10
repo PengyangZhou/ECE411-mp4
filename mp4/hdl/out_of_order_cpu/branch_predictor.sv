@@ -4,10 +4,10 @@ module branch_predictor
 (
     input logic clk,
     input logic rst, 
-    // instruction queue
+    // inst queue
     input logic iq_ready,
     output rv32i_word pc,
-    output rv32i_word instruction,
+    output rv32i_word inst,
     output rv32i_word pc_next,
     output logic br_pred,
     output logic iq_valid,
@@ -23,9 +23,9 @@ module branch_predictor
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
     output logic mem_write_i,
-    output logic [3:0] mem_byte_enable_i,
+    output logic [3:0] mem_byte_enable_i, // TODO really need it?
     output rv32i_word mem_address_i,
-    output rv32i_word mem_wdata_i
+    output rv32i_word mem_wdata_i // TODO really need it?
 );
 
 assign mem_write_i = 0;
@@ -52,14 +52,14 @@ begin
     begin
         state <= IDLE;
         pc <= 0;
-        instruction <= 0;
+        inst <= 0;
         pc_next <= 0;
         br_pred <= 0;
     end
     else if (flush)
     begin
         pc <= pc_correct;
-        instruction <= 0;
+        inst <= 0;
         pc_next <= 0;
         br_pred <= 0;
     end
@@ -70,7 +70,7 @@ begin
         IDLE:
         begin
             pc <= pc;
-            instruction <= instruction;
+            inst <= inst;
             pc_next <= pc_next;
             br_pred <= br_pred;
         end
@@ -79,7 +79,7 @@ begin
             if (mem_resp_i)
             begin
                 pc <= pc;
-                instruction <= mem_rdata_i;
+                inst <= mem_rdata_i;
                 if (op_jal == opcode)
                 begin
                     pc_next <= pc + i_imm;
@@ -104,7 +104,7 @@ begin
             else
             begin
                 pc <= pc;
-                instruction <= instruction;
+                inst <= inst;
                 pc_next <= pc_next;
                 br_pred <= br_pred;
             end
@@ -112,7 +112,7 @@ begin
         OUT:
         begin
             pc <= pc_next;
-            instruction <= instruction;
+            inst <= inst;
             pc_next <= pc_next;
             br_pred <= br_pred;
         end
