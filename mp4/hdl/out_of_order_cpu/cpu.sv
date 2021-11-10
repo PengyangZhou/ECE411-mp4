@@ -5,6 +5,7 @@ import rv32i_types::*;
 module cpu (
     input clk,
     input rst,
+    /* port between instruction cache */
     input mem_resp_i,
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
@@ -12,6 +13,7 @@ module cpu (
     output logic [3:0] mem_byte_enable_i,
     output rv32i_word mem_address_i,
     output rv32i_word mem_wdata_i,
+    /* port between data cache */
     input mem_resp_d,
     input rv32i_word mem_rdata_d,
     output logic mem_read_d,
@@ -25,9 +27,9 @@ module cpu (
     logic mem_address_d_read;
     logic mem_address_d_write;
 
-    assign mem_read_resp = (1 == mem_resp_d && mem_read_d) ? 1 : 0;
-    assign mem_write_resp = (1 == mem_resp_d && mem_write_d) ? 1 : 0;
-    assign mem_address_d = (1 == mem_write_d) mem_address_d_write : mem_address_d_read;
+    assign mem_read_resp = (1 == mem_resp_d && mem_read_d) ? 1'b1 : 1'b0;
+    assign mem_write_resp = (1 == mem_resp_d && mem_write_d) ? 1'b1 : 1'b0;
+    assign mem_address_d = (1 == mem_write_d) ? mem_address_d_write : mem_address_d_read;
 
     logic flush;
 
