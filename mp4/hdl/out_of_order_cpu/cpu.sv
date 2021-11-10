@@ -22,6 +22,8 @@ module cpu (
     output rv32i_word mem_address_d,
     output rv32i_word mem_wdata_d
 );
+    logic trap;
+
     logic mem_read_resp;
     logic mem_write_resp;
     rv32i_word mem_address_d_read;
@@ -108,18 +110,18 @@ module cpu (
     logic        load_tag;
     tag_t        tag_out;
     rv32i_reg    rd_out;
-    tag_t         reg_Qj;
-    tag_t         reg_Qk;
-    rv32i_word    reg_Vj;
-    rv32i_word    reg_Vk;
+    tag_t        reg_Qj;
+    tag_t        reg_Qk;
+    rv32i_word   reg_Vj;
+    rv32i_word   reg_Vk;
     logic        rob_valid;
     op_type_t    rob_op;
     rv32i_word   rob_dest;
-    rob_out_t     rob_data;
-    alu_rs_itf  alu_itf();
-    cmp_rs_itf  cmp_itf();
-    lsb_rs_itf  lsb_itf();
-    jalr_itf jalr_itf();
+    rob_out_t    rob_data;
+    alu_rs_itf   alu_itf();
+    cmp_rs_itf   cmp_itf();
+    lsb_rs_itf   lsb_itf();
+    jalr_itf     jalr_itf();
 
     decoder decoder_inst(
         .clk(clk),

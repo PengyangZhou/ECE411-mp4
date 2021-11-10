@@ -27,8 +27,13 @@ initial begin
     tb_itf.rst = 1'b0;
 end
 
+initial begin
+    $dumpfile("cpu_tb.vcd");
+    $dumpvars;
+end
+
 /**************************** Halting Conditions *****************************/
-int timeout = 100000000;
+int timeout = 100;
 
 always @(posedge tb_itf.clk) begin
     if (rvfi.halt)

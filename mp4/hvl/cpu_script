@@ -1,0 +1,23 @@
+-top mp4_tb 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_mux_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/rv32i_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/ooo_types.sv 
+/home/zeduoyu2/M2/mp4/hdl/include/ooo_itfs.sv 
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/alu.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/alu_rs.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/cmp.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/cmp_rs.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/lsb_rs.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/jalr.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/branch_predictor.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/decoder.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/regfile.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/inst_queue.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/reorder_buffer.sv
+/home/zeduoyu2/M2/mp4/hdl/out_of_order_cpu/cpu.sv
+/home/zeduoyu2/M2/mp4/hvl/tb_itf.sv
+/home/zeduoyu2/M2/mp4/hvl/rvfi_itf.sv
+/home/zeduoyu2/M2/mp4/hvl/magic_dual_port.sv
+/home/zeduoyu2/M2/mp4/hvl/rvfimon.v
+/home/zeduoyu2/M2/mp4/hvl/source_tb.sv
+/home/zeduoyu2/M2/mp4/hvl/top_cpu.sv

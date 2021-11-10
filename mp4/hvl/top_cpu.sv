@@ -24,7 +24,7 @@ bit f;
 /************************ Signals necessary for monitor **********************/
 // This section not required until CP2
 
-assign rvfi.commit = dut.load_val_rob_reg; //TODO Set high when a valid instruction is modifying regfile or PC
+assign rvfi.commit = dut.load_val_rob_reg | dut.br_mispredict; // Set high when a valid instruction is modifying regfile or PC
 assign rvfi.halt = 0;   // Set high when you detect an infinite loop
 initial rvfi.order = 0;
 always @(posedge itf.clk iff rvfi.commit) rvfi.order <= rvfi.order + 1; // Modify for OoO
@@ -57,6 +57,23 @@ Memory:
 
 Please refer to rvfi_itf.sv for more information.
 */
+
+// assign rvfi_itf.inst = dut.inst_decoder;
+// assign rvfi_itf.trap = dut.trap; /* NOT USED */
+// assign rvfi_itf.rs1_addr = dut.rs1;
+// assign rvfi_itf.rs2_addr = dut.rs2;
+// assign rvfi_itf.rs1_rdata = dut.decoder_inst.Vj_out;
+// assign rvfi_itf.rs2_rdata = dut.decoder_inst.Vk_out;
+// assign rvfi_itf.load_regfile = dut.rob_inst.load_val;
+// assign rvfi_itf.rd_addr = dut.rob_inst.val_rd;
+// assign rvfi_itf.rd_wdata = dut.rob_inst.val;
+// assign rvfi_itf.pc_rdata = 
+// assign rvfi_itf.pc_wdata = 
+// assign rvfi_itf.mem_addr = 
+// assign rvfi_itf.mem_rmask = 
+// assign rvfi_itf.mem_wmask = dut.mem_byte_enable_d;
+// assign rvfi_itf.mem_rdata = dut.mem_rdata_d;
+// assign rvfi_itf.mem_wdata = dut.mem_wdata_d;
 
 /**************************** End RVFIMON signals ****************************/
 
