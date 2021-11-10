@@ -30,7 +30,7 @@ module jalr
             Qj   <= 'b0;
             dest <= 'b0;
             pc <= 'b0;
-            pc_next <= b0;
+            pc_next <= 'b0;
         end else begin
             if(jalr_itf.valid)begin
                 /* bring in new entry */

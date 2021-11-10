@@ -16,7 +16,7 @@ module cmp_rs (
     /* NUM_CMP_RS is 3 */
     logic       busy    [NUM_CMP_RS];
     logic       is_br   [NUM_CMP_RS];
-    branch_funct3_t beq [NUM_CMP_RS];
+    branch_funct3_t op_type[NUM_CMP_RS];
     rv32i_word  Vj      [NUM_CMP_RS];
     rv32i_word  Vk      [NUM_CMP_RS];
     tag_t       Qj      [NUM_CMP_RS];
@@ -101,9 +101,9 @@ module cmp_rs (
                 Qj[i]   <= 'b0;
                 Qk[i]   <= 'b0;
                 dest[i] <= 'b0;
-                br_pred[index] <= 'b0;
-                pc[index] <= 'b0;
-                B_imm[index] <= 'b0;
+                br_pred[i] <= 'b0;
+                pc[i] <= 'b0;
+                B_imm[i] <= 'b0;
             end
         end else begin
             for (int i = 0; i < NUM_CMP_RS; ++i) begin

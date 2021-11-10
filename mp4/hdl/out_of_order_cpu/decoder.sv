@@ -293,8 +293,8 @@ module decoder (
                         jalr_itf.A <= i_imm;
                         jalr_itf.Qj <= Qj_out;
                         jalr_itf.dest <= rob_data.tag_ready;
-                        jalr_itf.pc <= pc;
-                        jalr_itf.pc_next <= pc_next;
+                        jalr_itf.pc <= pc_in;
+                        jalr_itf.pc_next <= pc_next_in;
                         end
                     end
 

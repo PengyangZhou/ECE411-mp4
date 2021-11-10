@@ -279,7 +279,7 @@ module lsb_rs (
                 if (3 != current_load)
                 begin
                     state <= BUSY;
-                    mem_address_d <= Vj[current_load] + [current_load];
+                    mem_address_d <= Vj[current_load] + A[current_load];
                 end
                 else
                 begin
