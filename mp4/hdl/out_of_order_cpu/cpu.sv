@@ -27,7 +27,7 @@ module cpu (
 
     assign mem_resp_d_read = (1 == mem_resp_d && mem_read_d) ? 1 : 0;
     assign mem_resp_d_write = (1 == mem_resp_d && mem_write_d) ? 1 : 0;
-    assign mem_address_d = (1 == mem_write_d) mem_address_d_write : mem_address_d_read;
+    assign mem_address_d = (1 == mem_write_d) ? mem_address_d_write : mem_address_d_read;
 
     logic flush;
 
