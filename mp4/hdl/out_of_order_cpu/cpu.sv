@@ -9,10 +9,7 @@ module cpu (
     input mem_resp_i,
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
-    output logic mem_write_i,
-    output logic [3:0] mem_byte_enable_i,
     output rv32i_word mem_address_i,
-    output rv32i_word mem_wdata_i,
     /* port between data cache */
     input mem_resp_d,
     input rv32i_word mem_rdata_d,
@@ -71,10 +68,7 @@ module cpu (
         .mem_resp_i(mem_resp_i),
         .mem_rdata_i(mem_rdata_i),
         .mem_read_i(mem_read_i),
-        .mem_write_i(mem_write_i),
-        .mem_byte_enable_i(mem_byte_enable_i),
-        .mem_address_i(mem_address_i),
-        .mem_wdata_i(mem_wdata_i)
+        .mem_address_i(mem_address_i)
     );
 
     logic valid_decoder;

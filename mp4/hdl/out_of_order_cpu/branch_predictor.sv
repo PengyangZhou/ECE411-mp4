@@ -22,15 +22,8 @@ module branch_predictor
     input logic mem_resp_i,
     input rv32i_word mem_rdata_i,
     output logic mem_read_i,
-    output logic mem_write_i,
-    output logic [3:0] mem_byte_enable_i,
-    output rv32i_word mem_address_i,
-    output rv32i_word mem_wdata_i
+    output rv32i_word mem_address_i
 );
-
-assign mem_write_i = 0;
-assign mem_byte_enable_i = 0;
-assign mem_wdata_i = 0;
 
 assign mem_address_i = pc;
 

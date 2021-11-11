@@ -137,10 +137,7 @@ cpu dut(
     .mem_resp_i(itf.inst_resp),
     .mem_rdata_i(itf.inst_rdata),
     .mem_read_i(itf.inst_read),
-    .mem_write_i(),
-    .mem_byte_enable_i(),
     .mem_address_i(itf.inst_addr),
-    .mem_wdata_i(),
     /* data cache */
     .mem_resp_d(itf.data_resp),
     .mem_rdata_d(itf.data_rdata),
