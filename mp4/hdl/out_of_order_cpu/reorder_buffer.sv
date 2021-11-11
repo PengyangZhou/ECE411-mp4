@@ -52,7 +52,7 @@ module reorder_buffer
     rv32i_word rob_vals [ROB_DEPTH + 1];   // contains the value of register or the value to store
     bit rob_ready [ROB_DEPTH + 1];         // high if the entry is ready to commit
     bit rob_predict [ROB_DEPTH + 1];       // for storing branch and jalr predict result
-    logic [2:0] rob_store_type [ROB_DEPTH + 1]; // for distinguish sb, sh and sw 
+    // logic [2:0] rob_store_type [ROB_DEPTH + 1]; // for distinguish sb, sh and sw  TODO
     rv32i_word jalr_pc_next;               // used for storing the jalr
 
     tag_t input_head;   // pointing to the empty entry waiting for input
@@ -85,7 +85,7 @@ module reorder_buffer
                 rob_vals[i] <= '0;
                 rob_ready[i] <= '0;
                 rob_predict[i] <= 1'b1;
-                rob_store_type[i] <= '0;
+                // rob_store_type[i] <= '0;
             end
             jalr_pc_next <= '0;
             // reset head pointer
@@ -120,7 +120,7 @@ module reorder_buffer
                         rob_vals[commit_head] <= '0;
                         rob_ready[commit_head] <= '0;
                         rob_predict[commit_head] <= 1'b1;
-                        rob_store_type[commit_head] <= '0;
+                        // rob_store_type[commit_head] <= '0;
                         inc_commit_head();
                     end
                 end else begin
@@ -131,7 +131,7 @@ module reorder_buffer
                     rob_vals[commit_head] <= '0;
                     rob_ready[commit_head] <= '0;
                     rob_predict[commit_head] <= 1'b1;
-                    rob_store_type[commit_head] <= '0;
+                    // rob_store_type[commit_head] <= '0;
                     if (rob_type[commit_head] == JALR) begin
                         jalr_pc_next <= '0;
                     end
