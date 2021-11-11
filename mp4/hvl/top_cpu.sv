@@ -17,7 +17,7 @@ source_tb tb(
 
 // For local simulation, add signal for Modelsim to display by default
 // Note that this signal does nothing and is not used for anything
-bit f;
+// bit f;
 
 /****************************** End do not touch *****************************/
 
@@ -25,9 +25,17 @@ bit f;
 // This section not required until CP2
 
 assign rvfi.commit = dut.load_val_rob_reg | dut.br_mispredict; // Set high when a valid instruction is modifying regfile or PC
-assign rvfi.halt = 0;   // Set high when you detect an infinite loop
+assign rvfi.halt = dut.trap;   // Set high when you detect an infinite loop
 initial rvfi.order = 0;
 always @(posedge itf.clk iff rvfi.commit) rvfi.order <= rvfi.order + 1; // Modify for OoO
+
+/* print register values at the end of simulation */
+always @(rvfi.halt iff (rvfi.halt == 1'b1))begin 
+    for (int i = 0; i < 32; ++i) begin
+        $display("reg x%0d: %0h", i, dut.regfile_inst.reg_vals[i]);
+    end
+end
+
 
 /*
 The following signals need to be set:
