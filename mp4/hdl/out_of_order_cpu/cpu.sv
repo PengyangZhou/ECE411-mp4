@@ -22,7 +22,7 @@ module cpu (
     output rv32i_word mem_address_d,
     output rv32i_word mem_wdata_d
 );
-    logic trap;
+    logic trap; /* TODO */
 
     logic mem_read_resp;
     logic mem_write_resp;
