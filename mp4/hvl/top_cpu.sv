@@ -32,7 +32,7 @@ always @(posedge itf.clk iff rvfi.commit) rvfi.order <= rvfi.order + 1; // Modif
 /* print register values at the end of simulation */
 always @(rvfi.halt iff (rvfi.halt == 1'b1))begin 
     for (int i = 0; i < 32; ++i) begin
-        $display("reg x%0d: %0h", i, dut.regfile_inst.reg_vals[i]);
+        $display("reg x%0d: 0x%8h", i, dut.regfile_inst.reg_vals[i]);
     end
 end
 
