@@ -36,7 +36,9 @@ module reorder_buffer
     output rv32i_word pc_correct,
     output rv32i_word br_pc_mispredict,
     output rv32i_word jalr_pc_mispredict,
-    output logic flush
+    output logic flush,
+    // output to indicate infinite loop
+    output logic trap
 );
 
     assign mem_byte_enable = 4'b1111;
@@ -274,6 +276,7 @@ module reorder_buffer
     // output to the branch predictor
     always_comb begin
         flush = '0;
+        trap = '0;
         // branch
         br_mispredict = '0;
         br_pc_mispredict = '0;
@@ -290,6 +293,10 @@ module reorder_buffer
                 br_mispredict = 1'b1;
                 pc_correct = rob_dest[commit_head]; // the next correct pc
                 br_pc_mispredict = rob_vals[commit_head]; // the pc of the branch instruction
+                if (pc_correct == br_pc_mispredict) begin
+                    // if is the infinite loop, stop the program
+                    trap = 1'b1;
+                end
             end
             if (rob_type[commit_head] == JALR) begin
                 jalr_mispredict = '0;

@@ -200,7 +200,8 @@ module cpu (
         .pc_correct(pc_correct),
         .br_pc_mispredict(br_pc_mispredict),
         .jalr_pc_mispredict(jalr_pc_mispredict),
-        .flush(flush)
+        .flush(flush),
+        .trap(trap)
     );
 
     regfile regfile_inst(
