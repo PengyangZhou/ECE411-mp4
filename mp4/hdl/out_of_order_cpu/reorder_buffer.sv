@@ -9,6 +9,7 @@ module reorder_buffer
     input logic valid_in,
     input logic [1:0] op_type,
     input logic [31:0] dest,
+    input logic [2:0] store_type,
     // port from CDB
     input alu_cdb_t alu_res,
     input cmp_cdb_t cmp_res,
@@ -27,7 +28,7 @@ module reorder_buffer
     output logic mem_write,
     output rv32i_word mem_wdata,
     output rv32i_word mem_address,
-    output logic [3:0] mem_byte_enable, // TODO
+    output logic [3:0] mem_byte_enable,
     // port to load/store buffer
     output logic new_store,
     // port to branch predictor
@@ -41,8 +42,6 @@ module reorder_buffer
     output logic trap
 );
 
-    assign mem_byte_enable = 4'b1111;
-
     // entry of reorder buffer
     // the entry of index 0 will be remained empty by intention
     bit rob_busy [ROB_DEPTH + 1];          // high if the entry's value is not available
@@ -52,7 +51,7 @@ module reorder_buffer
     rv32i_word rob_vals [ROB_DEPTH + 1];   // contains the value of register or the value to store
     bit rob_ready [ROB_DEPTH + 1];         // high if the entry is ready to commit
     bit rob_predict [ROB_DEPTH + 1];       // for storing branch and jalr predict result
-    // logic [2:0] rob_store_type [ROB_DEPTH + 1]; // for distinguish sb, sh and sw  TODO
+    logic [2:0] rob_store_type [ROB_DEPTH + 1]; // for distinguish sb, sh and sw  TODO
     rv32i_word jalr_pc_next;               // used for storing the jalr
 
     tag_t input_head;   // pointing to the empty entry waiting for input
@@ -85,7 +84,7 @@ module reorder_buffer
                 rob_vals[i] <= '0;
                 rob_ready[i] <= '0;
                 rob_predict[i] <= 1'b1;
-                // rob_store_type[i] <= '0;
+                rob_store_type[i] <= '0;
             end
             jalr_pc_next <= '0;
             // reset head pointer
@@ -98,6 +97,10 @@ module reorder_buffer
                 rob_busy[input_head] <= 1'b1;
                 rob_type[input_head] <= op_type;
                 rob_dest[input_head] <= dest;
+                if (op_type == ST) begin
+                    // to distinguish sw, sh, sb
+                    rob_store_type[input_head] <= store_type;
+                end
                 // increment the head pointer
                 if (input_head == ROB_DEPTH) begin
                     input_head <= 4'd1;
@@ -120,7 +123,7 @@ module reorder_buffer
                         rob_vals[commit_head] <= '0;
                         rob_ready[commit_head] <= '0;
                         rob_predict[commit_head] <= 1'b1;
-                        // rob_store_type[commit_head] <= '0;
+                        rob_store_type[commit_head] <= '0;
                         inc_commit_head();
                     end
                 end else begin
@@ -131,7 +134,6 @@ module reorder_buffer
                     rob_vals[commit_head] <= '0;
                     rob_ready[commit_head] <= '0;
                     rob_predict[commit_head] <= 1'b1;
-                    // rob_store_type[commit_head] <= '0;
                     if (rob_type[commit_head] == JALR) begin
                         jalr_pc_next <= '0;
                     end
@@ -241,6 +243,40 @@ module reorder_buffer
         end
     end
 
+    always_comb begin
+        case (rob_store_type[commit_head])
+            sw: mem_byte_enable = 4'b1111;
+            sh: begin
+                case (rob_dest[commit_head][1])
+                    1'b0: mem_byte_enable = 4'b0011;
+                    1'b1: mem_byte_enable = 4'b1100;
+                    default:;
+                endcase
+            end
+            sb: begin
+                case (rob_dest[commit_head][1:0])
+                    2'b00: mem_byte_enable = 4'b0001;
+                    2'b01: mem_byte_enable = 4'b0010;
+                    2'b10: mem_byte_enable = 4'b0100;
+                    2'b11: mem_byte_enable = 4'b1000;
+                    default:;
+                endcase
+            end    
+            default: mem_byte_enable = 4'b1111;
+        endcase
+    end
+
+    rv32i_word store_data;
+    always_comb begin
+        case (rob_dest[commit_head][1:0])
+            2'b00: store_data = rob_vals[commit_head];
+            2'b01: store_data = {rob_vals[commit_head][23:0], rob_vals[commit_head][31:24]};
+            2'b10: store_data = {rob_vals[commit_head][15:0], rob_vals[commit_head][31:16]};
+            2'b11: store_data = {rob_vals[commit_head][7:0], rob_vals[commit_head][31:8]};
+            default: store_data = rob_vals[commit_head];
+        endcase
+    end
+
     // output to the data cache, for store operation
     always_comb begin
         next_state = state;
@@ -252,21 +288,18 @@ module reorder_buffer
                 new_store = '0;
                 if (commit_ready && (rob_type[commit_head] == ST)) begin
                     mem_write = 1'b1;
-                    mem_wdata = rob_vals[commit_head];
-                    mem_address = rob_dest[commit_head];
+                    mem_wdata = store_data;
+                    mem_address = {rob_dest[commit_head][31:2], 2'b00};
                     new_store = 1'b1;
                     next_state = STORE_PROCESSING;
                 end
             end
             STORE_PROCESSING: begin
                 mem_write = 1'b1;
-                mem_wdata = rob_vals[commit_head];
-                mem_address = rob_dest[commit_head];
+                mem_wdata = store_data;
+                mem_address = {rob_dest[commit_head][31:2], 2'b00};
                 new_store = '0;
                 if (mem_resp) begin
-                    //mem_write = '0;
-                    //mem_wdata = '0;
-                    //mem_address = '0;
                     next_state = STORE_IDLE;
                 end
             end
@@ -299,7 +332,7 @@ module reorder_buffer
                 end
             end
             if (rob_type[commit_head] == JALR) begin
-                jalr_mispredict = '0;
+                jalr_mispredict = '1;
                 pc_correct = jalr_pc_next;
                 jalr_pc_mispredict = rob_vals[commit_head];
             end
