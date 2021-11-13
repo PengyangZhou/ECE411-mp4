@@ -267,7 +267,7 @@ module cpu (
         .mem_rdata_d(mem_rdata_d)
     );
 
-    jalr lalr_inst(
+    jalr jalr_inst(
         .clk(clk),
         .rst(rst),
         .flush(flush),
