@@ -36,6 +36,10 @@ module regfile(
             for (int i = 0; i < 32; i++) begin
                 reg_tags[i] <= '0;
             end
+            if (load_val) begin
+                // for jalr, if flush, still needs to store the rd
+                reg_vals[val_rd] <= val; 
+            end
         end else begin
             if (load_tag) begin
                 // the situation happens when decoder adds a new entry in ROB
