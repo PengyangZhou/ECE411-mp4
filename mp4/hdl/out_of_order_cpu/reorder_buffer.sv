@@ -244,26 +244,30 @@ module reorder_buffer
     end
 
     always_comb begin
-        case (rob_store_type[commit_head])
-            sw: mem_byte_enable = 4'b1111;
-            sh: begin
-                case (rob_dest[commit_head][1])
-                    1'b0: mem_byte_enable = 4'b0011;
-                    1'b1: mem_byte_enable = 4'b1100;
-                    default:;
-                endcase
-            end
-            sb: begin
-                case (rob_dest[commit_head][1:0])
-                    2'b00: mem_byte_enable = 4'b0001;
-                    2'b01: mem_byte_enable = 4'b0010;
-                    2'b10: mem_byte_enable = 4'b0100;
-                    2'b11: mem_byte_enable = 4'b1000;
-                    default:;
-                endcase
-            end    
-            default: mem_byte_enable = 4'b1111;
-        endcase
+        if (rob_type[commit_head] == ST) begin
+            case (rob_store_type[commit_head])
+                sw: mem_byte_enable = 4'b1111;
+                sh: begin
+                    case (rob_dest[commit_head][1])
+                        1'b0: mem_byte_enable = 4'b0011;
+                        1'b1: mem_byte_enable = 4'b1100;
+                        default:;
+                    endcase
+                end
+                sb: begin
+                    case (rob_dest[commit_head][1:0])
+                        2'b00: mem_byte_enable = 4'b0001;
+                        2'b01: mem_byte_enable = 4'b0010;
+                        2'b10: mem_byte_enable = 4'b0100;
+                        2'b11: mem_byte_enable = 4'b1000;
+                        default:;
+                    endcase
+                end    
+                default: mem_byte_enable = 4'b1111;
+            endcase
+        end else begin
+            mem_byte_enable = 4'b1111;
+        end
     end
 
     rv32i_word store_data;
