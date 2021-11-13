@@ -32,6 +32,7 @@ module decoder (
     output logic        rob_valid,  /* indicate there is a new inst coming */
     output op_type_t    rob_op,     /* there are 3 types of operation in ROB */
     output rv32i_word   rob_dest,   /* destination can be ROB entry or memory address */
+    output store_funct3_t rob_st_type,
     /* port from ROB */
     input rob_out_t     rob_data,
     /* port to ALU RS */
@@ -313,6 +314,7 @@ module decoder (
                         if(rob_data.tag_ready != 0 && lsb_itf.ready)begin
                             rob_op      <= ST;  /* don't need dest here */
                             rob_valid   <= 1'b1;
+                            rob_st_type <= store_funct3;
                             send_to_LSB(Vj_out, Vk_out, s_imm, Qj_out, Qk_out, 1'b1, store_funct3, rob_data.tag_ready);
                         end
                     end

@@ -17,7 +17,8 @@ source_tb tb(
 
 // For local simulation, add signal for Modelsim to display by default
 // Note that this signal does nothing and is not used for anything
-// bit f;
+bit cpu_clk;
+assign cpu_clk = itf.clk;
 
 /****************************** End do not touch *****************************/
 
