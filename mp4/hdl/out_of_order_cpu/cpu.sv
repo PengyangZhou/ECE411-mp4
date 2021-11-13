@@ -112,6 +112,8 @@ module cpu (
     op_type_t    rob_op;
     rv32i_word   rob_dest;
     rob_out_t    rob_data;
+    store_funct3_t rob_st_type;
+    
     alu_rs_itf   alu_itf();
     cmp_rs_itf   cmp_itf();
     lsb_rs_itf   lsb_itf();
@@ -143,6 +145,7 @@ module cpu (
         .rob_op(rob_op),
         .rob_dest(rob_dest),
         .rob_data(rob_data),
+        .rob_st_type(rob_st_type),
         .alu_itf(alu_itf.decoder),
         .cmp_itf(cmp_itf.decoder),
         .lsb_itf(lsb_itf.decoder),
@@ -168,6 +171,7 @@ module cpu (
         .valid_in(rob_valid),
         .op_type(rob_op),
         .dest(rob_dest),
+        .store_type(rob_st_type),
         // port from CDB
         .alu_res(alu_res),
         .cmp_res(cmp_res),
