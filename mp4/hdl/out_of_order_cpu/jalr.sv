@@ -34,7 +34,7 @@ module jalr
             pc <= 'b0;
             pc_next <= 'b0;
         end else begin
-            if(jalr_itf.valid)begin
+            if(jalr_itf.ready && jalr_itf.valid)begin
                 /* bring in new entry */
                 Vj <= jalr_itf.Vj;
                 A <= jalr_itf.A;
@@ -59,7 +59,6 @@ module jalr
     always_ff @( posedge clk )
     begin
         if(rst | flush) begin
-            busy <= 1'b0;
             jalr_res.valid  <= 1'b0;
             jalr_res.val   <= 'b0;
             jalr_res.tag   <= 'b0;
@@ -70,7 +69,6 @@ module jalr
             jalr_res.valid  <= 1'b0;
             if (busy && Qj == 0 && pc_next == correct_pc)
             begin
-                busy <= 1'b0;
                 jalr_res.valid  <= 1'b1;
                 jalr_res.val   <= pc + 4;
                 jalr_res.tag   <= dest;
@@ -79,13 +77,29 @@ module jalr
             end
             else if (busy && Qj == 0 && pc_next != correct_pc)
             begin
-                busy <= 1'b1;
                 jalr_res.valid  <= 1'b1;
                 jalr_res.val   <= pc + 4;
                 jalr_res.tag   <= dest;
                 jalr_res.correct_predict <= 'b0;
                 jalr_res.pc_next <= correct_pc;
             end
+        end
+    end
+
+    /* busy bit logic */
+    always_ff @(posedge clk)
+    begin
+        if(rst | flush)
+        begin
+            busy <= 1'b0;
+        end
+        else if(jalr_itf.ready && jalr_itf.valid)
+        begin
+            busy <= 1'b1;
+        end
+        else if(busy && Qj == 0 && pc_next == correct_pc)
+        begin
+            busy <= 1'b0;
         end
     end
 
