@@ -146,7 +146,7 @@ module decoder (
             alu_itf.valid   <= 1'b0;
             cmp_itf.valid   <= 1'b0;
             lsb_itf.valid   <= 1'b0;
-            jalr_itf.valid  <= 1'b1;
+            jalr_itf.valid  <= 1'b0;
             /* decode each instruction */
             if(valid_in)begin
                 case (opcode)
