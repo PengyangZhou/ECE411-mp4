@@ -339,7 +339,12 @@ module reorder_buffer
                 pc_correct = jalr_pc_next;
                 jalr_pc_mispredict = rob_vals[commit_head];
             end
-		  end
+        end
+        if (commit_ready && (rob_type[commit_head] == REG)) begin
+            if (rob_dest[commit_head][31] == 1'b1) begin
+                trap = 1'b1;
+            end
+        end
     end
 
 

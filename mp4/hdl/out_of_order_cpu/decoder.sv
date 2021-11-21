@@ -281,7 +281,10 @@ module decoder (
                     op_jal: begin
                         if(rob_data.tag_ready != 0 && alu_itf.ready)begin
                             rob_op    <= REG; /* jal is regarded as REG. Because it will write value to a register. */
-                            rob_dest  <= rd;
+                            if (pc_in == pc_next_in) 
+                                rob_dest <= {1'b1, 26'b0, rd}; // set the highest bit to 1, indicate a trap
+                            else
+                                rob_dest  <= rd;
                             rob_valid <= 1'b1;
                             send_to_ALU(pc_in, 4, 0, 0, alu_add, rob_data.tag_ready); /* perfrom PC+4 */
                         end
