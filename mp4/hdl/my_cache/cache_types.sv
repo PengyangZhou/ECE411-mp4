@@ -14,7 +14,7 @@ parameter num_sets = 2**s_index;
 
 typedef logic [s_index-1:0] index_t;
 typedef logic [255:0]       cacheline_t;
-typedef logic [s_tag-1:0]   tag_t;
+typedef logic [s_tag-1:0]   ctag_t;
 typedef logic [31:0]        byte_en_t;
 
     

@@ -5,8 +5,8 @@ import cache_types::*;
  */
 module hit_check (
     input logic [1:0] valid_in,
-    input cache_types::tag_t tag_in,
-    input cache_types::tag_t tag_array_in [2],
+    input ctag_t tag_in,
+    input ctag_t tag_array_in [2],
     output logic hit,
     output logic hit_wayid
 );

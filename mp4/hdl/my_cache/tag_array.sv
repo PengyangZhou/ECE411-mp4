@@ -7,9 +7,9 @@ module tag_array (
     input logic write,
     input logic wayid,
     input index_t index,
-    input cache_types::tag_t tag_in,
-    output cache_types::tag_t tag_out [2],
-    output cache_types::tag_t tag_evict  /* the tag of the cacheline that we want to evict */
+    input ctag_t tag_in,
+    output ctag_t tag_out [2],
+    output ctag_t tag_evict  /* the tag of the cacheline that we want to evict */
 );
 
 /* intermediate variables */

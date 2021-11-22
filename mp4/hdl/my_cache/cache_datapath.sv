@@ -32,8 +32,8 @@ module cache_datapath (
 );
 
 /* translation of cpu_address */
-cache_types::tag_t   tag_in;
-assign tag_in = cache_types::tag_t'(cpu_address[31-:cache_types::s_tag]);
+ctag_t   tag_in;
+assign tag_in = ctag_t'(cpu_address[31-:cache_types::s_tag]);
 index_t index_in;
 assign index_in = index_t'(cpu_address[5+:cache_types::s_index]);
 
@@ -48,8 +48,8 @@ logic           lru_wayid;
 cacheline_t     data_out;
 assign ca_wdata = data_out;
 assign cpu_rdata = data_out;
-cache_types::tag_t tag_out [2];
-cache_types::tag_t tag_evict;
+ctag_t tag_out [2];
+ctag_t tag_evict;
 logic [1:0]     valid_out;
 
 data_storage_array data_storage_array_inst(

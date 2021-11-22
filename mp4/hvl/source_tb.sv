@@ -28,7 +28,7 @@ initial begin
 end
 
 initial begin
-    $dumpfile("cpu_tb.vcd");
+    $dumpfile("all_tb.vcd");
     $dumpvars;
 end
 
