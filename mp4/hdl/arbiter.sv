@@ -48,6 +48,10 @@ always_ff @( posedge clk ) begin : state_machine
 end
 
 always_comb begin : wiring
+    icache_resp = 1'b0;
+    icache_rdata = 256'b0;
+    dcache_resp = 1'b0;
+    dcache_rdata = 256'b0;
     case (state)
         ICACHE: begin
             icache_resp = pmem_resp;
