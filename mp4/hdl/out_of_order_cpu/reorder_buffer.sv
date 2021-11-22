@@ -225,8 +225,7 @@ module reorder_buffer
         val_rd = '0;
         tag = '0;
         val = '0;
-        if (commit_ready && ((rob_type[commit_head] == REG) | 
-            ((rob_type[commit_head] == JALR) && (rob_predict[commit_head] == 1'b1)))) begin
+        if (commit_ready && ((rob_type[commit_head] == REG) | (rob_type[commit_head] == JALR))) begin
             // when committing, update the corresponding register
             load_val = 1'b1;
             val_rd = rob_dest[commit_head][4:0];
@@ -340,7 +339,12 @@ module reorder_buffer
                 pc_correct = jalr_pc_next;
                 jalr_pc_mispredict = rob_vals[commit_head];
             end
-		  end
+        end
+        if (commit_ready && (rob_type[commit_head] == REG)) begin
+            if (rob_dest[commit_head][31] == 1'b1) begin
+                trap = 1'b1;
+            end
+        end
     end
 
 

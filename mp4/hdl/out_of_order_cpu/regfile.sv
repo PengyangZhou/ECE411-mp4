@@ -36,20 +36,24 @@ module regfile(
             for (int i = 0; i < 32; i++) begin
                 reg_tags[i] <= '0;
             end
+            if (load_val && (val_rd != 0)) begin
+                // for jalr, if flush, still needs to store the rd
+                reg_vals[val_rd] <= val; 
+            end
         end else begin
             if (load_tag) begin
                 // the situation happens when decoder adds a new entry in ROB
                 // tag is the ROB new entry number, rd is the register to be calculated 
                 reg_tags[tag_rd] <= tag_from_decoder;
             end
-            if (load_val) begin
+            if (load_val && (val_rd != 0)) begin
                 // the situation happens when committing
                 // each cycle updates a single register's value
                 reg_vals[val_rd] <= val; 
                 if (reg_tags[val_rd] == tag_from_rob) begin
                     // if the register tag is the same as the committed ROB entry number,
                     // clear the tag
-                    reg_tags[val_rd] = '0;
+                    reg_tags[val_rd] <= '0;
                 end
                 
             end

@@ -51,6 +51,7 @@ begin
     end
     else if (flush)
     begin
+        state   <= IDLE;
         pc      <= pc_correct;
         inst    <= 0;
         pc_next <= 0;
