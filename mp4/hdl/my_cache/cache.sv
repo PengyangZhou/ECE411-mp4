@@ -1,6 +1,6 @@
 /* MODIFY. Your cache design. It contains the cache
 controller, cache datapath, and bus adapter. */
-
+import cache_types::*; 
 module cache
 (
     input logic clk,

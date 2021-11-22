@@ -1,3 +1,4 @@
+import rv32i_types::*;
 module arbiter (
     input logic clk,
     input logic rst,
