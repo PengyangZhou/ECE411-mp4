@@ -1,5 +1,9 @@
-module cache (
+module given_cache # (
+  parameter s_offset = 5,
+  parameter s_index  = 3
+)(
   input clk,
+  input rst,
 
   /* Physical memory signals */
   input logic pmem_resp,
@@ -32,8 +36,8 @@ logic [255:0] mem_wdata;
 logic [255:0] mem_rdata;
 logic [31:0] mem_byte_enable;
 
-cache_control control(.*);
-cache_datapath datapath(.*);
+given_cache_control control(.*);
+given_cache_datapath #(s_offset, s_index) datapath (.*);
 
 line_adapter bus (
     .mem_wdata_line(mem_wdata),
@@ -45,4 +49,4 @@ line_adapter bus (
     .address(mem_address)
 );
 
-endmodule : cache
+endmodule : given_cache

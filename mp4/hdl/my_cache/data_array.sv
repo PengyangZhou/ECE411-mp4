@@ -1,4 +1,8 @@
-module given_data_array #(
+/* A special register array specifically for your
+data arrays. This module supports a write mask to
+help you update the values in the array. */
+
+module data_array #(
     parameter s_offset = 5,
     parameter s_index = 3
 )
@@ -39,13 +43,15 @@ begin
     else begin
         if (read)
             for (int i = 0; i < s_mask; i++)
-                _dataout[8*i +: 8] <= (write_en[i] & (rindex == windex)) ? datain[8*i +: 8] : data[rindex][8*i +: 8];
+                _dataout[8*i +: 8] <= (write_en[i] & (rindex == windex)) ?
+                                      datain[8*i +: 8] : data[rindex][8*i +: 8];
 
         for (int i = 0; i < s_mask; i++)
         begin
-            data[windex][8*i +: 8] <= write_en[i] ? datain[8*i +: 8] : data[windex][8*i +: 8];
+            data[windex][8*i +: 8] <= write_en[i] ? datain[8*i +: 8] :
+                                                    data[windex][8*i +: 8];
         end
     end
 end
 
-endmodule : given_data_array
+endmodule : data_array
