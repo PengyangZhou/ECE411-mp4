@@ -41,6 +41,7 @@
 ../hvl/tb_itf.sv
 ../hvl/rvfi_itf.sv
 ../hvl/param_memory.sv
+../hvl/shadow_memory.sv
 ../hvl/rvfimon.v
 ../hvl/source_tb.sv
 ../hvl/top_all.sv

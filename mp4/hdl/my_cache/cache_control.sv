@@ -61,6 +61,11 @@ always_comb begin : state_outputs
 
         S_HIT_CHECK: begin
             if (hit) begin
+                if(cpu_write)begin
+                    datamux_sel = datamux::data_from_cpu;
+                    benmux_sel = benmux::spec_by_cpu;
+                    data_write = 1'b1;
+                end
                 cpu_resp = 1'b1;
                 waymux_sel = waymux::hit_id;
                 lru_write = 1'b1;
@@ -69,7 +74,6 @@ always_comb begin : state_outputs
                 waymux_sel = waymux::lru_id;
             end
             if (cpu_write) dirty_write = 1'b1; /* if it's a write, update dirty array */
-            
         end
 
         S_WRITE_BACK: begin

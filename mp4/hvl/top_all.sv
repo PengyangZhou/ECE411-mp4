@@ -31,14 +31,32 @@ initial rvfi.order = 0;
 always @(posedge itf.clk iff rvfi.commit) rvfi.order <= rvfi.order + 1; // Modify for OoO
 
 /* print register values at the end of simulation */
-always @(rvfi.halt iff (rvfi.halt == 1'b1))begin 
+always @(posedge rvfi.halt)begin 
     for (int i = 0; i < 32; ++i) begin
         $display("reg x%0d: 0x%8h", i, dut.ooo_cpu.regfile_inst.reg_vals[i]);
     end
 end
 
-// Set this to the proper value
-// assign itf.registers = '{default: '0};
+/* set up counters for profiling */
+int total_cycles;   /* the counter for total cycles elapsed */
+int stall_cycles;   /* the counter for cycles that no instruction is issued */
+always @(posedge cpu_clk) begin
+    total_cycles <= total_cycles + 1;
+    if(~dut.ooo_cpu.iq_shift) stall_cycles <= stall_cycles + 1;
+end
+
+/* connect to shadow memory */
+assign itf.inst_read = dut.icache_read;
+assign itf.inst_addr = dut.icache_address;
+assign itf.inst_resp = dut.icache_resp;
+assign itf.inst_rdata = dut.icache_rdata;
+assign itf.data_read = dut.dcache_read;
+assign itf.data_write = dut.dcache_write;
+assign itf.data_mbe = dut.dcache_byte_enable;
+assign itf.data_addr = dut.dcache_address;
+assign itf.data_wdata = dut.dcache_wdata;
+assign itf.data_resp = dut.dcache_resp;
+assign itf.data_rdata = dut.dcache_rdata;
 
 mp4 dut(
     .clk(itf.clk),

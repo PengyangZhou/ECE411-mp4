@@ -293,7 +293,7 @@ module reorder_buffer
                     mem_write = 1'b1;
                     mem_wdata = store_data;
                     mem_address = {rob_dest[commit_head][31:2], 2'b00};
-                    new_store = 1'b1;
+                    // new_store = 1'b1;
                     next_state = STORE_PROCESSING;
                 end
             end
@@ -304,6 +304,7 @@ module reorder_buffer
                 new_store = '0;
                 if (mem_resp) begin
                     next_state = STORE_IDLE;
+                    new_store = 1'b1;
                 end
             end
         endcase
