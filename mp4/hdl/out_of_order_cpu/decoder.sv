@@ -9,6 +9,7 @@ import rv32i_types::*;
 module decoder (
     input logic clk,
     input logic rst,
+    input logic flush,
     /* port from instruction queue */
     input logic      valid_in,
     input rv32i_word pc_in,
@@ -130,7 +131,7 @@ module decoder (
     
     /* main logic */
     always_ff @( posedge clk ) begin : issue_logic
-        if(rst)begin
+        if(rst | flush)begin
             rob_valid   <= 1'b0;
             rob_op      <= REG;
             rob_dest    <= 0;

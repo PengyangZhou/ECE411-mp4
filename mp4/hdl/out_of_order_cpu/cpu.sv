@@ -122,6 +122,7 @@ module cpu (
     decoder decoder_inst(
         .clk(clk),
         .rst(rst),
+        .flush(flush),
         .valid_in(valid_decoder),
         .pc_in(pc_decoder),
         .pc_next_in(pc_next_decoder),
