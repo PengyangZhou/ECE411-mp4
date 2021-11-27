@@ -35,12 +35,17 @@ always @(posedge rvfi.halt)begin
     for (int i = 0; i < 32; ++i) begin
         $display("reg x%0d: 0x%8h", i, dut.ooo_cpu.regfile_inst.reg_vals[i]);
     end
+    $display("Total cycles: %0d\n", total_cycles);
+    $display("Stall cycles: %0d\n", stall_cycles);
+    
 end
 
 /* set up counters for profiling */
 int total_cycles;   /* the counter for total cycles elapsed */
 int stall_cycles;   /* the counter for cycles that no instruction is issued */
-always @(posedge cpu_clk) begin
+initial total_cycles = 0;
+initial stall_cycles = 0;
+always @(negedge cpu_clk) begin
     total_cycles <= total_cycles + 1;
     if(~dut.ooo_cpu.iq_shift) stall_cycles <= stall_cycles + 1;
 end
