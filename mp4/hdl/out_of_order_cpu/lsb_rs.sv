@@ -73,22 +73,6 @@ module lsb_rs (
         store_before[index] <= store_number;
     endtask
 
-    // logic last_valid;
-    // logic new_valid;
-    // assign new_valid = (0 == last_valid && 1 == lsb_itf.valid) ? 1'b1 : 1'b0;
-
-    // always_ff @(posedge clk)
-    // begin
-    //     if (rst | flush)
-    //     begin
-    //         last_valid <= 0;
-    //     end
-    //     else
-    //     begin
-    //         last_valid <= lsb_itf.valid;
-    //     end
-    // end
-
     always_ff @(posedge clk)
     begin
         if (rst | flush)
@@ -269,75 +253,33 @@ module lsb_rs (
         IDLE,
         BUSY
     } state;
-    // } state, next_state;
 
-    // rv32i_word mem_address_d_inside_in;
-
-    // always_ff @(posedge clk)
-    // begin
-    //     if (rst | flush)
-    //     begin
-    //         state <= IDLE;
-    //         mem_address_d_inside <= 0;
-    //     end
-    //     else
-    //     begin
-    //         state <= next_state;
-    //         mem_address_d_inside <= mem_address_d_inside_in;
-    //     end
-    // end
-
-    // always_comb
-    // begin
-    //     if (rst | flush)
-    //     begin
-    //         mem_read_d = 0;
-    //         next_state = IDLE;
-    //         mem_address_d_inside_in = 0;
-    //     end
-    //     else
-    //     begin
-    //         unique case (state)
-    //         IDLE:
-    //         begin
-    //             mem_read_d = 0;
-    //             if (3 != current_load)
-    //             begin
-    //                 next_state = BUSY;
-    //                 mem_address_d_inside_in = Vj[current_load] + A[current_load];
-    //             end
-    //             else
-    //             begin
-    //                 next_state = IDLE;
-    //                 mem_address_d_inside_in = 0;
-    //             end
-    //         end
-    //         BUSY:
-    //         begin
-    //             mem_read_d = 1;
-    //             mem_address_d_inside_in = Vj[current_load] + A[current_load];
-    //             if (mem_resp_d)
-    //             begin
-    //                 next_state = IDLE;
-    //             end
-    //             else
-    //             begin
-    //                 next_state = BUSY;
-    //             end
-    //         end
-    //         endcase
-    //     end
-    // end
+    logic flush_store;
 
     always_ff @(posedge clk)
     begin
-        if (rst | flush)
+        if (rst)
         begin
             state <= IDLE;
             mem_address_d_inside <= 0;
+            flush_store <= 0;
+        end
+        else if ((flush | flush_store) && (IDLE == state))
+        begin
+            state <= IDLE;
+            mem_address_d_inside <= 0;
+            flush_store <= 0;
         end
         else
         begin
+            if (flush)
+            begin
+                flush_store <= 1;
+            end
+            else
+            begin
+                flush_store <= flush_store;
+            end
             unique case (state)
             IDLE:
             begin

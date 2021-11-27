@@ -25,6 +25,9 @@ module branch_predictor
     output rv32i_word mem_address_i
 );
 
+logic flush_store;
+rv32i_word pc_correct_store;
+
 assign mem_address_i = pc;
 
 enum logic [1:0]
@@ -48,17 +51,41 @@ begin
         inst    <= 0;
         pc_next <= 0;
         br_pred <= 0;
+        flush_store <= 0;
+        pc_correct_store <= 32'h00000060;
     end
-    else if (flush)
+    else if (flush && (IDLE == state))
     begin
         state   <= IDLE;
         pc      <= pc_correct;
         inst    <= 0;
         pc_next <= 0;
         br_pred <= 0;
+        flush_store <= 0;
+        pc_correct_store <= pc_correct;
+    end
+    else if (flush_store && (IDLE == state))
+    begin
+        state   <= IDLE;
+        pc      <= pc_correct_store;
+        inst    <= 0;
+        pc_next <= 0;
+        br_pred <= 0;
+        flush_store <= 0;
+        pc_correct_store <= pc_correct_store;
     end
     else
     begin
+        if (flush)
+        begin
+            flush_store <= 1;
+            pc_correct_store <= pc_correct;
+        end
+        else
+        begin
+            flush_store <= flush_store;
+            pc_correct_store <= pc_correct_store;
+        end
         state <= next_state;
         unique case (state)
         IDLE:
@@ -138,7 +165,14 @@ begin
     OUT:
     begin
         next_state = IDLE;
-        iq_valid = 1;
+        if (flush | flush_store)
+        begin
+            iq_valid = 0;
+        end
+        else
+        begin
+            iq_valid = 1;
+        end
     end
     
     default: ;
