@@ -324,8 +324,6 @@ module reorder_buffer
         pc_correct = '0;
 
         if (commit_ready && (rob_predict[commit_head] == 0)) begin
-            // if mispredict
-            flush = 1'b1;
             if (rob_type[commit_head] == BR) begin
                 br_mispredict = 1'b1;
                 pc_correct = rob_dest[commit_head]; // the next correct pc
@@ -334,11 +332,13 @@ module reorder_buffer
                     // if is the infinite loop, stop the program
                     trap = 1'b1;
                 end
+                flush = 1'b1;
             end
             if (rob_type[commit_head] == JALR) begin
                 jalr_mispredict = '1;
                 pc_correct = jalr_pc_next;
                 jalr_pc_mispredict = rob_vals[commit_head];
+                flush = 1'b1;
             end
         end
         if (commit_ready && (rob_type[commit_head] == REG)) begin
