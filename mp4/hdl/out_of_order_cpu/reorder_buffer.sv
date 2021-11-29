@@ -162,7 +162,6 @@ module reorder_buffer
                 end
             end
             for (int i = 0; i < NUM_CMP_RS; i++) begin
-                // for checkpoint2 we assume all the predict result is true.
                 if (cmp_res.valid[i]) begin
                     rob_ready[cmp_res.tag[i]] <= 1'b1;
                     if (cmp_res.br_pred_res[i]) begin
@@ -178,8 +177,13 @@ module reorder_buffer
                     end else begin
                         // if the predict result if false
                         rob_predict[cmp_res.tag[i]] <= 1'b0;
-                        rob_vals[cmp_res.tag[i]] <= cmp_res.val[i]; // the pc of the instruction
-                        rob_dest[cmp_res.tag[i]] <= cmp_res.pc_next[i]; // the correct next pc
+                        if (rob_type[cmp_res.tag[i]] == BR) begin
+                            rob_vals[cmp_res.tag[i]] <= cmp_res.val[i]; // the pc of the instruction
+                            rob_dest[cmp_res.tag[i]] <= cmp_res.pc_next[i]; // the correct next pc
+                        end else if (rob_type[cmp_res.tag[i]] == REG) begin
+                            // if the operation is slt, store the compare result 1 or 0
+                            rob_vals[cmp_res.tag[i]] <= cmp_res.val[i];
+                        end
                     end
                 end
             end
