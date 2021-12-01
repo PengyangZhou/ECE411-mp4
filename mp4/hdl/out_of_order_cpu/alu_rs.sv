@@ -89,6 +89,14 @@ module alu_rs (
                 if(alu_itf.valid && empty_index == i)begin
                     /* bring in new entry */
                     push_entry(i);
+                    if(alu_itf.Qj != 0 && rob_data.ready[alu_itf.Qj])begin
+                        Qj[i] <= 'b0;
+                        Vj[i] <= rob_data.vals[alu_itf.Qj];
+                    end
+                    if(alu_itf.Qk != 0 && rob_data.ready[alu_itf.Qk])begin
+                        Qk[i] <= 'b0;
+                        Vk[i] <= rob_data.vals[alu_itf.Qk];
+                    end
                 end else begin
                     /* grab data from CDB */
                     if(Qj[i] != 0 && rob_data.ready[Qj[i]])begin

@@ -148,7 +148,7 @@ module cmp_rs (
                     cmp_res.valid[i] <= 1'b1;
                     if (!is_br[i])
                     begin
-                        cmp_res.val[i] <= {32{res[i]}};
+                        cmp_res.val[i] <= {31'd0, res[i]};
                     end
                     else
                         cmp_res.val[i] <= pc[i];
