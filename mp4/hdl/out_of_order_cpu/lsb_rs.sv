@@ -296,7 +296,7 @@ module lsb_rs (
             end
             BUSY:
             begin
-                mem_address_d_inside <= Vj[current_load] + A[current_load];
+                mem_address_d_inside <= mem_address_d_inside;
                 if (mem_resp_d)
                 begin
                     state <= IDLE;
