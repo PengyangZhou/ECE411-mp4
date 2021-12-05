@@ -144,10 +144,10 @@ module decoder (
             rob_valid   <= 1'b0;
             rob_op      <= REG;
             rob_dest    <= 0;
-            alu_itf.valid   <= 1'b0;
-            cmp_itf.valid   <= 1'b0;
-            lsb_itf.valid   <= 1'b0;
-            jalr_itf.valid  <= 1'b0;
+            alu_itf.valid   <= alu_itf.ready ? 1'b0 : alu_itf.valid;
+            cmp_itf.valid   <= cmp_itf.ready ? 1'b0 : cmp_itf.valid;
+            lsb_itf.valid   <= lsb_itf.ready ? 1'b0 : lsb_itf.valid;
+            jalr_itf.valid  <= jalr_itf.ready ? 1'b0 : jalr_itf.valid;
             /* decode each instruction */
             if(valid_in)begin
                 case (opcode)
