@@ -28,13 +28,13 @@ module branch_predictor
 logic flush_store;
 rv32i_word pc_correct_store;
 
-assign mem_address_i = pc;
+assign pc = mem_address_i;
+assign inst = mem_rdata_i;
 
-enum logic [1:0]
+enum logic
 {
-    IDLE,
-    BUSY,
-    OUT
+    QUICK,
+    SLOW
 } state, next_state;
 
 rv32i_opcode opcode;
@@ -46,36 +46,36 @@ always_ff @(posedge clk)
 begin
     if (rst)
     begin
-        state   <= IDLE;
-        pc      <= 32'h00000060;
-        inst    <= 0;
-        pc_next <= 0;
-        br_pred <= 0;
+        state   <= QUICK;
+        mem_address_i <= 32'h00000060;
         flush_store <= 0;
         pc_correct_store <= 32'h00000060;
     end
-    else if (flush && (IDLE == state))
+    else if (flush && (QUICK == state))
     begin
-        state   <= IDLE;
-        pc      <= pc_correct;
-        inst    <= 0;
-        pc_next <= 0;
-        br_pred <= 0;
+        state   <= QUICK;
+        mem_address_i <= pc_correct;
         flush_store <= 0;
         pc_correct_store <= pc_correct;
     end
-    else if (flush_store && (IDLE == state))
+    else if (flush_store && (QUICK == state))
     begin
-        state   <= IDLE;
-        pc      <= pc_correct_store;
-        inst    <= 0;
-        pc_next <= 0;
-        br_pred <= 0;
+        state   <= QUICK;
+        mem_address_i <= pc_correct_store;
         flush_store <= 0;
         pc_correct_store <= pc_correct_store;
     end
     else
     begin
+        state <= next_state;
+        if (mem_resp_i)
+        begin
+            mem_address_i <= pc_next;
+        end
+        else
+        begin
+            mem_address_i <= mem_address_i;
+        end
         if (flush)
         begin
             flush_store <= 1;
@@ -86,58 +86,30 @@ begin
             flush_store <= flush_store;
             pc_correct_store <= pc_correct_store;
         end
-        state <= next_state;
-        unique case (state)
-        IDLE:
-        begin
-            pc <= pc;
-            inst <= inst;
-            pc_next <= pc_next;
-            br_pred <= br_pred;
-        end
-        BUSY:
-        begin
-            if (mem_resp_i)
-            begin
-                pc <= pc;
-                inst <= mem_rdata_i;
-                if (op_jal == opcode)
-                begin
-                    pc_next <= pc + j_imm;
-                    br_pred <= 0;
-                end
-                else if (op_br == opcode) // TODO: Predictor
-                begin
-                    pc_next <= pc + 4;
-                    br_pred <= 0;
-                end
-                else if (op_jalr == opcode) // TODO: Predictor
-                begin
-                    pc_next <= pc + 4;
-                    br_pred <= 0;
-                end
-                else
-                begin
-                    pc_next <= pc + 4;
-                    br_pred <= 0;
-                end
-            end
-            else
-            begin
-                pc <= pc;
-                inst <= inst;
-                pc_next <= pc_next;
-                br_pred <= br_pred;
-            end
-        end
-        OUT:
-        begin
-            pc <= pc_next;
-            inst <= inst;
-            pc_next <= pc_next;
-            br_pred <= br_pred;
-        end
-        endcase
+    end
+end
+
+always_comb
+begin
+    if (op_jal == opcode)
+    begin
+        pc_next = pc + j_imm;
+        br_pred = 0;
+    end
+    else if (op_br == opcode) // TODO: Predictor
+    begin
+        pc_next = pc + 4;
+        br_pred = 0;
+    end
+    else if (op_jalr == opcode) // TODO: Predictor
+    begin
+        pc_next = pc + 4;
+        br_pred = 0;
+    end
+    else
+    begin
+        pc_next = pc + 4;
+        br_pred = 0;
     end
 end
 
@@ -147,31 +119,36 @@ begin
     mem_read_i = 0;
     iq_valid = 0;
     unique case (state)
-    IDLE:
+    QUICK:
     begin
-        if (iq_ready)
+        if ((!flush) && (!flush_store) && iq_ready)
         begin
-            next_state = BUSY;
+            mem_read_i = 1;
+            if (mem_resp_i)
+            begin
+                next_state = QUICK;
+                iq_valid = 1;
+            end
+            else
+            begin
+                next_state = SLOW;
+            end
         end
     end
-    BUSY:
+    SLOW:
     begin
         mem_read_i = 1;
         if (mem_resp_i)
         begin
-            next_state = OUT;
-        end
-    end
-    OUT:
-    begin
-        next_state = IDLE;
-        if (flush | flush_store)
-        begin
-            iq_valid = 0;
-        end
-        else
-        begin
-            iq_valid = 1;
+            next_state = QUICK;
+            if (flush || flush_store)
+            begin
+                iq_valid = 0;
+            end
+            else
+            begin
+                iq_valid = 1;
+            end
         end
     end
     
