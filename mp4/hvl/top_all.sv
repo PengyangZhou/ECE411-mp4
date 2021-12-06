@@ -38,8 +38,9 @@ int icache_ops, icache_hits; /* counter for cache operations and hits */
 int dcache_ops, dcache_hits;
 int num_branch, num_correct; /* counter for branch prediction results */
 logic [31:0] last_addr_i, last_addr_d;
-int alu_usage, cmp_usage, lsb_usage, rob_full; /* rob_full indicates the # of cycles ROB is full */
+int alu_usage, cmp_usage, lsb_usage; 
 int alu_working, cmp_working, lsb_working;
+int alu_full, cmp_full, lsb_full, rob_full; /* rob_full indicates the # of cycles ROB is full */
 
 initial begin
     total_cycles    = 0;
@@ -96,6 +97,10 @@ always @(negedge cpu_clk) begin
             dut.ooo_cpu.cmp_rs_inst.busy[2];
         cmp_working <= cmp_working + 1;
     end
+    /* fullness counter */
+    if(~dut.ooo_cpu.alu_itf.ready) alu_full <= alu_full + 1;
+    if(~dut.ooo_cpu.cmp_itf.ready) cmp_full <= cmp_full + 1;
+    if(~dut.ooo_cpu.lsb_itf.ready) lsb_full <= lsb_full + 1;
     if(dut.ooo_cpu.rob_data.tag_ready == 0) rob_full <= rob_full + 1;
     /* branch prediction counters */
     if(dut.ooo_cpu.br_predict) begin
@@ -118,9 +123,9 @@ always @(posedge rvfi.halt)begin
     $display("icache hit rate: %f%%", 100.0*icache_hits/icache_ops);
     $display("dcache operations: %0d  dcache hits: %0d", dcache_ops, dcache_hits);
     $display("dcache hit rate: %f%%", 100.0*dcache_hits/dcache_ops);
-    $display("ALU reservation station utilization: %f%%", 100.0*alu_usage/alu_working/5);
-    $display("LSB reservation station utilization: %f%%", 100.0*lsb_usage/lsb_working/3);
-    $display("CMP reservation station utilization: %f%%", 100.0*cmp_usage/cmp_working/3);
+    $display("ALU reservation station utilization: %f%%, ALU full cycles: %0d", 100.0*alu_usage/alu_working/5, alu_full);
+    $display("LSB reservation station utilization: %f%%, LSB full cycles: %0d", 100.0*lsb_usage/lsb_working/3, lsb_full);
+    $display("CMP reservation station utilization: %f%%, CMP full cycles: %0d", 100.0*cmp_usage/cmp_working/3, cmp_full);
     $display("ROB full cycles: %0d", rob_full);
     $display("\n");
 end
