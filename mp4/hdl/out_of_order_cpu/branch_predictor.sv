@@ -17,8 +17,8 @@ module branch_predictor
     input logic br_predict,
     input logic br_correct,
     input rv32i_word br_pc_predict,
-    input logic jalr_mispredict,
-    input rv32i_word jalr_pc_mispredict,
+    input logic jalr_mispredict, // Note: useless
+    input rv32i_word jalr_pc_mispredict, // Note: useless
     // i cache
     input logic mem_resp_i,
     input rv32i_word mem_rdata_i,
@@ -57,6 +57,17 @@ predictor_b predictor_b_inst (
     .is_correction(br_predict),
     .pc_correct(br_pc_predict),
     .is_correct(br_correct)
+);
+
+rv32i_word jalr_pc_next;
+
+predictor_j predictor_j_inst (
+    .clk(clk),
+    .rst(rst),
+    .new_inst(iq_valid),
+    .pc(pc),
+    .inst(inst),
+    .pc_next(jalr_pc_next)
 );
 
 always_ff @(posedge clk)
@@ -123,9 +134,9 @@ begin
             pc_next = pc + 4;
         end
     end
-    else if (op_jalr == opcode) // TODO: Predictor
+    else if (op_jalr == opcode)
     begin
-        pc_next = pc + 4;
+        pc_next = jalr_pc_next;
     end
     else
     begin

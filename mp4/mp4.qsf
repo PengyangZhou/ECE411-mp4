@@ -64,6 +64,7 @@ set_global_assignment -name EDA_TEST_BENCH_FILE hvl/shadow_memory.sv -section_id
 set_global_assignment -name EDA_TEST_BENCH_FILE hvl/source_tb.sv -section_id mp4_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE hvl/tb_itf.sv -section_id mp4_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE hvl/top_cpu.sv -section_id mp4_tb
+set_global_assignment -name SYSTEMVERILOG_FILE hdl/out_of_order_cpu/predictor_j.sv
 set_global_assignment -name SYSTEMVERILOG_FILE hdl/out_of_order_cpu/predictor_b.sv
 set_global_assignment -name SYSTEMVERILOG_FILE hdl/include/rv32i_types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE hdl/include/rv32i_mux_types.sv
