@@ -25,7 +25,7 @@ assign cpu_clk = itf.clk;
 /************************ Signals necessary for monitor **********************/
 // This section not required until CP2
 
-assign rvfi.commit = dut.ooo_cpu.load_val_rob_reg | dut.ooo_cpu.br_mispredict; // Set high when a valid instruction is modifying regfile or PC
+assign rvfi.commit = dut.ooo_cpu.load_val_rob_reg | dut.ooo_cpu.br_predict; // Set high when a valid instruction is modifying regfile or PC
 assign rvfi.halt = dut.ooo_cpu.trap;   // Set high when you detect an infinite loop
 initial rvfi.order = 0;
 always @(posedge itf.clk iff rvfi.commit) rvfi.order <= rvfi.order + 1; // Modify for OoO
