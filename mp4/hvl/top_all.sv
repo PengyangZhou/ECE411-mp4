@@ -36,7 +36,8 @@ int total_cycles;   /* the counter for total cycles elapsed */
 int stall_cycles, stall_icache_read, stall_rs_full;   /* the counter for cycles that no instruction is issued */
 int icache_ops, icache_hits; /* counter for cache operations and hits */
 int dcache_ops, dcache_hits;
-int num_branch, num_correct; /* counter for branch prediction results */
+int num_branch, num_branch_correct; /* counter for branch prediction results */
+int num_jalr, num_jalr_correct;
 logic [31:0] last_addr_i, last_addr_d;
 int alu_usage, cmp_usage, lsb_usage; 
 int alu_working, cmp_working, lsb_working;
@@ -107,7 +108,11 @@ always @(negedge cpu_clk) begin
     /* branch prediction counters */
     if(dut.ooo_cpu.br_predict) begin
         num_branch <= num_branch + 1;
-        if(dut.ooo_cpu.br_correct) num_correct <= num_correct + 1;
+        if(dut.ooo_cpu.br_correct) num_branch_correct <= num_branch_correct + 1;
+    end
+    if(dut.ooo_cpu.jalr_predict) begin
+        num_jalr <= num_jalr + 1;
+        if(dut.ooo_cpu.jalr_correct) num_jalr_correct <= num_jalr_correct + 1;
     end
 end
 
@@ -119,7 +124,10 @@ always @(posedge rvfi.halt)begin
     $display("\nExecution Time: %0dns", total_cycles * 10);
     $display("Total Cycles: %0d", total_cycles);
     $display("Stall Cycles: %0d, %0d due to icache read, %0d due to RS fullness", stall_cycles, stall_icache_read, stall_rs_full);
-    $display("Percentage of correctly predicted branch: %f%% (%0d/%0d)", 100.0*num_correct/num_branch, num_correct, num_branch);
+    $display("Percentage of correctly predicted branch: %f%% (%0d/%0d)", 100.0*num_branch_correct/num_branch, num_branch_correct, num_branch);
+    $display("Percentage of correctly predicted jalr: %f%% (%0d/%0d)", 100.0*num_jalr_correct/num_jalr, num_jalr_correct, num_jalr);
+    $display("Percentage of correctly predicted branch/jal/jalr: %f%% (%0d/%0d) (all jal/jalr jumps are considered correct)", 
+        100.0*(num_branch_correct+num_jalr)/(num_branch+num_jalr), num_branch_correct+num_jalr_correct, num_branch+num_jalr);
     $display("Percentage of issuing instructions: %f%%", 100.0*(total_cycles-stall_cycles)/total_cycles);
     $display("icache operations: %0d  icache hits: %0d", icache_ops, icache_hits);
     $display("icache hit rate: %f%%", 100.0*icache_hits/icache_ops);
