@@ -89,7 +89,9 @@ always @(negedge cpu_clk) begin
     end
     if(dut.ooo_cpu.lsb_rs_inst.busy)begin
         lsb_usage <= lsb_usage + dut.ooo_cpu.lsb_rs_inst.busy[0] + dut.ooo_cpu.lsb_rs_inst.busy[1] +
-            dut.ooo_cpu.lsb_rs_inst.busy[2];
+            dut.ooo_cpu.lsb_rs_inst.busy[2] + dut.ooo_cpu.lsb_rs_inst.busy[3] +
+            dut.ooo_cpu.lsb_rs_inst.busy[4] + dut.ooo_cpu.lsb_rs_inst.busy[5] +
+            dut.ooo_cpu.lsb_rs_inst.busy[6];
         lsb_working <= lsb_working + 1;
     end
     if(dut.ooo_cpu.cmp_rs_inst.busy)begin
