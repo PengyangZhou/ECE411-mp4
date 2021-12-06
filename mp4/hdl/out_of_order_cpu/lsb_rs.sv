@@ -22,7 +22,9 @@ module lsb_rs (
     input logic mem_resp_d,
     input rv32i_word mem_rdata_d
 );
-        rv32i_word mem_address_d_inside;
+    logic flush_not_finished;
+    
+    rv32i_word mem_address_d_inside;
     assign mem_address_d = {mem_address_d_inside[31:2], 2'b00};
     
     /* RS entry fields */
@@ -64,7 +66,7 @@ module lsb_rs (
         end else begin
             empty_index = 7; /* if empty_index is 7, there is no empty space in the RS */
         end
-        lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
+        lsb_itf.ready = (empty_index < NUM_LDST_RS) && (!flush_not_finished) ? 1'b1 : 1'b0;
     end
 
     task push_entry(logic [NUM_LDST_RS_LOG2-1:0] index);
@@ -279,6 +281,7 @@ module lsb_rs (
             mem_address_d_inside <= 0;
             flush_store <= 0;
             current_load_ff <= 0;
+            flush_not_finished <= 0;
         end
         else if ((flush | flush_store) && (IDLE == state))
         begin
@@ -286,16 +289,19 @@ module lsb_rs (
             mem_address_d_inside <= 0;
             flush_store <= 0;
             current_load_ff <= 0;
+            flush_not_finished <= 0;
         end
         else
         begin
             if (flush)
             begin
                 flush_store <= 1;
+                flush_not_finished <= 1;
             end
             else
             begin
                 flush_store <= flush_store;
+                flush_not_finished <= flush_not_finished;
             end
             unique case (state)
             IDLE:

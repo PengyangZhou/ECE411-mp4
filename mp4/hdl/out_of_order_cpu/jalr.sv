@@ -22,6 +22,8 @@ module jalr
 
     logic busy;
 
+    logic misprediction_reported;
+
     assign jalr_itf.ready = (busy == 0) ? 1'b1 : 1'b0;
 
     /* input and update logic */
@@ -75,7 +77,7 @@ module jalr
                 jalr_res.correct_predict <= 'b1;
                 jalr_res.pc_next <= correct_pc;
             end
-            else if (busy && Qj == 0 && pc_next != correct_pc)
+            else if (busy && Qj == 0 && pc_next != correct_pc && misprediction_reported == 0)
             begin
                 jalr_res.valid  <= 1'b1;
                 jalr_res.val   <= pc + 4;
@@ -100,6 +102,18 @@ module jalr
         else if(busy && Qj == 0 && pc_next == correct_pc)
         begin
             busy <= 1'b0;
+        end
+    end
+
+    always_ff @(posedge clk)
+    begin
+        if(rst | flush)
+        begin
+            misprediction_reported <= 1'b0;
+        end
+        else if (busy && Qj == 0 && pc_next != correct_pc)
+        begin
+            misprediction_reported <= 1'b1;
         end
     end
 
