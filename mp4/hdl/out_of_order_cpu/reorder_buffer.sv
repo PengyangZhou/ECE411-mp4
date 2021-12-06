@@ -172,7 +172,7 @@ module reorder_buffer
                         rob_predict[cmp_res.tag[i]] <= 1'b1;
                         if (rob_type[cmp_res.tag[i]] == BR) begin
                             // if the operation is branch
-                            // for correct predict, nothing is needed
+                            rob_vals[cmp_res.tag[i]] <= cmp_res.val[i];
                         end else if (rob_type[cmp_res.tag[i]] == REG) begin
                             // if the operation is slt, store the compare result 1 or 0
                             rob_vals[cmp_res.tag[i]] <= cmp_res.val[i];
