@@ -142,6 +142,7 @@ module lsb_rs (
     end
 
     logic [1:0] current_load;
+    logic [1:0] current_load_ff;
     always_comb
     begin
         if(busy[0] == 1 && lsb_op[0] == 0 && Qj[0] == 0 && store_before[0] == 0)begin
@@ -181,7 +182,7 @@ module lsb_rs (
                 end
                 else
                 begin
-                    if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
+                    if(busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load_ff == i && mem_resp_d)begin
                         mem_res.valid[i] <= 1'b1;
                         mem_res.tag[i]  <= dest[i];
                         case (funct[i])
@@ -263,12 +264,14 @@ module lsb_rs (
             state <= IDLE;
             mem_address_d_inside <= 0;
             flush_store <= 0;
+            current_load_ff <= 0;
         end
         else if ((flush | flush_store) && (IDLE == state))
         begin
             state <= IDLE;
             mem_address_d_inside <= 0;
             flush_store <= 0;
+            current_load_ff <= 0;
         end
         else
         begin
@@ -287,11 +290,13 @@ module lsb_rs (
                 begin
                     state <= BUSY;
                     mem_address_d_inside <= Vj[current_load] + A[current_load];
+                    current_load_ff <= current_load;
                 end
                 else
                 begin
                     state <= state;
                     mem_address_d_inside <= 0;
+                    current_load_ff <= current_load_ff;
                 end
             end
             BUSY:
@@ -305,6 +310,7 @@ module lsb_rs (
                 begin
                     state <= state;
                 end
+                current_load_ff <= current_load_ff;
             end
             endcase
         end
