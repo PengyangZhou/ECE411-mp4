@@ -237,7 +237,7 @@ module lsb_rs (
             for (int i = 0; i < NUM_LDST_RS; ++i) begin
                 if(lsb_op[i] == 1 && busy[i] && Qj[i] == 0 && Qk[i] == 0)begin
                     busy[i] <= 1'b0;
-                end else if(lsb_op[i] == 0 && busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load == i && mem_resp_d)begin
+                end else if(lsb_op[i] == 0 && busy[i] && Qj[i] == 0 && Qk[i] == 0 && current_load_ff == i && mem_resp_d)begin
                     busy[i] <= 1'b0;                    
                 end else if(~busy[i] && lsb_itf.valid && empty_index == i)begin
                     busy[i] <= 1'b1;
