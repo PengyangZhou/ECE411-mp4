@@ -8,12 +8,12 @@ package ooo_types;
     import rv32i_types::*;
 
     parameter int INST_QUEUE_DEPTH = 6;
-    parameter int ROB_DEPTH   = 6;
+    parameter int ROB_DEPTH   = 14;
     parameter int NUM_ALU_RS  = 5;
     parameter int NUM_CMP_RS  = 3;
     parameter int NUM_LDST_RS = 7;
     parameter int NUM_LDST_RS_LOG2 = 3;
-    parameter MAX_STORE_INDEX = 3; // Based on ROB_DEPTH
+    parameter MAX_STORE_INDEX = 4; // Based on ROB_DEPTH
 
     typedef logic [3:0] tag_t;
     
