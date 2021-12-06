@@ -9,6 +9,8 @@
 ../hdl/out_of_order_cpu/cmp_rs.sv
 ../hdl/out_of_order_cpu/lsb_rs.sv
 ../hdl/out_of_order_cpu/jalr.sv
+../hdl/out_of_order_cpu/predictor_b.sv
+../hdl/out_of_order_cpu/predictor_j.sv
 ../hdl/out_of_order_cpu/branch_predictor.sv
 ../hdl/out_of_order_cpu/decoder.sv
 ../hdl/out_of_order_cpu/regfile.sv

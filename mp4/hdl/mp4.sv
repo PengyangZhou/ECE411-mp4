@@ -55,7 +55,7 @@ module mp4(
     rv32i_word      dcache_pmem_address;
 
     /* instruction cache */
-    given_cache icache(
+    given_cache #(5,5) icache(
         .clk,
         .rst,
         /* port between physical memory (arbiter) */
