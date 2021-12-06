@@ -13,8 +13,8 @@ module predictor_b
     input rv32i_word pc_correct,
     input logic is_correct
 );
-    parameter PRE_B_LEN = 16;
-    parameter PRE_B_LEN_LOG2 = 4;
+    parameter PRE_B_LEN = 32;
+    parameter PRE_B_LEN_LOG2 = 5;
 
     logic used[PRE_B_LEN];
     logic [29:0] tag[PRE_B_LEN];
