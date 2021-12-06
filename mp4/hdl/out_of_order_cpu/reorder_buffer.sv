@@ -32,10 +32,11 @@ module reorder_buffer
     // port to load/store buffer
     output logic new_store,
     // port to branch predictor
-    output logic br_mispredict,
+    output logic br_predict,
+    output logic br_correct,
+    output rv32i_word br_pc_predict,
     output logic jalr_mispredict,
     output rv32i_word pc_correct,
-    output rv32i_word br_pc_mispredict,
     output rv32i_word jalr_pc_mispredict,
     output logic flush,
     // output to indicate infinite loop
@@ -210,6 +211,18 @@ module reorder_buffer
                     rob_out.ready[i] = 1'b1;
                 end  
             end
+            for (int j = 0; j < NUM_CMP_RS; j++) begin
+                if (cmp_res.valid[j] && (cmp_res.tag[j] == i) && (rob_type[i] == REG)) begin
+                    rob_out.vals[i] = cmp_res.val[j];
+                    rob_out.ready[i] = 1'b1;
+                end
+            end
+            for (int j = 0; j < NUM_LDST_RS; j++) begin
+                if (mem_res.valid[j] && (mem_res.tag[j] == i) && (rob_type[i] == REG)) begin
+                    rob_out.vals[i] = mem_res.val[j];
+                    rob_out.ready[i] = 1'b1;
+                end
+            end
         end
 
         // immediately return the next next available ROB entry number
@@ -319,8 +332,9 @@ module reorder_buffer
         flush = '0;
         trap = '0;
         // branch
-        br_mispredict = '0;
-        br_pc_mispredict = '0;
+        br_predict = '0;
+        br_correct = '0;
+        br_pc_predict = '0;
         // jalr
         jalr_mispredict = '0;
         jalr_pc_mispredict = '0;
@@ -329,10 +343,11 @@ module reorder_buffer
 
         if (commit_ready && (rob_predict[commit_head] == 0)) begin
             if (rob_type[commit_head] == BR) begin
-                br_mispredict = 1'b1;
+                br_predict = 1'b1;
+                br_correct = 1'b0;
                 pc_correct = rob_dest[commit_head]; // the next correct pc
-                br_pc_mispredict = rob_vals[commit_head]; // the pc of the branch instruction
-                if (pc_correct == br_pc_mispredict) begin
+                br_pc_predict = rob_vals[commit_head]; // the pc of the branch instruction
+                if (pc_correct == br_pc_predict) begin
                     // if is the infinite loop, stop the program
                     trap = 1'b1;
                 end
@@ -343,6 +358,13 @@ module reorder_buffer
                 pc_correct = jalr_pc_next;
                 jalr_pc_mispredict = rob_vals[commit_head];
                 flush = 1'b1;
+            end
+        end
+        if (commit_ready && (rob_predict[commit_head] == 1)) begin
+            if (rob_type[commit_head] == BR) begin
+                br_predict = 1'b1;
+                br_correct = 1'b1;
+                br_pc_predict = rob_vals[commit_head]; // the pc of the branch instruction
             end
         end
         if (commit_ready && (rob_type[commit_head] == REG)) begin
