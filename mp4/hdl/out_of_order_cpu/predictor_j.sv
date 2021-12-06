@@ -88,14 +88,14 @@ begin
             if (stack_pointer != STACK_LEN)
             begin
                 stack[stack_pointer - 1] <= pc + 4;
-                stack_pointer <= stack_pointer + 'd1;
+                stack_pointer <= stack_pointer + 4'd1;
             end
         end
         else if (new_inst && pop)
         begin
             if (stack_pointer != 0)
             begin
-                stack_pointer <= stack_pointer - 'd1;
+                stack_pointer <= stack_pointer - 4'd1;
             end
         end
     end
