@@ -50,7 +50,7 @@ module regfile(
                 // the situation happens when committing
                 // each cycle updates a single register's value
                 reg_vals[val_rd] <= val; 
-                if ((reg_tags[val_rd] == tag_from_rob) && (!load_tag)) begin
+                if ((reg_tags[val_rd] == tag_from_rob) && !(load_tag && (val_rd == tag_rd))) begin
                     // if the register tag is the same as the committed ROB entry number,
                     // clear the tag
                     reg_tags[val_rd] <= '0;
