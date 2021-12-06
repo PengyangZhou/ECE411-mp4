@@ -40,8 +40,24 @@ enum logic
 
 rv32i_opcode opcode;
 rv32i_word j_imm;
+rv32i_word b_imm;
 assign opcode = rv32i_opcode'(mem_rdata_i[6:0]);
 assign j_imm = {{12{mem_rdata_i[31]}}, mem_rdata_i[19:12], mem_rdata_i[20], mem_rdata_i[30:21], 1'b0};
+assign b_imm = {{20{mem_rdata_i[31]}}, mem_rdata_i[7], mem_rdata_i[30:25], mem_rdata_i[11:8], 1'b0};
+
+logic is_prediction;
+assign is_prediction = (op_br == opcode) ? 1'b1 : 1'b0;
+
+predictor_b predictor_b_inst (
+    .clk(clk),
+    .rst(rst),
+    .is_prediction(is_prediction),
+    .pc_fetch(pc),
+    .br_pred(br_pred),
+    .is_correction(br_predict),
+    .pc_correct(br_pc_predict),
+    .is_correct(br_correct)
+);
 
 always_ff @(posedge clk)
 begin
@@ -95,22 +111,25 @@ begin
     if (op_jal == opcode)
     begin
         pc_next = pc + j_imm;
-        br_pred = 0;
     end
-    else if (op_br == opcode) // TODO: Predictor
+    else if (op_br == opcode)
     begin
-        pc_next = pc + 4;
-        br_pred = 0;
+        if (br_pred)
+        begin
+            pc_next = pc + b_imm;
+        end
+        else
+        begin
+            pc_next = pc + 4;
+        end
     end
     else if (op_jalr == opcode) // TODO: Predictor
     begin
         pc_next = pc + 4;
-        br_pred = 0;
     end
     else
     begin
         pc_next = pc + 4;
-        br_pred = 0;
     end
 end
 
