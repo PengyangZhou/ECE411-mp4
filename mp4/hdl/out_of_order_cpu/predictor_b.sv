@@ -13,8 +13,8 @@ module predictor_b
     input rv32i_word pc_correct,
     input logic is_correct
 );
-    parameter PRE_B_LEN = 8;
-    parameter PRE_B_LEN_LOG2 = 3;
+    parameter PRE_B_LEN = 16;
+    parameter PRE_B_LEN_LOG2 = 4;
 
     logic used[PRE_B_LEN];
     logic [29:0] tag[PRE_B_LEN];
@@ -35,7 +35,7 @@ module predictor_b
     always_comb
     begin
         pc_fetch_exist = 0;
-        pc_fetch_match = 3'd0;
+        pc_fetch_match = 0;
         for (int i = 0; i < PRE_B_LEN; i++)
         begin
             if (used[i] && (pc_fetch[31:2] == tag[i]))
@@ -44,55 +44,11 @@ module predictor_b
                 pc_fetch_match = i[PRE_B_LEN_LOG2-1:0];
             end
         end
-        // if (used[0] && (pc_fetch[31:2] == tag[0]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd0;
-        // end
-        // else if (used[1] && (pc_fetch[31:2] == tag[1]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd1;
-        // end
-        // else if (used[2] && (pc_fetch[31:2] == tag[2]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd2;
-        // end
-        // else if (used[3] && (pc_fetch[31:2] == tag[3]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd3;
-        // end
-        // else if (used[4] && (pc_fetch[31:2] == tag[4]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd4;
-        // end
-        // else if (used[5] && (pc_fetch[31:2] == tag[5]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd5;
-        // end
-        // else if (used[6] && (pc_fetch[31:2] == tag[6]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd6;
-        // end
-        // else if (used[7] && (pc_fetch[31:2] == tag[7]))
-        // begin
-        //     pc_fetch_exist = 1;
-        //     pc_fetch_match = 3'd7;
-        // else
-        // begin
-        //     pc_fetch_exist = 0;
-        //     pc_fetch_match = 3'd0;
-        // end
     end
     always_comb
     begin
         pc_correct_exist = 0;
-        pc_correct_match = 3'd0;
+        pc_correct_match = 0;
         for (int i = 0; i < PRE_B_LEN; i++)
         begin
             if (used[i] && (pc_correct[31:2] == tag[i]))
@@ -101,50 +57,6 @@ module predictor_b
                 pc_correct_match = i[PRE_B_LEN_LOG2-1:0];
             end
         end
-        // if (used[0] && (pc_correct[31:2] == tag[0]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd0;
-        // end
-        // else if (used[1] && (pc_correct[31:2] == tag[1]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd1;
-        // end
-        // else if (used[2] && (pc_correct[31:2] == tag[2]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd2;
-        // end
-        // else if (used[3] && (pc_correct[31:2] == tag[3]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd3;
-        // end
-        // else if (used[4] && (pc_correct[31:2] == tag[4]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd4;
-        // end
-        // else if (used[5] && (pc_correct[31:2] == tag[5]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd5;
-        // end
-        // else if (used[6] && (pc_correct[31:2] == tag[6]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd6;
-        // end
-        // else if (used[7] && (pc_correct[31:2] == tag[7]))
-        // begin
-        //     pc_correct_exist = 1;
-        //     pc_correct_match = 3'd7;
-        // else
-        // begin
-        //     pc_correct_exist = 0;
-        //     pc_correct_match = 3'd0;
-        // end
     end
 
     always_ff @(posedge clk)
@@ -157,7 +69,7 @@ module predictor_b
                 tag[i] <= 30'b0;
                 br[i] <= WN;
             end
-            next_new <= 3'd0;
+            next_new <= 0;
         end
         else
         begin
