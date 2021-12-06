@@ -27,7 +27,7 @@ module lsb_rs (
     
     /* RS entry fields */
     /* NUM_LDST_RS is 7 */
-    logic       busy    [NUM_LDST_RS];
+    logic [NUM_LDST_RS-1:0] busy;
     rv32i_word  Vj      [NUM_LDST_RS];
     rv32i_word  Vk      [NUM_LDST_RS];
     rv32i_word  A       [NUM_LDST_RS];

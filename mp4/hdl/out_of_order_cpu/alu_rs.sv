@@ -18,7 +18,7 @@ module alu_rs (
 );
 
     /* RS entry fields */
-    logic       busy    [NUM_ALU_RS];
+    logic       [NUM_ALU_RS-1:0] busy;
     alu_ops     op_type [NUM_ALU_RS];
     rv32i_word  Vj      [NUM_ALU_RS];
     rv32i_word  Vk      [NUM_ALU_RS];

@@ -16,7 +16,7 @@ module cmp_rs (
 
     /* RS entry fields */
     /* NUM_CMP_RS is 3 */
-    logic       busy    [NUM_CMP_RS];
+    logic       [NUM_CMP_RS-1:0] busy;
     logic       is_br   [NUM_CMP_RS];
     branch_funct3_t op_type[NUM_CMP_RS];
     rv32i_word  Vj      [NUM_CMP_RS];
