@@ -41,8 +41,10 @@ module cpu (
     logic br_predict;
     logic br_correct;
     rv32i_word br_pc_predict;
-    logic jalr_mispredict;
-    rv32i_word jalr_pc_mispredict;
+    logic jalr_predict;
+    logic jalr_correct;
+    // logic jalr_mispredict;
+    // rv32i_word jalr_pc_mispredict;
 
     logic iq_valid;
     logic iq_ready;
@@ -64,8 +66,10 @@ module cpu (
         .br_predict(br_predict),
         .br_correct(br_correct),
         .br_pc_predict(br_pc_predict),
-        .jalr_mispredict(jalr_mispredict),
-        .jalr_pc_mispredict(jalr_pc_mispredict),
+        .jalr_predict(jalr_predict),
+        .jalr_correct(jalr_correct),
+        // .jalr_mispredict(jalr_mispredict),
+        // .jalr_pc_mispredict(jalr_pc_mispredict),
         // port with instruction cache
         .mem_resp_i(mem_resp_i),
         .mem_rdata_i(mem_rdata_i),
@@ -201,8 +205,10 @@ module cpu (
         .br_predict(br_predict),
         .br_correct(br_correct),
         .br_pc_predict(br_pc_predict),
-        .jalr_mispredict(jalr_mispredict),
-        .jalr_pc_mispredict(jalr_pc_mispredict),
+        .jalr_predict(jalr_predict),
+        .jalr_correct(jalr_correct),
+        // .jalr_mispredict(jalr_mispredict),
+        // .jalr_pc_mispredict(jalr_pc_mispredict),
         .trap(trap)
     );
 

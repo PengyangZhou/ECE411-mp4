@@ -17,8 +17,10 @@ module branch_predictor
     input logic br_predict,
     input logic br_correct,
     input rv32i_word br_pc_predict,
-    input logic jalr_mispredict, // Note: useless
-    input rv32i_word jalr_pc_mispredict, // Note: useless
+    input logic jalr_predict,
+    input logic jalr_correct,
+    // input logic jalr_mispredict, // Note: useless
+    // input rv32i_word jalr_pc_mispredict, // Note: useless
     // i cache
     input logic mem_resp_i,
     input rv32i_word mem_rdata_i,

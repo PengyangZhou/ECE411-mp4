@@ -37,8 +37,10 @@ module reorder_buffer
     output logic br_predict,
     output logic br_correct,
     output rv32i_word br_pc_predict,
-    output logic jalr_mispredict,
-    output rv32i_word jalr_pc_mispredict,
+    output logic jalr_predict,
+    output logic jalr_correct,
+    // output logic jalr_mispredict,
+    // output rv32i_word jalr_pc_mispredict,
     // output to indicate infinite loop
     output logic trap
 );
@@ -336,8 +338,10 @@ module reorder_buffer
         br_correct = '0;
         br_pc_predict = '0;
         // jalr
-        jalr_mispredict = '0;
-        jalr_pc_mispredict = '0;
+        jalr_predict = '0;
+        jalr_correct = '0;
+        // jalr_mispredict = '0;
+        // jalr_pc_mispredict = '0;
         // the next correct pc, used when mispredict
         pc_correct = '0;
 
@@ -354,9 +358,11 @@ module reorder_buffer
                 flush = 1'b1;
             end
             if (rob_type[commit_head] == JALR) begin
-                jalr_mispredict = '1;
+                jalr_predict = '1;
+                jalr_correct = '0;
+                // jalr_mispredict = '1;
                 pc_correct = jalr_pc_next;
-                jalr_pc_mispredict = rob_vals[commit_head];
+                // jalr_pc_mispredict = rob_vals[commit_head];
                 flush = 1'b1;
             end
         end
@@ -365,6 +371,10 @@ module reorder_buffer
                 br_predict = 1'b1;
                 br_correct = 1'b1;
                 br_pc_predict = rob_vals[commit_head]; // the pc of the branch instruction
+            end
+            if (rob_type[commit_head] == JALR) begin
+                jalr_predict = '1;
+                jalr_correct = '1;
             end
         end
         if (commit_ready && (rob_type[commit_head] == REG)) begin
