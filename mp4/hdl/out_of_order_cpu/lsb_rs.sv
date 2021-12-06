@@ -22,13 +22,11 @@ module lsb_rs (
     input logic mem_resp_d,
     input rv32i_word mem_rdata_d
 );
-    parameter MAX_STORE_INDEX = 2; // ROB_DEPTH is 7
-    
-    rv32i_word mem_address_d_inside;
+        rv32i_word mem_address_d_inside;
     assign mem_address_d = {mem_address_d_inside[31:2], 2'b00};
     
     /* RS entry fields */
-    /* NUM_LDST_RS is 3 */
+    /* NUM_LDST_RS is 7 */
     logic       busy    [NUM_LDST_RS];
     rv32i_word  Vj      [NUM_LDST_RS];
     rv32i_word  Vk      [NUM_LDST_RS];
@@ -38,12 +36,12 @@ module lsb_rs (
     logic [2:0] lsb_op  [NUM_LDST_RS]; // 1 for store, 0 for load
     logic [2:0] funct   [NUM_LDST_RS];
     tag_t       dest    [NUM_LDST_RS];
-    logic [MAX_STORE_INDEX:0] store_before [NUM_LDST_RS];
+    logic [MAX_STORE_INDEX-1:0] store_before [NUM_LDST_RS];
 
     /* intermediate variables */
     genvar i;
-    logic [1:0] empty_index;
-    logic [MAX_STORE_INDEX:0] store_number;
+    logic [2:0] empty_index;
+    logic [MAX_STORE_INDEX-1:0] store_number;
 
     /* Your logic here */
     /* find the first empty entry */
@@ -55,8 +53,16 @@ module lsb_rs (
             empty_index = 1;
         end else if(busy[2] == 0)begin
             empty_index = 2;
+        end else if(busy[3] == 0)begin
+            empty_index = 3;
+        end else if(busy[4] == 0)begin
+            empty_index = 4;
+        end else if(busy[5] == 0)begin
+            empty_index = 5;
+        end else if(busy[6] == 0)begin
+            empty_index = 6;
         end else begin
-            empty_index = 3; /* if empty_index is 3, there is no empty space in the RS */
+            empty_index = 7; /* if empty_index is 7, there is no empty space in the RS */
         end
         lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
@@ -87,11 +93,11 @@ module lsb_rs (
         // else if (new_valid && lsb_itf.lsb_op)
         else if (lsb_itf.valid && lsb_itf.lsb_op)
         begin
-            store_number <= store_number + 3'b1;
+            store_number <= store_number + 1'b1;
         end
         else if (new_store)
         begin
-            store_number <= store_number - 3'b1;
+            store_number <= store_number - 1'b1;
         end
         else
         begin
@@ -121,7 +127,7 @@ module lsb_rs (
                     push_entry(i);
                     if (new_store && 0 == lsb_itf.lsb_op)
                     begin
-                        store_before[i] <= store_number - 3'b1;
+                        store_before[i] <= store_number - 1'b1;
                     end
                 end else begin
                     /* grab data from CDB */
@@ -134,15 +140,15 @@ module lsb_rs (
                         Vk[i] <= rob_data.vals[Qk[i]];
                     end
                     if (new_store && busy[i] == 1 && lsb_op[i] == 0 && store_before[i] != 0)begin
-                        store_before[i] <= store_before[i] - 3'b1;
+                        store_before[i] <= store_before[i] - 1'b1;
                     end
                 end
             end
         end
     end
 
-    logic [1:0] current_load;
-    logic [1:0] current_load_ff;
+    logic [NUM_LDST_RS_LOG2-1:0] current_load;
+    logic [NUM_LDST_RS_LOG2-1:0] current_load_ff;
     always_comb
     begin
         if(busy[0] == 1 && lsb_op[0] == 0 && Qj[0] == 0 && store_before[0] == 0)begin
@@ -151,8 +157,16 @@ module lsb_rs (
             current_load = 1;
         end else if(busy[2] == 1 && lsb_op[2] == 0 && Qj[2] == 0 && store_before[2] == 0)begin
             current_load = 2;
+        end else if(busy[3] == 1 && lsb_op[3] == 0 && Qj[3] == 0 && store_before[3] == 0)begin
+            current_load = 3;
+        end else if(busy[4] == 1 && lsb_op[4] == 0 && Qj[4] == 0 && store_before[4] == 0)begin
+            current_load = 4;
+        end else if(busy[5] == 1 && lsb_op[5] == 0 && Qj[5] == 0 && store_before[5] == 0)begin
+            current_load = 5;
+        end else if(busy[6] == 1 && lsb_op[6] == 0 && Qj[6] == 0 && store_before[6] == 0)begin
+            current_load = 6;
         end else begin
-            current_load = 3; /* if current_load is 3, there is no valid load instruction */
+            current_load = 7; /* if current_load is 7, there is no valid load instruction */
         end
     end
 
@@ -286,7 +300,7 @@ module lsb_rs (
             unique case (state)
             IDLE:
             begin
-                if (3 != current_load)
+                if (NUM_LDST_RS != current_load)
                 begin
                     state <= BUSY;
                     mem_address_d_inside <= Vj[current_load] + A[current_load];
