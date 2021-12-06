@@ -31,16 +31,17 @@ module cpu (
     assign mem_address_d = (1 == mem_write_d) ? mem_address_d_write : mem_address_d_read;
 
     logic flush;
+    rv32i_word pc_correct;
 
     rv32i_word pc_predictor;
     rv32i_word inst_predictor;
     rv32i_word pc_next_predictor;
     logic br_pred_predictor;
     
-    logic br_mispredict;
+    logic br_predict;
+    logic br_correct;
+    rv32i_word br_pc_predict;
     logic jalr_mispredict;
-    rv32i_word pc_correct;
-    rv32i_word br_pc_mispredict;
     rv32i_word jalr_pc_mispredict;
 
     logic iq_valid;
@@ -59,10 +60,11 @@ module cpu (
         .iq_valid(iq_valid),
         // update and flush logic
         .flush(flush),
-        .br_mispredict(br_mispredict),
-        .jalr_mispredict(jalr_mispredict),
         .pc_correct(pc_correct),
-        .br_pc_mispredict(br_pc_mispredict),
+        .br_predict(br_predict),
+        .br_correct(br_correct),
+        .br_pc_predict(br_pc_predict),
+        .jalr_mispredict(jalr_mispredict),
         .jalr_pc_mispredict(jalr_pc_mispredict),
         // port with instruction cache
         .mem_resp_i(mem_resp_i),
@@ -194,12 +196,13 @@ module cpu (
         .mem_byte_enable(mem_byte_enable_d),
         .new_store(new_store),
         // flush signal
-        .br_mispredict(br_mispredict),
-        .jalr_mispredict(jalr_mispredict),
-        .pc_correct(pc_correct),
-        .br_pc_mispredict(br_pc_mispredict),
-        .jalr_pc_mispredict(jalr_pc_mispredict),
         .flush(flush),
+        .pc_correct(pc_correct),
+        .br_predict(br_predict),
+        .br_correct(br_correct),
+        .br_pc_predict(br_pc_predict),
+        .jalr_mispredict(jalr_mispredict),
+        .jalr_pc_mispredict(jalr_pc_mispredict),
         .trap(trap)
     );
 

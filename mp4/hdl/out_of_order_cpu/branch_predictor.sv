@@ -13,10 +13,11 @@ module branch_predictor
     output logic iq_valid,
     // flush
     input logic flush,
-    input logic br_mispredict,
-    input logic jalr_mispredict,
     input rv32i_word pc_correct,
-    input rv32i_word br_pc_mispredict,
+    input logic br_predict,
+    input logic br_correct,
+    input rv32i_word br_pc_predict,
+    input logic jalr_mispredict,
     input rv32i_word jalr_pc_mispredict,
     // i cache
     input logic mem_resp_i,

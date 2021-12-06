@@ -32,13 +32,13 @@ module reorder_buffer
     // port to load/store buffer
     output logic new_store,
     // port to branch predictor
+    output logic flush,
+    output rv32i_word pc_correct,
     output logic br_predict,
     output logic br_correct,
     output rv32i_word br_pc_predict,
     output logic jalr_mispredict,
-    output rv32i_word pc_correct,
     output rv32i_word jalr_pc_mispredict,
-    output logic flush,
     // output to indicate infinite loop
     output logic trap
 );
