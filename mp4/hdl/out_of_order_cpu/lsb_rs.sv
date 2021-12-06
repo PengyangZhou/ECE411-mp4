@@ -40,7 +40,7 @@ module lsb_rs (
 
     /* intermediate variables */
     genvar i;
-    logic [2:0] empty_index;
+    logic [NUM_LDST_RS_LOG2-1:0] empty_index;
     logic [MAX_STORE_INDEX-1:0] store_number;
 
     /* Your logic here */
@@ -67,7 +67,7 @@ module lsb_rs (
         lsb_itf.ready = empty_index < NUM_LDST_RS ? 1'b1 : 1'b0;
     end
 
-    task push_entry(logic [1:0] index);
+    task push_entry(logic [NUM_LDST_RS_LOG2-1:0] index);
         Vj[index]   <= lsb_itf.Vj;
         Vk[index]   <= lsb_itf.Vk;
         A[index]    <= lsb_itf.A;
