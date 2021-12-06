@@ -81,18 +81,18 @@ always @(negedge cpu_clk) begin
         if(dut.dcache.control.hit) dcache_hits <= dcache_hits + 1;
     end
     /* reservation station counters */
-    if(dut.ooo_cpu.alu_rs_inst.busy[0])begin 
+    if(dut.ooo_cpu.alu_rs_inst.busy)begin 
         alu_usage <= alu_usage + dut.ooo_cpu.alu_rs_inst.busy[0] + dut.ooo_cpu.alu_rs_inst.busy[1] +
             dut.ooo_cpu.alu_rs_inst.busy[2] + dut.ooo_cpu.alu_rs_inst.busy[3] +
             dut.ooo_cpu.alu_rs_inst.busy[4];
         alu_working <= alu_working + 1;
     end
-    if(dut.ooo_cpu.lsb_rs_inst.busy[0])begin
+    if(dut.ooo_cpu.lsb_rs_inst.busy)begin
         lsb_usage <= lsb_usage + dut.ooo_cpu.lsb_rs_inst.busy[0] + dut.ooo_cpu.lsb_rs_inst.busy[1] +
             dut.ooo_cpu.lsb_rs_inst.busy[2];
         lsb_working <= lsb_working + 1;
     end
-    if(dut.ooo_cpu.cmp_rs_inst.busy[0])begin
+    if(dut.ooo_cpu.cmp_rs_inst.busy)begin
         cmp_usage <= cmp_usage + dut.ooo_cpu.cmp_rs_inst.busy[0] + dut.ooo_cpu.cmp_rs_inst.busy[1] +
             dut.ooo_cpu.cmp_rs_inst.busy[2];
         cmp_working <= cmp_working + 1;
