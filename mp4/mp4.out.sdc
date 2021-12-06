@@ -19,10 +19,10 @@
 ## PROGRAM "Quartus Prime"
 ## VERSION "Version 18.1.0 Build 625 09/12/2018 SJ Standard Edition"
 
-## DATE    "Mon Dec 06 11:53:03 2021"
+## DATE    "Mon Dec  6 18:43:32 2021"
 
 ##
-## DEVICE  "EP2AGX45DF25I3"
+## DEVICE  "EP2AGX65DF25I3"
 ##
 
 
