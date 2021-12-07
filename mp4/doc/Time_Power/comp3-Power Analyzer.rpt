@@ -1,5 +1,5 @@
 Power Analyzer report for mp4
-Sun Dec 05 19:30:34 2021
+Sun Dec 05 23:14:46 2021
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Standard Edition
 
 
@@ -54,29 +54,29 @@ refer to the applicable agreement for further details.
 ; Number detected on machine ; 16          ;
 ; Maximum allowed            ; 8           ;
 ;                            ;             ;
-; Average used               ; 1.10        ;
+; Average used               ; 1.11        ;
 ; Maximum used               ; 8           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processors 2-8         ;   1.5%      ;
+;     Processors 2-8         ;   1.6%      ;
 +----------------------------+-------------+
 
 
 +-------------------------------------------------------------------------------------------+
 ; Power Analyzer Summary                                                                    ;
 +----------------------------------------+--------------------------------------------------+
-; Power Analyzer Status                  ; Successful - Sun Dec 05 19:22:08 2021            ;
+; Power Analyzer Status                  ; Successful - Sun Dec 05 23:12:55 2021            ;
 ; Quartus Prime Version                  ; 18.1.0 Build 625 09/12/2018 SJ Standard Edition  ;
 ; Revision Name                          ; mp4                                              ;
 ; Top-level Entity Name                  ; mp4                                              ;
 ; Family                                 ; Arria II GX                                      ;
 ; Device                                 ; EP2AGX65DF25I3                                   ;
 ; Power Models                           ; Final                                            ;
-; Total Thermal Power Dissipation        ; 970.89 mW                                        ;
-; Core Dynamic Thermal Power Dissipation ; 615.58 mW                                        ;
-; Core Static Thermal Power Dissipation  ; 335.77 mW                                        ;
-; I/O Thermal Power Dissipation          ; 19.54 mW                                         ;
+; Total Thermal Power Dissipation        ; 960.27 mW                                        ;
+; Core Dynamic Thermal Power Dissipation ; 601.06 mW                                        ;
+; Core Static Thermal Power Dissipation  ; 340.03 mW                                        ;
+; I/O Thermal Power Dissipation          ; 19.19 mW                                         ;
 ; Power Estimation Confidence            ; Low: user provided insufficient toggle rate data ;
 +----------------------------------------+--------------------------------------------------+
 
@@ -112,7 +112,7 @@ refer to the applicable agreement for further details.
 +---------+--------------------------------+-----------+--------+----------------+--------------+-----------+----------+
 ; File ID ; File Name                      ; File Type ; Entity ; VCD Start Time ; VCD End Time ; Unknown % ; Toggle % ;
 +---------+--------------------------------+-----------+--------+----------------+--------------+-----------+----------+
-; f1      ; simulation/modelsim/all_tb.vcd ; VCD       ; |mp4   ; N/A            ; N/A          ; 0.9%      ; 87.9%    ;
+; f1      ; simulation/modelsim/all_tb.vcd ; VCD       ; |mp4   ; N/A            ; N/A          ; 0.9%      ; 88.1%    ;
 +---------+--------------------------------+-----------+--------+----------------+--------------+-----------+----------+
 
 
@@ -134,7 +134,7 @@ refer to the applicable agreement for further details.
 ;     VCCL_GXB                                ; 0.00 V                    ;
 ;     2.5 V I/O Standard                      ; 2.5 V                     ;
 ;                                             ;                           ;
-; Auto computed junction temperature          ; 28.8 degrees Celsius      ;
+; Auto computed junction temperature          ; 28.7 degrees Celsius      ;
 ;     Ambient temperature                     ; 25.0 degrees Celsius      ;
 ;     Junction-to-Case thermal resistance     ; 0.10 degrees Celsius/Watt ;
 ;     Case-to-Heat Sink thermal resistance    ; 0.10 degrees Celsius/Watt ;
@@ -157,10 +157,10 @@ refer to the applicable agreement for further details.
 +--------------------+-----------------------------------+-----------------------------+--------------------------------+-------------------------------+-----------------------------------------------------------+
 ; Block Type         ; Total Thermal Power by Block Type ; Block Thermal Dynamic Power ; Block Thermal Static Power (1) ; Routing Thermal Dynamic Power ; Block Average Toggle Rate (millions of transitions / sec) ;
 +--------------------+-----------------------------------+-----------------------------+--------------------------------+-------------------------------+-----------------------------------------------------------+
-; Combinational cell ; 400.39 mW                         ; 141.93 mW                   ; --                             ; 258.46 mW                     ;   21.799                                                  ;
-; Clock enable block ; 34.49 mW                          ; 0.00 mW                     ; --                             ; 34.49 mW                      ;  200.000                                                  ;
-; Register cell      ; 180.65 mW                         ; 69.14 mW                    ; --                             ; 111.51 mW                     ;   12.047                                                  ;
-; I/O                ; 7.09 mW                           ; 2.86 mW                     ; 4.18 mW                        ; 0.05 mW                       ;    1.673                                                  ;
+; Combinational cell ; 368.36 mW                         ; 131.13 mW                   ; --                             ; 237.23 mW                     ;   19.109                                                  ;
+; Clock enable block ; 41.14 mW                          ; 0.00 mW                     ; --                             ; 41.14 mW                      ;  200.000                                                  ;
+; Register cell      ; 191.49 mW                         ; 68.66 mW                    ; --                             ; 122.83 mW                     ;   12.044                                                  ;
+; I/O                ; 6.75 mW                           ; 2.51 mW                     ; 4.18 mW                        ; 0.07 mW                       ;    1.685                                                  ;
 +--------------------+-----------------------------------+-----------------------------+--------------------------------+-------------------------------+-----------------------------------------------------------+
 (1) The "Block Thermal Static Power" for all block types except Pins and the Voltage Regulator, if one exists, is part of the "Core Static Thermal Power Dissipation" value found on the PowerPlay Power Analyzer-->Summary report panel. The "Core Static Thermal Power Dissipation" also contains the thermal static power dissipated by the routing.
 
@@ -170,56 +170,56 @@ refer to the applicable agreement for further details.
 +---------------------------------------------------------+--------------------------------------+---------------------------------+-----------------------------------+-----------------------------------+-----------------------------------------------------------------------------------------------------------------+
 ; Compilation Hierarchy Node                              ; Total Thermal Power by Hierarchy (1) ; Block Thermal Dynamic Power (1) ; Block Thermal Static Power (1)(2) ; Routing Thermal Dynamic Power (1) ; Full Hierarchy Name                                                                                             ;
 +---------------------------------------------------------+--------------------------------------+---------------------------------+-----------------------------------+-----------------------------------+-----------------------------------------------------------------------------------------------------------------+
-; |mp4                                                    ; 622.63 mW (41.58 mW)                 ; 213.93 mW (2.86 mW)             ; 4.18 mW (4.18 mW)                 ; 404.51 mW (34.54 mW)              ; |mp4                                                                                                            ;
-;     |arbiter:arbiter_inst                               ; 0.11 mW (0.11 mW)                    ; 0.08 mW (0.08 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|arbiter:arbiter_inst                                                                                       ;
+; |mp4                                                    ; 607.75 mW (47.90 mW)                 ; 202.30 mW (2.51 mW)             ; 4.18 mW (4.18 mW)                 ; 401.27 mW (41.21 mW)              ; |mp4                                                                                                            ;
+;     |arbiter:arbiter_inst                               ; 0.10 mW (0.10 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|arbiter:arbiter_inst                                                                                       ;
 ;     |hard_block:auto_generated_inst                     ; 0.00 mW (0.00 mW)                    ; 0.00 mW (0.00 mW)               ; --                                ; 0.00 mW (0.00 mW)                 ; |mp4|hard_block:auto_generated_inst                                                                             ;
-;     |cacheline_adaptor:cacheline_adaptor_inst           ; 2.02 mW (2.02 mW)                    ; 1.03 mW (1.03 mW)               ; --                                ; 0.99 mW (0.99 mW)                 ; |mp4|cacheline_adaptor:cacheline_adaptor_inst                                                                   ;
-;     |cache:dcache                                       ; 111.09 mW (0.00 mW)                  ; 42.63 mW (0.00 mW)              ; --                                ; 68.45 mW (0.00 mW)                ; |mp4|cache:dcache                                                                                               ;
-;         |bus_adapter:bus_adapter                        ; 3.55 mW (3.55 mW)                    ; 1.28 mW (1.28 mW)               ; --                                ; 2.27 mW (2.27 mW)                 ; |mp4|cache:dcache|bus_adapter:bus_adapter                                                                       ;
-;         |cache_control:control                          ; 3.23 mW (3.23 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 3.16 mW (3.16 mW)                 ; |mp4|cache:dcache|cache_control:control                                                                         ;
-;         |cache_datapath:datapath                        ; 104.31 mW (2.97 mW)                  ; 41.29 mW (0.11 mW)              ; --                                ; 63.02 mW (2.85 mW)                ; |mp4|cache:dcache|cache_datapath:datapath                                                                       ;
-;             |data_storage_array:data_storage_array_inst ; 98.12 mW (7.06 mW)                   ; 38.83 mW (1.61 mW)              ; --                                ; 59.29 mW (5.45 mW)                ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst                            ;
-;                 |data_array:data_array_way0             ; 40.31 mW (40.31 mW)                  ; 17.54 mW (17.54 mW)             ; --                                ; 22.77 mW (22.77 mW)               ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst|data_array:data_array_way0 ;
-;                 |data_array:data_array_way1             ; 50.75 mW (50.75 mW)                  ; 19.68 mW (19.68 mW)             ; --                                ; 31.07 mW (31.07 mW)               ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst|data_array:data_array_way1 ;
-;             |dirty_array:dirty_array_inst               ; 0.20 mW (0.04 mW)                    ; 0.17 mW (0.02 mW)               ; --                                ; 0.03 mW (0.02 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst                                          ;
-;                 |array:dirty_array_way0                 ; 0.08 mW (0.08 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst|array:dirty_array_way0                   ;
-;                 |array:dirty_array_way1                 ; 0.08 mW (0.08 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst|array:dirty_array_way1                   ;
-;             |hit_check:hit_check_inst                   ; 0.06 mW (0.06 mW)                    ; 0.03 mW (0.03 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|hit_check:hit_check_inst                                              ;
-;             |lru_array:lru_array_inst                   ; 0.24 mW (0.00 mW)                    ; 0.16 mW (0.00 mW)               ; --                                ; 0.07 mW (0.00 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|lru_array:lru_array_inst                                              ;
-;                 |array:lru_array                        ; 0.24 mW (0.24 mW)                    ; 0.16 mW (0.16 mW)               ; --                                ; 0.07 mW (0.07 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|lru_array:lru_array_inst|array:lru_array                              ;
-;             |tag_array:tag_array_inst                   ; 2.53 mW (0.00 mW)                    ; 1.86 mW (0.00 mW)               ; --                                ; 0.67 mW (0.00 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst                                              ;
-;                 |array:tag_array_way0                   ; 1.25 mW (1.25 mW)                    ; 0.92 mW (0.92 mW)               ; --                                ; 0.34 mW (0.34 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst|array:tag_array_way0                         ;
-;                 |array:tag_array_way1                   ; 1.28 mW (1.28 mW)                    ; 0.94 mW (0.94 mW)               ; --                                ; 0.34 mW (0.34 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst|array:tag_array_way1                         ;
+;     |cacheline_adaptor:cacheline_adaptor_inst           ; 2.03 mW (2.03 mW)                    ; 1.11 mW (1.11 mW)               ; --                                ; 0.92 mW (0.92 mW)                 ; |mp4|cacheline_adaptor:cacheline_adaptor_inst                                                                   ;
+;     |cache:dcache                                       ; 83.39 mW (0.00 mW)                   ; 33.19 mW (0.00 mW)              ; --                                ; 50.20 mW (0.00 mW)                ; |mp4|cache:dcache                                                                                               ;
+;         |bus_adapter:bus_adapter                        ; 5.80 mW (5.80 mW)                    ; 1.55 mW (1.55 mW)               ; --                                ; 4.25 mW (4.25 mW)                 ; |mp4|cache:dcache|bus_adapter:bus_adapter                                                                       ;
+;         |cache_control:control                          ; 2.45 mW (2.45 mW)                    ; 0.08 mW (0.08 mW)               ; --                                ; 2.37 mW (2.37 mW)                 ; |mp4|cache:dcache|cache_control:control                                                                         ;
+;         |cache_datapath:datapath                        ; 75.14 mW (1.63 mW)                   ; 31.56 mW (0.13 mW)              ; --                                ; 43.58 mW (1.50 mW)                ; |mp4|cache:dcache|cache_datapath:datapath                                                                       ;
+;             |data_storage_array:data_storage_array_inst ; 70.19 mW (5.67 mW)                   ; 29.12 mW (1.71 mW)              ; --                                ; 41.07 mW (3.96 mW)                ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst                            ;
+;                 |data_array:data_array_way0             ; 26.72 mW (26.72 mW)                  ; 12.47 mW (12.47 mW)             ; --                                ; 14.25 mW (14.25 mW)               ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst|data_array:data_array_way0 ;
+;                 |data_array:data_array_way1             ; 37.80 mW (37.80 mW)                  ; 14.94 mW (14.94 mW)             ; --                                ; 22.86 mW (22.86 mW)               ; |mp4|cache:dcache|cache_datapath:datapath|data_storage_array:data_storage_array_inst|data_array:data_array_way1 ;
+;             |dirty_array:dirty_array_inst               ; 0.22 mW (0.04 mW)                    ; 0.17 mW (0.02 mW)               ; --                                ; 0.05 mW (0.02 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst                                          ;
+;                 |array:dirty_array_way0                 ; 0.08 mW (0.08 mW)                    ; 0.08 mW (0.08 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst|array:dirty_array_way0                   ;
+;                 |array:dirty_array_way1                 ; 0.09 mW (0.09 mW)                    ; 0.08 mW (0.08 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|dirty_array:dirty_array_inst|array:dirty_array_way1                   ;
+;             |hit_check:hit_check_inst                   ; 0.05 mW (0.05 mW)                    ; 0.03 mW (0.03 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|hit_check:hit_check_inst                                              ;
+;             |lru_array:lru_array_inst                   ; 0.25 mW (0.00 mW)                    ; 0.18 mW (0.00 mW)               ; --                                ; 0.07 mW (0.00 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|lru_array:lru_array_inst                                              ;
+;                 |array:lru_array                        ; 0.25 mW (0.25 mW)                    ; 0.18 mW (0.18 mW)               ; --                                ; 0.07 mW (0.07 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|lru_array:lru_array_inst|array:lru_array                              ;
+;             |tag_array:tag_array_inst                   ; 2.60 mW (0.00 mW)                    ; 1.81 mW (0.00 mW)               ; --                                ; 0.79 mW (0.00 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst                                              ;
+;                 |array:tag_array_way0                   ; 1.25 mW (1.25 mW)                    ; 0.87 mW (0.87 mW)               ; --                                ; 0.38 mW (0.38 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst|array:tag_array_way0                         ;
+;                 |array:tag_array_way1                   ; 1.35 mW (1.35 mW)                    ; 0.94 mW (0.94 mW)               ; --                                ; 0.41 mW (0.41 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|tag_array:tag_array_inst|array:tag_array_way1                         ;
 ;             |valid_array:valid_array_inst               ; 0.20 mW (0.04 mW)                    ; 0.13 mW (0.00 mW)               ; --                                ; 0.07 mW (0.04 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|valid_array:valid_array_inst                                          ;
-;                 |array:valid_array_way0                 ; 0.08 mW (0.08 mW)                    ; 0.06 mW (0.06 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|valid_array:valid_array_inst|array:valid_array_way0                   ;
-;                 |array:valid_array_way1                 ; 0.08 mW (0.08 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|valid_array:valid_array_inst|array:valid_array_way1                   ;
-;     |given_cache:icache                                 ; 54.00 mW (0.00 mW)                   ; 31.55 mW (0.00 mW)              ; --                                ; 22.45 mW (0.00 mW)                ; |mp4|given_cache:icache                                                                                         ;
-;         |line_adapter:bus                               ; 4.29 mW (4.29 mW)                    ; 1.20 mW (1.20 mW)               ; --                                ; 3.09 mW (3.09 mW)                 ; |mp4|given_cache:icache|line_adapter:bus                                                                        ;
-;         |given_cache_control:control                    ; 0.18 mW (0.18 mW)                    ; 0.01 mW (0.01 mW)               ; --                                ; 0.17 mW (0.17 mW)                 ; |mp4|given_cache:icache|given_cache_control:control                                                             ;
-;         |given_cache_datapath:datapath                  ; 49.52 mW (0.02 mW)                   ; 30.34 mW (0.01 mW)              ; --                                ; 19.18 mW (0.01 mW)                ; |mp4|given_cache:icache|given_cache_datapath:datapath                                                           ;
-;             |given_data_array:DM_cache                  ; 45.61 mW (45.61 mW)                  ; 27.80 mW (27.80 mW)             ; --                                ; 17.82 mW (17.82 mW)               ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_data_array:DM_cache                                 ;
-;             |given_array:tag                            ; 3.63 mW (3.63 mW)                    ; 2.35 mW (2.35 mW)               ; --                                ; 1.29 mW (1.29 mW)                 ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_array:tag                                           ;
-;             |given_array:valid                          ; 0.25 mW (0.25 mW)                    ; 0.19 mW (0.19 mW)               ; --                                ; 0.06 mW (0.06 mW)                 ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_array:valid                                         ;
-;     |cpu:ooo_cpu                                        ; 413.84 mW (2.10 mW)                  ; 135.77 mW (0.08 mW)             ; --                                ; 278.06 mW (2.02 mW)               ; |mp4|cpu:ooo_cpu                                                                                                ;
-;         |alu_rs:alu_rs_inst                             ; 48.83 mW (43.62 mW)                  ; 21.84 mW (18.65 mW)             ; --                                ; 26.99 mW (24.97 mW)               ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst                                                                             ;
-;             |alu:alu_inst[0].alu_inst                   ; 1.09 mW (1.09 mW)                    ; 0.63 mW (0.63 mW)               ; --                                ; 0.45 mW (0.45 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[0].alu_inst                                                    ;
-;             |alu:alu_inst[1].alu_inst                   ; 0.96 mW (0.96 mW)                    ; 0.64 mW (0.64 mW)               ; --                                ; 0.32 mW (0.32 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[1].alu_inst                                                    ;
-;             |alu:alu_inst[2].alu_inst                   ; 1.07 mW (1.07 mW)                    ; 0.64 mW (0.64 mW)               ; --                                ; 0.43 mW (0.43 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[2].alu_inst                                                    ;
-;             |alu:alu_inst[3].alu_inst                   ; 0.94 mW (0.94 mW)                    ; 0.64 mW (0.64 mW)               ; --                                ; 0.30 mW (0.30 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[3].alu_inst                                                    ;
-;             |alu:alu_inst[4].alu_inst                   ; 1.15 mW (1.15 mW)                    ; 0.64 mW (0.64 mW)               ; --                                ; 0.50 mW (0.50 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[4].alu_inst                                                    ;
-;         |branch_predictor:branch_predictor_inst         ; 90.23 mW (16.14 mW)                  ; 24.96 mW (4.41 mW)              ; --                                ; 65.27 mW (11.73 mW)               ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst                                                         ;
-;             |predictor_b:predictor_b_inst               ; 69.98 mW (69.98 mW)                  ; 19.18 mW (19.18 mW)             ; --                                ; 50.81 mW (50.81 mW)               ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst|predictor_b:predictor_b_inst                            ;
-;             |predictor_j:predictor_j_inst               ; 4.11 mW (4.11 mW)                    ; 1.38 mW (1.38 mW)               ; --                                ; 2.73 mW (2.73 mW)                 ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst|predictor_j:predictor_j_inst                            ;
-;         |cmp_rs:cmp_rs_inst                             ; 27.07 mW (26.56 mW)                  ; 9.70 mW (9.35 mW)               ; --                                ; 17.37 mW (17.21 mW)               ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst                                                                             ;
-;             |cmp:cmp_inst[0].cmp_inst                   ; 0.19 mW (0.19 mW)                    ; 0.12 mW (0.12 mW)               ; --                                ; 0.07 mW (0.07 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[0].cmp_inst                                                    ;
-;             |cmp:cmp_inst[1].cmp_inst                   ; 0.17 mW (0.17 mW)                    ; 0.12 mW (0.12 mW)               ; --                                ; 0.06 mW (0.06 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[1].cmp_inst                                                    ;
-;             |cmp:cmp_inst[2].cmp_inst                   ; 0.15 mW (0.15 mW)                    ; 0.11 mW (0.11 mW)               ; --                                ; 0.04 mW (0.04 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[2].cmp_inst                                                    ;
-;         |decoder:decoder_inst                           ; 16.55 mW (16.55 mW)                  ; 6.75 mW (6.75 mW)               ; --                                ; 9.80 mW (9.80 mW)                 ; |mp4|cpu:ooo_cpu|decoder:decoder_inst                                                                           ;
-;         |instruction_queue:instruction_queue_inst       ; 5.64 mW (5.64 mW)                    ; 2.10 mW (2.10 mW)               ; --                                ; 3.54 mW (3.54 mW)                 ; |mp4|cpu:ooo_cpu|instruction_queue:instruction_queue_inst                                                       ;
-;         |jalr:jalr_inst                                 ; 5.90 mW (5.90 mW)                    ; 1.96 mW (1.96 mW)               ; --                                ; 3.93 mW (3.93 mW)                 ; |mp4|cpu:ooo_cpu|jalr:jalr_inst                                                                                 ;
-;         |lsb_rs:lsb_rs_inst                             ; 72.84 mW (72.84 mW)                  ; 25.76 mW (25.76 mW)             ; --                                ; 47.08 mW (47.08 mW)               ; |mp4|cpu:ooo_cpu|lsb_rs:lsb_rs_inst                                                                             ;
-;         |regfile:regfile_inst                           ; 7.08 mW (7.08 mW)                    ; 3.53 mW (3.53 mW)               ; --                                ; 3.55 mW (3.55 mW)                 ; |mp4|cpu:ooo_cpu|regfile:regfile_inst                                                                           ;
-;         |reorder_buffer:rob_inst                        ; 137.60 mW (137.60 mW)                ; 39.10 mW (39.10 mW)             ; --                                ; 98.50 mW (98.50 mW)               ; |mp4|cpu:ooo_cpu|reorder_buffer:rob_inst                                                                        ;
+;                 |array:valid_array_way0                 ; 0.09 mW (0.09 mW)                    ; 0.07 mW (0.07 mW)               ; --                                ; 0.02 mW (0.02 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|valid_array:valid_array_inst|array:valid_array_way0                   ;
+;                 |array:valid_array_way1                 ; 0.07 mW (0.07 mW)                    ; 0.06 mW (0.06 mW)               ; --                                ; 0.01 mW (0.01 mW)                 ; |mp4|cache:dcache|cache_datapath:datapath|valid_array:valid_array_inst|array:valid_array_way1                   ;
+;     |given_cache:icache                                 ; 55.41 mW (0.00 mW)                   ; 31.76 mW (0.00 mW)              ; --                                ; 23.65 mW (0.00 mW)                ; |mp4|given_cache:icache                                                                                         ;
+;         |line_adapter:bus                               ; 4.23 mW (4.23 mW)                    ; 1.19 mW (1.19 mW)               ; --                                ; 3.05 mW (3.05 mW)                 ; |mp4|given_cache:icache|line_adapter:bus                                                                        ;
+;         |given_cache_control:control                    ; 0.22 mW (0.22 mW)                    ; 0.02 mW (0.02 mW)               ; --                                ; 0.20 mW (0.20 mW)                 ; |mp4|given_cache:icache|given_cache_control:control                                                             ;
+;         |given_cache_datapath:datapath                  ; 50.95 mW (0.03 mW)                   ; 30.55 mW (0.01 mW)              ; --                                ; 20.40 mW (0.02 mW)                ; |mp4|given_cache:icache|given_cache_datapath:datapath                                                           ;
+;             |given_data_array:DM_cache                  ; 47.21 mW (47.21 mW)                  ; 28.03 mW (28.03 mW)             ; --                                ; 19.18 mW (19.18 mW)               ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_data_array:DM_cache                                 ;
+;             |given_array:tag                            ; 3.50 mW (3.50 mW)                    ; 2.33 mW (2.33 mW)               ; --                                ; 1.17 mW (1.17 mW)                 ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_array:tag                                           ;
+;             |given_array:valid                          ; 0.21 mW (0.21 mW)                    ; 0.18 mW (0.18 mW)               ; --                                ; 0.03 mW (0.03 mW)                 ; |mp4|given_cache:icache|given_cache_datapath:datapath|given_array:valid                                         ;
+;     |cpu:ooo_cpu                                        ; 418.93 mW (2.04 mW)                  ; 133.67 mW (0.09 mW)             ; --                                ; 285.26 mW (1.94 mW)               ; |mp4|cpu:ooo_cpu                                                                                                ;
+;         |alu_rs:alu_rs_inst                             ; 52.03 mW (46.84 mW)                  ; 21.98 mW (18.79 mW)             ; --                                ; 30.06 mW (28.04 mW)               ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst                                                                             ;
+;             |alu:alu_inst[0].alu_inst                   ; 1.03 mW (1.03 mW)                    ; 0.65 mW (0.65 mW)               ; --                                ; 0.38 mW (0.38 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[0].alu_inst                                                    ;
+;             |alu:alu_inst[1].alu_inst                   ; 0.94 mW (0.94 mW)                    ; 0.63 mW (0.63 mW)               ; --                                ; 0.31 mW (0.31 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[1].alu_inst                                                    ;
+;             |alu:alu_inst[2].alu_inst                   ; 1.08 mW (1.08 mW)                    ; 0.63 mW (0.63 mW)               ; --                                ; 0.45 mW (0.45 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[2].alu_inst                                                    ;
+;             |alu:alu_inst[3].alu_inst                   ; 1.05 mW (1.05 mW)                    ; 0.63 mW (0.63 mW)               ; --                                ; 0.41 mW (0.41 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[3].alu_inst                                                    ;
+;             |alu:alu_inst[4].alu_inst                   ; 1.10 mW (1.10 mW)                    ; 0.64 mW (0.64 mW)               ; --                                ; 0.46 mW (0.46 mW)                 ; |mp4|cpu:ooo_cpu|alu_rs:alu_rs_inst|alu:alu_inst[4].alu_inst                                                    ;
+;         |branch_predictor:branch_predictor_inst         ; 81.11 mW (13.25 mW)                  ; 21.99 mW (3.04 mW)              ; --                                ; 59.12 mW (10.21 mW)               ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst                                                         ;
+;             |predictor_b:predictor_b_inst               ; 62.83 mW (62.83 mW)                  ; 17.61 mW (17.61 mW)             ; --                                ; 45.21 mW (45.21 mW)               ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst|predictor_b:predictor_b_inst                            ;
+;             |predictor_j:predictor_j_inst               ; 5.04 mW (5.04 mW)                    ; 1.33 mW (1.33 mW)               ; --                                ; 3.70 mW (3.70 mW)                 ; |mp4|cpu:ooo_cpu|branch_predictor:branch_predictor_inst|predictor_j:predictor_j_inst                            ;
+;         |cmp_rs:cmp_rs_inst                             ; 29.33 mW (28.80 mW)                  ; 10.30 mW (9.96 mW)              ; --                                ; 19.02 mW (18.84 mW)               ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst                                                                             ;
+;             |cmp:cmp_inst[0].cmp_inst                   ; 0.17 mW (0.17 mW)                    ; 0.12 mW (0.12 mW)               ; --                                ; 0.06 mW (0.06 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[0].cmp_inst                                                    ;
+;             |cmp:cmp_inst[1].cmp_inst                   ; 0.17 mW (0.17 mW)                    ; 0.12 mW (0.12 mW)               ; --                                ; 0.05 mW (0.05 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[1].cmp_inst                                                    ;
+;             |cmp:cmp_inst[2].cmp_inst                   ; 0.18 mW (0.18 mW)                    ; 0.11 mW (0.11 mW)               ; --                                ; 0.06 mW (0.06 mW)                 ; |mp4|cpu:ooo_cpu|cmp_rs:cmp_rs_inst|cmp:cmp_inst[2].cmp_inst                                                    ;
+;         |decoder:decoder_inst                           ; 18.85 mW (18.85 mW)                  ; 6.74 mW (6.74 mW)               ; --                                ; 12.11 mW (12.11 mW)               ; |mp4|cpu:ooo_cpu|decoder:decoder_inst                                                                           ;
+;         |instruction_queue:instruction_queue_inst       ; 6.89 mW (6.89 mW)                    ; 2.35 mW (2.35 mW)               ; --                                ; 4.54 mW (4.54 mW)                 ; |mp4|cpu:ooo_cpu|instruction_queue:instruction_queue_inst                                                       ;
+;         |jalr:jalr_inst                                 ; 6.50 mW (6.50 mW)                    ; 2.11 mW (2.11 mW)               ; --                                ; 4.38 mW (4.38 mW)                 ; |mp4|cpu:ooo_cpu|jalr:jalr_inst                                                                                 ;
+;         |lsb_rs:lsb_rs_inst                             ; 77.72 mW (77.72 mW)                  ; 26.16 mW (26.16 mW)             ; --                                ; 51.55 mW (51.55 mW)               ; |mp4|cpu:ooo_cpu|lsb_rs:lsb_rs_inst                                                                             ;
+;         |regfile:regfile_inst                           ; 9.59 mW (9.59 mW)                    ; 3.95 mW (3.95 mW)               ; --                                ; 5.64 mW (5.64 mW)                 ; |mp4|cpu:ooo_cpu|regfile:regfile_inst                                                                           ;
+;         |reorder_buffer:rob_inst                        ; 134.87 mW (134.87 mW)                ; 37.98 mW (37.98 mW)             ; --                                ; 96.88 mW (96.88 mW)               ; |mp4|cpu:ooo_cpu|reorder_buffer:rob_inst                                                                        ;
 +---------------------------------------------------------+--------------------------------------+---------------------------------+-----------------------------------+-----------------------------------+-----------------------------------------------------------------------------------------------------------------+
 (1) Value in parentheses is the power consumed at that level of hierarchy. Value not in parentheses is the power consumed at that level of hierarchy plus the power consumed by all levels of hierarchy below it.
 
@@ -231,7 +231,7 @@ refer to the applicable agreement for further details.
 +--------------+-----------------------+--------------------------+
 ; Clock Domain ; Clock Frequency (MHz) ; Total Core Dynamic Power ;
 +--------------+-----------------------+--------------------------+
-; clk          ; 100.00                ; 615.58                   ;
+; clk          ; 100.00                ; 601.06                   ;
 +--------------+-----------------------+--------------------------+
 
 
@@ -240,10 +240,10 @@ refer to the applicable agreement for further details.
 +----------------+-------------------------+---------------------------+--------------------------+----------------------------------+
 ; Voltage Supply ; Total Current Drawn (1) ; Dynamic Current Drawn (1) ; Static Current Drawn (1) ; Minimum Power Supply Current (2) ;
 +----------------+-------------------------+---------------------------+--------------------------+----------------------------------+
-; VCC            ; 1017.72 mA              ; 685.19 mA                 ; 332.53 mA                ; 1017.72 mA                       ;
-; VCCIO          ; 4.73 mA                 ; 0.49 mA                   ; 4.25 mA                  ; 4.73 mA                          ;
-; VCCPD          ; 1.45 mA                 ; 0.12 mA                   ; 1.32 mA                  ; 184.00 mA                        ;
-; VCCCB          ; 15.16 mA                ; 0.00 mA                   ; 15.16 mA                 ; 15.16 mA                         ;
+; VCC            ; 1005.89 mA              ; 668.61 mA                 ; 337.27 mA                ; 1005.89 mA                       ;
+; VCCIO          ; 4.74 mA                 ; 0.50 mA                   ; 4.25 mA                  ; 4.74 mA                          ;
+; VCCPD          ; 1.45 mA                 ; 0.13 mA                   ; 1.32 mA                  ; 184.00 mA                        ;
+; VCCCB          ; 15.15 mA                ; 0.00 mA                   ; 15.15 mA                 ; 15.15 mA                         ;
 ; VCCA_PLL       ; 4.69 mA                 ; 0.00 mA                   ; 4.69 mA                  ; 4.69 mA                          ;
 ; VCCD_PLL       ; 5.27 mA                 ; 0.00 mA                   ; 5.27 mA                  ; 5.27 mA                          ;
 ; VCCBAT         ; 0.00 mA                 ; 0.00 mA                   ; 0.00 mA                  ; 0.00 mA                          ;
@@ -263,12 +263,12 @@ refer to the applicable agreement for further details.
 ; QL1      ; --            ; --                  ; --                    ; --                   ;
 ; QL0      ; --            ; --                  ; --                    ; --                   ;
 ; 3C       ; 2.5V          ; 0.51 mA             ; 0.00 mA               ; 0.51 mA              ;
-; 3A       ; 2.5V          ; 0.52 mA             ; 0.01 mA               ; 0.51 mA              ;
-; 4A       ; 2.5V          ; 0.52 mA             ; 0.00 mA               ; 0.52 mA              ;
-; 5A       ; 2.5V          ; 0.65 mA             ; 0.10 mA               ; 0.55 mA              ;
-; 6A       ; 2.5V          ; 0.65 mA             ; 0.10 mA               ; 0.55 mA              ;
-; 7A       ; 2.5V          ; 0.69 mA             ; 0.14 mA               ; 0.55 mA              ;
-; 8A       ; 2.5V          ; 0.67 mA             ; 0.13 mA               ; 0.55 mA              ;
+; 3A       ; 2.5V          ; 0.75 mA             ; 0.21 mA               ; 0.55 mA              ;
+; 4A       ; 2.5V          ; 0.69 mA             ; 0.15 mA               ; 0.54 mA              ;
+; 5A       ; 2.5V          ; 0.69 mA             ; 0.13 mA               ; 0.55 mA              ;
+; 6A       ; 2.5V          ; 0.55 mA             ; 0.01 mA               ; 0.54 mA              ;
+; 7A       ; 2.5V          ; 0.52 mA             ; 0.00 mA               ; 0.52 mA              ;
+; 8A       ; 2.5V          ; 0.52 mA             ; 0.00 mA               ; 0.52 mA              ;
 ; 8C       ; 2.5V          ; 0.51 mA             ; 0.00 mA               ; 0.51 mA              ;
 +----------+---------------+---------------------+-----------------------+----------------------+
 
@@ -278,7 +278,7 @@ refer to the applicable agreement for further details.
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
 ; VCCIO Voltage ; Total Current Drawn (1) ; Dynamic Current Drawn (1) ; Static Current Drawn (1) ; Minimum Power Supply Current (2) ;
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
-; 2.5V          ; 4.73 mA                 ; 0.49 mA                   ; 4.25 mA                  ; 4.73 mA                          ;
+; 2.5V          ; 4.74 mA                 ; 0.50 mA                   ; 4.25 mA                  ; 4.74 mA                          ;
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
 (1) Currents reported in columns "Total Current Drawn", "Dynamic Current Drawn", and "Static Current Drawn" are sufficient for user operation of the device.  
 (2) Currents reported in column "Minimum Power Supply Current" are sufficient for power-up, configuration, and user operation of the device.
@@ -292,12 +292,12 @@ refer to the applicable agreement for further details.
 ; QL1      ; --            ; --                  ; --                    ; --                   ;
 ; QL0      ; --            ; --                  ; --                    ; --                   ;
 ; 3C       ; 2.5V          ; 0.11 mA             ; 0.00 mA               ; 0.11 mA              ;
-; 3A       ; 2.5V          ; 0.12 mA             ; 0.01 mA               ; 0.12 mA              ;
-; 4A       ; 2.5V          ; 0.13 mA             ; 0.00 mA               ; 0.13 mA              ;
-; 5A       ; 2.5V          ; 0.23 mA             ; 0.03 mA               ; 0.20 mA              ;
-; 6A       ; 2.5V          ; 0.24 mA             ; 0.03 mA               ; 0.21 mA              ;
-; 7A       ; 2.5V          ; 0.25 mA             ; 0.04 mA               ; 0.22 mA              ;
-; 8A       ; 2.5V          ; 0.26 mA             ; 0.03 mA               ; 0.23 mA              ;
+; 3A       ; 2.5V          ; 0.28 mA             ; 0.05 mA               ; 0.23 mA              ;
+; 4A       ; 2.5V          ; 0.24 mA             ; 0.04 mA               ; 0.20 mA              ;
+; 5A       ; 2.5V          ; 0.27 mA             ; 0.03 mA               ; 0.23 mA              ;
+; 6A       ; 2.5V          ; 0.19 mA             ; 0.00 mA               ; 0.18 mA              ;
+; 7A       ; 2.5V          ; 0.12 mA             ; 0.00 mA               ; 0.12 mA              ;
+; 8A       ; 2.5V          ; 0.13 mA             ; 0.00 mA               ; 0.13 mA              ;
 ; 8C       ; 2.5V          ; 0.11 mA             ; 0.00 mA               ; 0.11 mA              ;
 +----------+---------------+---------------------+-----------------------+----------------------+
 
@@ -307,7 +307,7 @@ refer to the applicable agreement for further details.
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
 ; VCCPD Voltage ; Total Current Drawn (1) ; Dynamic Current Drawn (1) ; Static Current Drawn (1) ; Minimum Power Supply Current (2) ;
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
-; 2.5V          ; 1.45 mA                 ; 0.12 mA                   ; 1.32 mA                  ; 184.00 mA                        ;
+; 2.5V          ; 1.45 mA                 ; 0.13 mA                   ; 1.32 mA                  ; 184.00 mA                        ;
 +---------------+-------------------------+---------------------------+--------------------------+----------------------------------+
 (1) Currents reported in columns "Total Current Drawn", "Dynamic Current Drawn", and "Static Current Drawn" are sufficient for user operation of the device.  
 (2) Currents reported in column "Minimum Power Supply Current" are sufficient for power-up, configuration, and user operation of the device.
@@ -320,18 +320,18 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------------+---------------+-------------+---------------+----------------+
 ; Simulation (from file)                                                                 ;               ;             ;               ;                ;
 ;     -- Simulation time nodes in unknown state                                          ; 0.9%          ;             ;               ;                ;
-;     -- Number of signals with Toggle Rate from Simulation                              ; 1142 (2.1%)   ; 165 (99.4%) ; 977 (4.5%)    ; 0 (0.0%)       ;
-;     -- Number of signals with Zero toggle rate, from Simulation                        ; 138 (0.3%)    ; 7 (4.2%)    ; 131 (0.6%)    ; 0 (0.0%)       ;
-;     -- Number of signals with Static Probability from Simulation                       ; 1142 (2.1%)   ; 165 (99.4%) ; 977 (4.5%)    ; 0 (0.0%)       ;
+;     -- Number of signals with Toggle Rate from Simulation                              ; 1142 (2.2%)   ; 165 (99.4%) ; 977 (4.5%)    ; 0 (0.0%)       ;
+;     -- Number of signals with Zero toggle rate, from Simulation                        ; 136 (0.3%)    ; 7 (4.2%)    ; 129 (0.6%)    ; 0 (0.0%)       ;
+;     -- Number of signals with Static Probability from Simulation                       ; 1142 (2.2%)   ; 165 (99.4%) ; 977 (4.5%)    ; 0 (0.0%)       ;
 ;                                                                                        ;               ;             ;               ;                ;
 ; Node, entity or clock assignment                                                       ;               ;             ;               ;                ;
 ;     -- Number of signals with Toggle Rate from Node, entity or clock assignment        ; 0 (0.0%)      ; 0 (0.0%)    ; 0 (0.0%)      ; 0 (0.0%)       ;
 ;     -- Number of signals with Static Probability from Node, entity or clock assignment ; 0 (0.0%)      ; 0 (0.0%)    ; 0 (0.0%)      ; 0 (0.0%)       ;
 ;                                                                                        ;               ;             ;               ;                ;
 ; Vectorless estimation                                                                  ;               ;             ;               ;                ;
-;     -- Number of signals with Toggle Rate from Vectorless estimation                   ; 52068 (97.9%) ; 1 (0.6%)    ; 20802 (95.5%) ; 31265 (100.0%) ;
-;     -- Number of signals with Zero toggle rate, from Vectorless estimation             ; 390 (0.7%)    ; 1 (0.6%)    ; 0 (0.0%)      ; 389 (1.2%)     ;
-;     -- Number of signals with Static Probability from Vectorless estimation            ; 52068 (97.9%) ; 1 (0.6%)    ; 20802 (95.5%) ; 31265 (100.0%) ;
+;     -- Number of signals with Toggle Rate from Vectorless estimation                   ; 51913 (97.8%) ; 1 (0.6%)    ; 20802 (95.5%) ; 31110 (100.0%) ;
+;     -- Number of signals with Zero toggle rate, from Vectorless estimation             ; 329 (0.6%)    ; 1 (0.6%)    ; 0 (0.0%)      ; 328 (1.1%)     ;
+;     -- Number of signals with Static Probability from Vectorless estimation            ; 51913 (97.8%) ; 1 (0.6%)    ; 20802 (95.5%) ; 31110 (100.0%) ;
 ;                                                                                        ;               ;             ;               ;                ;
 ; Default assignment                                                                     ;               ;             ;               ;                ;
 ;     -- Number of signals with Toggle Rate from Default assignment                      ; 0 (0.0%)      ; 0 (0.0%)    ; 0 (0.0%)      ; 0 (0.0%)       ;
@@ -356,7 +356,7 @@ refer to the applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus Prime Power Analyzer
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Standard Edition
-    Info: Processing started: Sun Dec 05 19:20:52 2021
+    Info: Processing started: Sun Dec 05 23:11:41 2021
 Info: Command: quartus_pow --read_settings_files=off --write_settings_files=off mp4 -c mp4
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (21076): High junction temperature operating condition is not set. Assuming a default value of '100'.
@@ -371,12 +371,12 @@ Info (215037): Detailed signal activity file source information is not written t
 Info (218000): Using Advanced I/O Power to simulate I/O buffers with the specified board trace model
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
-Info (215049): Average toggle rate for this design is 17.735 millions of transitions / sec
-Info (215031): Total thermal power estimate for the design is 970.89 mW
+Info (215049): Average toggle rate for this design is 16.148 millions of transitions / sec
+Info (215031): Total thermal power estimate for the design is 960.27 mW
 Info: Quartus Prime Power Analyzer was successful. 0 errors, 1 warning
-    Info: Peak virtual memory: 5339 megabytes
-    Info: Processing ended: Sun Dec 05 19:22:09 2021
-    Info: Elapsed time: 00:01:17
-    Info: Total CPU time (on all processors): 00:01:13
+    Info: Peak virtual memory: 5347 megabytes
+    Info: Processing ended: Sun Dec 05 23:12:56 2021
+    Info: Elapsed time: 00:01:15
+    Info: Total CPU time (on all processors): 00:01:11
 
 
