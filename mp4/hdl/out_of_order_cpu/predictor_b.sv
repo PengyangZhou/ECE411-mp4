@@ -13,6 +13,26 @@ module predictor_b
     input rv32i_word pc_correct,
     input logic is_correct
 );
+    logic is_correction_local;
+    rv32i_word pc_correct_local;
+    logic is_correct_local;
+
+    always_ff @(posedge clk)
+    begin
+        if (rst)
+        begin
+            is_correction_local <= 0;
+            pc_correct_local <= 0;
+            is_correct_local <= 0;
+        end
+        else
+        begin
+            is_correction_local <= is_correction;
+            pc_correct_local <= pc_correct;
+            is_correct_local <= is_correct;
+        end
+    end
+    
     parameter PRE_B_LEN = 32;
     parameter PRE_B_LEN_LOG2 = 5;
 
@@ -51,7 +71,7 @@ module predictor_b
         pc_correct_match = 0;
         for (int i = 0; i < PRE_B_LEN; i++)
         begin
-            if (used[i] && (pc_correct[31:2] == tag[i]))
+            if (used[i] && (pc_correct_local[31:2] == tag[i]))
             begin
                 pc_correct_exist = 1;
                 pc_correct_match = i[PRE_B_LEN_LOG2-1:0];
@@ -73,12 +93,12 @@ module predictor_b
         end
         else
         begin
-            if (is_correction && pc_correct_exist && (!(is_prediction && (!pc_fetch_exist) && (pc_correct_match == next_new))))
+            if (is_correction_local && pc_correct_exist && (!(is_prediction && (!pc_fetch_exist) && (pc_correct_match == next_new))))
             begin
                 unique case (br[pc_correct_match])
                 ST:
                 begin
-                    if (is_correct)
+                    if (is_correct_local)
                     begin
                         br[pc_correct_match] <= ST;
                     end
@@ -89,7 +109,7 @@ module predictor_b
                 end
                 WT:
                 begin
-                    if (is_correct)
+                    if (is_correct_local)
                     begin
                         br[pc_correct_match] <= ST;
                     end
@@ -100,7 +120,7 @@ module predictor_b
                 end
                 WN:
                 begin
-                    if (is_correct)
+                    if (is_correct_local)
                     begin
                         br[pc_correct_match] <= SN;
                     end
@@ -111,7 +131,7 @@ module predictor_b
                 end
                 SN:
                 begin
-                    if (is_correct)
+                    if (is_correct_local)
                     begin
                         br[pc_correct_match] <= SN;
                     end
