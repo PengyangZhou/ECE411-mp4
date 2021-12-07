@@ -129,11 +129,11 @@ always @(posedge rvfi.halt)begin
     $display("\nExecution Time: %0dns", total_cycles * 10);
     $display("Total Cycles: %0d", total_cycles);
     $display("Stall Cycles: %0d, %0d due to icache read, %0d due to RS fullness", stall_cycles, stall_icache_read, stall_rs_full);
-    $display("Percentage of correctly predicted branch: %f%% (%0d/%0d)", 100.0*num_branch_correct/num_branch, num_branch_correct, num_branch);
-    $display("Percentage of correctly predicted jalr: %f%% (%0d/%0d)", 100.0*num_jalr_correct/num_jalr, num_jalr_correct, num_jalr);
-    $display("Number of jal: %0d", num_jal);
+    // $display("Percentage of correctly predicted branch: %f%% (%0d/%0d)", 100.0*num_branch_correct/num_branch, num_branch_correct, num_branch);
+    // $display("Percentage of correctly predicted jalr: %f%% (%0d/%0d)", 100.0*num_jalr_correct/num_jalr, num_jalr_correct, num_jalr);
+    // $display("Number of jal: %0d", num_jal);
     $display("Percentage of correctly predicted branch/jal/jalr: %f%% (%0d/%0d) (all jal/jalr jumps are considered correct)", 
-        100.0*(num_branch_correct+num_jalr+num_jal)/(num_branch+num_jalr+num_jal), num_branch_correct+num_jalr_correct, num_branch+num_jalr);
+        100.0*(num_branch_correct+num_jalr+num_jal)/(num_branch+num_jalr+num_jal), num_branch_correct+num_jalr+num_jal, num_branch+num_jalr+num_jal);
     $display("Percentage of issuing instructions: %f%%", 100.0*(total_cycles-stall_cycles)/total_cycles);
     $display("icache operations: %0d  icache hits: %0d", icache_ops, icache_hits);
     $display("icache hit rate: %f%%", 100.0*icache_hits/icache_ops);
