@@ -87,7 +87,7 @@ begin
         begin
             if (stack_pointer != STACK_LEN)
             begin
-                stack[stack_pointer - 1] <= pc + 4;
+                stack[stack_pointer] <= pc + 4;
                 stack_pointer <= stack_pointer + 4'd1;
             end
         end
